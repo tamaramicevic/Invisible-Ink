@@ -1,0 +1,40 @@
+# intelliJ files
+local.properties
+.idea/
+.metadata/
+.settings/
+*.swp
+*.orig
+*.iml
+*.eml
+*.ipr
+*.iws
+*.apk
+*.aar
+*.patch
+*.diff
+*.class
+*.log
+
+# generated files
+bin/
+gen/
+out/
+captures/
+
+# gradle files
+.gradle/
+build/
+
+# macOS
+.DS_Store
+
+# native build folder
+.externalNativeBuild
+.cxx/
+
+# lint
+lint/intermediates/
+lint/generated/
+lint/outputs/
+lint/tmp/
