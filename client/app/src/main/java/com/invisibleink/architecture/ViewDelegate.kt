@@ -10,21 +10,20 @@ interface ViewDelegate<TypeOfViewState : ViewState, TypeOfViewEvent : ViewEvent,
     /**
      * Render a view state on screen.
      */
-    fun render(viewState: TypeOfViewState)
+    fun render(viewState: TypeOfViewState): Unit?
 
     /**
      * Relay an event to the associated [Presenter].
      */
-    fun pushEvent(viewEvent: TypeOfViewEvent)
+    fun pushEvent(viewEvent: TypeOfViewEvent): Unit?
 
     /**
      * Attach the associated presenter to this [ViewDelegate] instance.
      */
-    fun attach(presenter: Presenter<TypeOfViewState, TypeOfViewEvent, TypeOfDestination>)
+    fun attach(presenter: Presenter<TypeOfViewState, TypeOfViewEvent, TypeOfDestination>): Unit?
 
     /**
      * Notifies this [ViewDelegate] that it is being detached from the associated presenter.
      */
-    fun detach()
-
+    fun detach(): Unit?
 }

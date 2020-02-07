@@ -14,20 +14,20 @@ interface Presenter<TypeOfViewState : ViewState, TypeOfViewEvent : ViewEvent, Ty
     fun attach(
         viewDelegate: ViewDelegate<TypeOfViewState, TypeOfViewEvent, TypeOfDestination>,
         router: Router<TypeOfDestination>? = null
-    )
+    ): Unit?
 
     /**
      * Remove any references to the attached [ViewDelegate] and [Router].
      */
-    fun detach()
+    fun detach(): Unit?
 
     /**
      * Implement the logic for handling [ViewEvent]s.
      */
-    fun onEvent(viewEvent: TypeOfViewEvent)
+    fun onEvent(viewEvent: TypeOfViewEvent): Unit?
 
     /**
      * Relay [ViewState]s to be rendering to the associated [ViewDelegate].
      */
-    fun pushState(viewState: TypeOfViewState)
+    fun pushState(viewState: TypeOfViewState): Unit?
 }
