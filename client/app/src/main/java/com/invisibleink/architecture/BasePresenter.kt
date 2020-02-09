@@ -24,6 +24,7 @@ abstract class BasePresenter<TypeOfViewState : ViewState, TypeOfViewEvent : View
         router: Router<TypeOfDestination>?
     ) {
         this.viewDelegate = WeakReference(viewDelegate)
+        viewDelegate.attach(this)
 
         if (router != null) {
             this.router = router

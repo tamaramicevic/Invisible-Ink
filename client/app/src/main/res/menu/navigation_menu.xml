@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/favoritesTab"
+        android:icon="@drawable/ic_favorite_black_24dp"
+        android:title="@string/favorites_content" />
+
+    <item
+        android:id="@+id/exploreTab"
+        android:icon="@drawable/ic_explore_black_24dp"
+        android:title="@string/explore_content" />
+
+    <item
+        android:id="@+id/noteTab"
+        android:icon="@drawable/ic_create_black_24dp"
+        android:title="@string/note_content" />
+
+    <item
+        android:id="@+id/settingsTab"
+        android:icon="@drawable/ic_settings_black_24dp"
+        android:title="@string/settings_content" />
+
+</menu>

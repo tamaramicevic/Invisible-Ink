@@ -1,3 +1,10 @@
 <resources>
     <string name="app_name">InvisibleInk</string>
+
+    <!-- Navigation content -->
+    <string name="explore_content">Explore</string>
+    <string name="favorites_content">Favorites</string>
+    <string name="note_content">Note</string>
+    <string name="settings_content">Settings</string>
+
 </resources>

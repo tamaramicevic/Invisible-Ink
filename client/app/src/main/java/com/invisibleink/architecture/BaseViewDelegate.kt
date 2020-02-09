@@ -6,7 +6,9 @@ import java.lang.ref.WeakReference
  * Top-level view delegate type for all concrete [ViewDelegate]s to extend.
  * Handles attaching/detaching of the associated [Presenter] and relaying of [ViewEvent]s.
  */
-abstract class BaseViewDelegate<TypeOfViewState : ViewState, TypeOfViewEvent : ViewEvent, TypeOfDestination : Destination> :
+abstract class BaseViewDelegate<TypeOfViewState : ViewState, TypeOfViewEvent : ViewEvent, TypeOfDestination : Destination>(
+    protected val viewProvider: ViewProvider
+) :
     ViewDelegate<TypeOfViewState, TypeOfViewEvent, TypeOfDestination> {
 
     private lateinit var presenter: WeakReference<Presenter<TypeOfViewState, TypeOfViewEvent, TypeOfDestination>>
