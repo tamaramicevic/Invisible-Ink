@@ -21,9 +21,13 @@
     "before-commit": "tslint --fix -p tsconfig.json -c tslint.json && jest --coverage"
   },
   "dependencies": {
+    "@azure/ai-text-analytics": "^1.0.0-preview.1",
+    "@azure/identity": "^1.0.2",
     "@nestjs/common": "^6.7.2",
+    "@nestjs/config": "^0.2.2",
     "@nestjs/core": "^6.7.2",
     "@nestjs/platform-express": "^6.7.2",
+    "dotenv": "^8.2.0",
     "reflect-metadata": "^0.1.13",
     "rimraf": "^3.0.0",
     "rxjs": "^6.5.3"

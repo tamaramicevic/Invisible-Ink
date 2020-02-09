@@ -66,6 +66,20 @@ $ npm run test:cov
 $ npm run before-commit
 ```
 
+## Adding source files
+All source components in Nest.js can be generated using the nest CLI. 
+This would generate the source file, unit test and scaffolding code
+```bash
+# generate a module
+$ nest g module <module-name>
+
+# generate service
+$ nest g service <service-name>
+
+# generate controller
+$ nest g controller <controller-name>
+```
+
 ## Support
 
 Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
