@@ -7,25 +7,12 @@
   "rules": {
     "quotemark": [true, "single"],
     "member-access": [false],
+    "ordered-imports": [false],
     "max-line-length": [true, 150],
     "member-ordering": [false],
     "interface-name": [false],
     "arrow-parens": false,
-    "object-literal-sort-keys": false,
-    "no-any": true,
-    "await-promise": [true, "Thenable"],
-    "no-async-without-await": true,
-    "no-duplicate-imports": [true, {"allow-namespace-imports": true}],
-    "class-name": true,
-    "file-name-casing": [true, "kebab-case"],
-    "ordered-imports": [
-      true,
-      {
-        "import-sources-order": "lowercase-last",
-        "named-imports-order": "lowercase-first"
-      }
-    ],
-    "semicolon": [true, "always", "ignore-bound-class-methods"]
+    "object-literal-sort-keys": false
   },
   "rulesDirectory": []
 }
