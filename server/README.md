@@ -60,6 +60,12 @@ $ npm run test:e2e
 $ npm run test:cov
 ```
 
+## Before Commiting & Pushing
+```bash
+# linter and the unit tests along with test coverage
+$ npm run before-commit
+```
+
 ## Support
 
 Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
