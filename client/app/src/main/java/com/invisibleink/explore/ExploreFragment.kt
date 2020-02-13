@@ -29,7 +29,7 @@ class ExploreFragment : Fragment(), ViewProvider {
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
-        (context as InvisibleInkApplication).appComponent.inject(this)
+        (context.applicationContext as InvisibleInkApplication).appComponent.inject(this)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
