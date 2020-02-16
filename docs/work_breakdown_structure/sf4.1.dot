@@ -1,0 +1,63 @@
+digraph L {
+    fontsize = 18
+    fontname = Arial
+    labelloc = "t"
+    labeljust = "l"
+    rankdir="TB"
+
+    // System feature title
+    label = <<b>Anonymous Geo-tagged Notes</b> - functional requirements are highlighted in red.<br/><br/>>
+
+    // System feature
+    node [shape=record fontname=Arial fontsize=12]
+    0 [label="Anonymous Geo-Tagged Notes"]
+
+    // Functional requirements
+    node [style=filled fillcolor="#FFCCCC"]
+    1 [label="Note-Input"]
+    2 [label="Note-Input-Validation"]
+    3 [label="Note-Photo-Import"]
+    4 [label="Note-Photo-Capture"]
+    5 [label="Note-Geo-Tagging"]
+    6 [label="Note-Upload-Message"]
+    node [fillcolor="#FFFFFF"]
+    0 -> 1, 2, 3, 4, 5, 6
+
+        // Sub-tasks of func-req-1
+    1.1 [label="Create layout for note view"]
+    1.2 [label="Inflate note view when tab is selected"]
+    1.3 [label="Define Retrofit interface for note-post endpoint"]
+    1 -> 1.1, 1.2, 1.3
+
+    // Sub-tasks of func-req-2
+    2.1 [label="Implement validation logic"]
+    2.2 [label="Write validation logic unit tests"]
+    2.3 [label="Invoke validation logic from view listeners"]
+    2.4 [label="Display human readable error message for invalid notes"]
+    2 -> 2.1, 2.2, 2.3, 2.4
+
+    // Sub-tasks of func-req-3
+    3.1 [label="Create and send intent for importing photo"]
+    3.2 [label="Display photo as thumbnail upon successful import"]
+    3.3 [label="Display human readable error message for failed import"]
+    3 -> 3.1, 3.2, 3.3
+
+    // Sub-tasks of func-req-4
+    4.1 [label="Create file for saving photo temporarily"]
+    4.2 [label="Create and send intent for taking photo"]
+    4.3 [label="Display photo as thumbnail upon successful capture"]
+    4.4 [label="Display human readable error message for failed capture"]
+    4 -> 4.1, 4.2, 4.3, 4.4
+
+    // Sub-tasks of func-req-5
+    5.1 [label="Update permissions to allow GPS access while the app is in use"]
+    5.2 [label="Implement code for retrieving the devices GPS coordinates"]
+    5.3 [label="Append coordinates as query parameters to note-post requests"]
+    5 -> 5.1, 5.2, 5.3
+
+    // Sub-tasks of func-req-6
+    6.1 [label="Add callback to handle result of note-post requests"]
+    6.2 [label="Add human readable messages to string resources"]
+    6.3 [label="Implement logic for selecting message upon request success/failure"]
+    6 -> 6.1, 6.2, 6.3
+}
