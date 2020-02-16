@@ -1,4 +1,4 @@
-import { AnalyzeSentimentSuccessResult, CognitiveServicesCredential, TextAnalyticsClient, AnalyzeSentimentResult} from '@azure/ai-text-analytics';
+import { AnalyzeSentimentResult, AnalyzeSentimentSuccessResult, CognitiveServicesCredential, TextAnalyticsClient} from '@azure/ai-text-analytics';
 import { Injectable } from '@nestjs/common';
 import { ConfigService} from '@nestjs/config';
 import { SentimentAnalysisResult } from './models/sentiment-analysis-result';
@@ -30,6 +30,7 @@ export class TextAnalyticsService {
             ).filter(item => !!item);
             return result;
         } catch (error) {
+            // tslint:disable-next-line
             console.debug('Error analyzing sentiment: ', error);
         }
     }
