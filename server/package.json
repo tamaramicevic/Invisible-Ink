@@ -23,10 +23,12 @@
   "dependencies": {
     "@azure/ai-text-analytics": "^1.0.0-preview.1",
     "@azure/identity": "^1.0.2",
+    "@azure/ms-rest-azure-js": "^2.0.1",
     "@nestjs/common": "^6.7.2",
     "@nestjs/config": "^0.2.2",
     "@nestjs/core": "^6.7.2",
     "@nestjs/platform-express": "^6.7.2",
+    "azure-cognitiveservices-contentmoderator": "^4.1.1",
     "dotenv": "^8.2.0",
     "reflect-metadata": "^0.1.13",
     "request": "^2.88.0",

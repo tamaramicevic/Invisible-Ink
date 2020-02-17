@@ -1,4 +1,4 @@
-import { AnalyzeSentimentResult, AnalyzeSentimentSuccessResult, CognitiveServicesCredential, TextAnalyticsClient} from '@azure/ai-text-analytics';
+import { AnalyzeSentimentSuccessResult, CognitiveServicesCredential, TextAnalyticsClient} from '@azure/ai-text-analytics';
 import { Injectable } from '@nestjs/common';
 import { ConfigService} from '@nestjs/config';
 import { SentimentAnalysisResult } from './models/sentiment-analysis-result';
