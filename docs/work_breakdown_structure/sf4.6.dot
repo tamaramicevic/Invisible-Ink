@@ -1,0 +1,27 @@
+digraph G {
+    fontsize = 18
+    fontname = Arial
+    labelloc = "t"
+    labeljust = "l"
+    rankdir="TB"
+
+    // System feature title
+    label = <<b>Content Moderation by Reporting     </b> - functional requirements are highlighted in red.<br/><br/>>
+
+    // System feature
+    node [shape=record fontname=Arial fontsize=12]
+    0 [label="Content Moderation by Reporting"]
+
+    // Functional Requirements
+    node [style=filled fillcolor="#FFCCCC"]
+    1 [label="Report-Note-UI"]
+    2 [label="Report-Note-Client-Post"]
+    3 [label="Report-Note-DB-Saved"]
+    4 [label="Report-Node-Return-Code"]
+    node [fillcolor="#FFFFFF"]
+    0 -> 1, 2, 3, 4
+
+    // func-req-1 sub-reqs
+    1.1 [label=""]
+    1 -> 1.1
+}

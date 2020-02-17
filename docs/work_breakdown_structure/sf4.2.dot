@@ -1,0 +1,31 @@
+digraph G {
+    fontsize = 18
+    fontname = Arial
+    labelloc = "t"
+    labeljust = "l"
+    rankdir="TB"
+
+    // System feature title
+    label = <<b>Users can view notes in Augmented Reality      </b> - functional requirements are highlighted in red.<br/><br/>>
+
+    // System feature
+    node [shape=record fontname=Arial fontsize=12]
+    0 [label="Users can view notes in AR"]
+
+    // Functional Requirements
+    node [style=filled fillcolor="#FFCCCC"]
+    1 [label="AR-Client-Note-Retrieval"]
+    2 [label="AR-Server-Note-Logic"]
+    3 [label="AR-Server-Note-Retrieval"]
+    4 [label="AR-Show-Notes"]
+    5 [label="AR-Note-Content-Display"]
+    6 [label="AR-Note-Grouping"]
+    7 [label="AR-GPS-Permissions"]
+    node [fillcolor="#FFFFFF"]
+    0 -> 1, 2, 3, 4, 5, 6, 7
+
+    // func-req-1 sub-reqs
+    1.1 [label=""]
+    1 -> 1.1
+    
+}
