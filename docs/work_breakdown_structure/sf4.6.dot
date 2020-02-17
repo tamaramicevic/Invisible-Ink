@@ -35,8 +35,9 @@ digraph G {
     1.2 -> {"1.2.1", "1.2.2", "1.2.3"}
 
     2.1 [label="Define Retrofit interface for report-note client endpoint"]
+    2.2 [label="Client sends a post request to server with noteID and optionalReport"]
     2.2 [label="Define a server endpoint for report-note requests"]
-    2 -> {2.1, 2.2}
+    2 -> {2.1, 2.2, 2.3}
 
     3.1 [label="Create a table named ReportedNotes with noteID and optionalReport"]
     3.2 [label="Define query to add reports to table with provided variables"]
