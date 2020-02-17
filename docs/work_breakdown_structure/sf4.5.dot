@@ -7,12 +7,17 @@ Client-Search-Params: The GET request should have search terms as optional param
 Client-Search-Filter: The server should find the notes within the range of the user and filter them by the search terms provided (if any).
 */
 
-digraph
+digraph L
 {
+    fontsize = 18
+    fontname = Arial
+    labelloc = "t"
+    labeljust = "l"
+    rankdir="TB"
     size="10.25, 7.75";
     overlap="compress"
     node [shape = rect, color=lightblue, style=filled]; "4.5 SearchableContent";  // System Reqs
-    node [shape = rect, color=yellow];                    // Functional Reqs
+    node [shape = rect, color="#FFCCCC"];                    // Functional Reqs
     "4.5.1 Client-Search-Request" 
     "4.5.2 Client-Search-Params" 
     "4.5.3 Client-Search-Filter";                              
@@ -40,5 +45,6 @@ digraph
         "4.5.3 Client-Search-Filter" -> "[server] Filter applicable notes based on request search terms"
         "4.5.3 Client-Search-Filter" -> "[server] Return filtered notes as response if applicable"
 	}
-    label="Blue: System Requirement; Yellow: Functional Requirement, White: Task";
+    
+    label = <<b>4.5 Searchable Content</b><br/><br/> Blue: System Requirement<br/> Pink: Functional Requirement<br/> White: Task>
 }
