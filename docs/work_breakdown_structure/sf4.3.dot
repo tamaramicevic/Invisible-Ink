@@ -1,0 +1,15 @@
+/*
+Users must be able to view local notes using a Map View
+
+Map-Client-Note-Serve: The server should return a list of all notes within a radius around a location
+
+Map-Client-Zoom: The client should allow zooming out upto a certain threshold
+
+Map-Client-Note-Retrieval: The client should send requests with the location of the user to receive all applicable notes
+
+Map-Client-Grouping: The client should be able to group together notes that are very close together in the map to prevent crowding when zoomed out really far
+
+Map-Client-Search: The client should be able to include search terms in their requests to filter the results they receive
+
+Map-Client-Filter: The client should be able to include pre-built filters in their requests to filter the results they receive eg. top 10 newest notes
+*/

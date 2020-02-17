@@ -1,0 +1,8 @@
+/*
+Searchable Content:
+Client-Search-Request: The client would send a GET request for all notes in the proximity
+
+Client-Search-Params: The GET request should have search terms as optional parameters
+
+Client-Search-Filter: The server should find the notes within the range of the user and filter them by the search terms provided (if any).
+*/

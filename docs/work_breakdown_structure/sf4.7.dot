@@ -1,0 +1,49 @@
+/*
+Automated Content Moderation:
+Auto-Negative-Note-Scan:    The server will need to scan the note’s contents to compare 
+                            and decide whether it is appropriate enough to store and 
+                            display to other users
+
+Auto-Negative-Note-Inform:  The server should inform the client if the content was deemed 
+                            inappropriate
+
+Auto-Negative-Note-Show:    The client should inform the user that their note was not uploaded 
+                            due to the note’s content containing inappropriate content
+*/
+
+digraph
+{
+    size="10.25, 7.75";
+    overlap="compress"
+    node [shape = rect, color=blue]; AutomatedContentModeration;  // System Reqs
+    node [shape = rect, color=green];                             // Functional Reqs
+    "Auto-Negative-Note-Scan" 
+    "Auto-Negative-Note-Inform" 
+    "Auto-Negative-Note-Show";                              
+    node [shape = rect, color=black, nodesep=0.75];               // Tasks
+    "AutomatedContentModeration" -> "Auto-Negative-Note-Scan";
+    "AutomatedContentModeration" -> "Auto-Negative-Note-Inform";
+    "AutomatedContentModeration" -> "Auto-Negative-Note-Show";
+    subgraph cluster_0 {
+		style=filled;
+		color=lightgrey;
+		node [style=filled,color=white];
+        "Auto-Negative-Note-Scan" -> "[server] Implement Text-Analytics service to scan for bad sentiment"
+        "Auto-Negative-Note-Scan" -> "[server] Implement Auto-Content-Moderation Service to scan for PIIs"
+	}
+    subgraph cluster_1 {
+		style=filled;
+		color=lightgrey;
+		node [style=filled,color=white];
+        "Auto-Negative-Note-Inform" -> "[server] Create an Interceptor using Text-Analytics service"
+        "Auto-Negative-Note-Inform" -> "[server] Create an Interceptor using Auto-Content-Moderation"
+	}
+    subgraph cluster_2 {
+		style=filled;
+		color=lightgrey;
+		node [style=filled,color=white];
+        "Auto-Negative-Note-Show" -> "[client] Show dialog when server returns DetectedPII error response"
+        "Auto-Negative-Note-Show" -> "[client] Show dialog when server returns DetectedBadSentiment error response"
+	}
+    label="Blue: System Requirement; Green: Functional Requirement, Black: Task";
+}
