@@ -8,6 +8,7 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import com.invisibleink.R
 import com.invisibleink.architecture.ViewProvider
+import com.invisibleink.extensions.findViewOrThrow
 import com.invisibleink.injection.InvisibleInkApplication
 import javax.inject.Inject
 
@@ -17,7 +18,7 @@ class NoteFragment : Fragment(), ViewProvider {
     lateinit var presenter: NotePresenter
     private lateinit var viewDelegate: NoteViewDelegate
 
-    override fun <T : View> findViewById(id: Int): T = findViewById(id)
+    override fun <T : View> findViewById(id: Int): T = findViewOrThrow(id)
 
     override fun onCreateView(
         inflater: LayoutInflater,
