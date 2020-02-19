@@ -14,4 +14,11 @@
     <string name="expiration_date_default">Add Expiration Date</string>
     <string name="expiration_date_format">Expires on %s</string>
 
+    <!-- Note API -->
+    <string name="upload_error_generic">Failed to upload note.</string>
+    <string name="invalid_note_title">The note must contain a non-empty title.</string>
+    <string name="invalid_note_body">The note must contain a non-empty body.</string>
+    <string name="valid_note">Valid note!</string>
+    <string name="upload_success">Successfully uploaded note!</string>
+
 </resources>

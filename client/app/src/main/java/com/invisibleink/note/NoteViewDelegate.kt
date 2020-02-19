@@ -7,7 +7,7 @@ import androidx.annotation.StringRes
 import com.invisibleink.R
 import com.invisibleink.architecture.BaseViewDelegate
 import com.invisibleink.architecture.ViewProvider
-import kotlinx.android.synthetic.main.fragment_note.view.*
+import com.invisibleink.extensions.showSnackbar
 
 class NoteViewDelegate(viewProvider: ViewProvider) :
     BaseViewDelegate<NoteViewState, NoteViewEvent, NoteDestination>(viewProvider) {
@@ -27,18 +27,16 @@ class NoteViewDelegate(viewProvider: ViewProvider) :
     override fun render(viewState: NoteViewState): Unit? = when (viewState) {
         is NoteViewState.Empty -> clearNoteContent()
         is NoteViewState.Draft -> showDraftContent(viewState.draft)
-        is NoteViewState.InvalidNote -> showErrorMessage(viewState.message)
-        is NoteViewState.UploadError -> showErrorMessage(viewState.message)
-        is NoteViewState.UploadSuccess -> showSuccessMessage(viewState.message)
+        is NoteViewState.InvalidNote -> showMessage(viewState.message)
+        is NoteViewState.UploadError -> showMessage(viewState.message)
+        is NoteViewState.UploadSuccess -> showMessage(viewState.message)
     }
 
     private fun clearNoteContent() = Unit // TODO: Ensure all the note fields are cleared
 
     private fun showDraftContent(note: Note) = Unit // TODO: Update all the fields for the draft
 
-    private fun showErrorMessage(@StringRes message: Int) = Unit // TODO: Display the message
-
-    private fun showSuccessMessage(@StringRes message: Int) = Unit // TODO: Display the message
+    private fun showMessage(@StringRes message: Int) = title.showSnackbar(message)
 
     private fun showDatePicker() = Unit // TODO: Display a date picker
 
