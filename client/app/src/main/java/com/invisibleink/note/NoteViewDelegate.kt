@@ -1,6 +1,7 @@
 package com.invisibleink.note
 
 import android.app.DatePickerDialog
+import android.graphics.Bitmap
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.EditText
@@ -39,9 +40,8 @@ class NoteViewDelegate(viewProvider: ViewProvider) :
     override fun render(viewState: NoteViewState): Unit? = when (viewState) {
         is NoteViewState.Empty -> clearNoteContent()
         is NoteViewState.Draft -> showDraftContent(viewState.draft)
-        is NoteViewState.InvalidNote -> showMessage(viewState.message)
-        is NoteViewState.UploadError -> showMessage(viewState.message)
-        is NoteViewState.UploadSuccess -> showMessage(viewState.message)
+        is NoteViewState.ImageSelected -> showImageThumbnail(viewState.image)
+        is NoteViewState.Error -> showMessage(viewState.message)
     }
 
     private fun clearNoteContent() {
@@ -64,6 +64,8 @@ class NoteViewDelegate(viewProvider: ViewProvider) :
         }
     }
 
+    private fun showImageThumbnail(image: Bitmap) = addPhotoButton.setImageBitmap(image)
+
     private fun showMessage(@StringRes message: Int) = title.showSnackbar(message)
 
     private fun showDatePicker() {
@@ -80,7 +82,7 @@ class NoteViewDelegate(viewProvider: ViewProvider) :
         }
     }
 
-    private fun showAddPhoto() = Unit // TODO: Display with an intent chooser
+    private fun showAddPhoto() = pushEvent(NoteViewEvent.AddImage)
 
     private fun composeNote(): Note = Note(title.text.toString(), body.text.toString())
 

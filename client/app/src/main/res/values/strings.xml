@@ -21,4 +21,10 @@
     <string name="valid_note">Valid note!</string>
     <string name="upload_success">Successfully uploaded note!</string>
 
+    <!-- Permission messages -->
+    <string name="image_picker_title">Add a photo</string>
+    <string name="error_adding_image">Failed to add photo</string>
+    <string name="missing_permission_camera">Camera permission is required for this action</string>
+    <string name="missing_permission_storage">Storage permission is required for this action</string>
+
 </resources>

@@ -15,15 +15,21 @@ import javax.inject.Inject
 class NotePresenter @Inject constructor(retrofit: Retrofit) :
     BasePresenter<NoteViewState, NoteViewEvent, NoteDestination>() {
 
+    interface ImageSelector {
+        fun onAddImageSelected()
+    }
+
     companion object {
         private val TAG = NotePresenter::class.java.canonicalName
     }
 
     private val noteApi = retrofit.create(NoteApi::class.java)
     private val disposable = CompositeDisposable()
+    var imageSelector: ImageSelector? = null
 
     override fun onEvent(viewEvent: NoteViewEvent): Unit? = when (viewEvent) {
         is NoteViewEvent.Upload -> uploadNote(viewEvent.note)
+        is NoteViewEvent.AddImage -> imageSelector?.onAddImageSelected()
     }
 
     override fun onAttach() {
@@ -37,7 +43,7 @@ class NotePresenter @Inject constructor(retrofit: Retrofit) :
     private fun uploadNote(note: Note) {
         val (isValid, error) = isValidNote(note)
         if (!isValid) {
-            pushState(NoteViewState.InvalidNote(error))
+            pushState(NoteViewState.Error(error))
             return
         }
 
@@ -57,13 +63,13 @@ class NotePresenter @Inject constructor(retrofit: Retrofit) :
 
     private fun showNetworkError(throwable: Throwable) {
         Log.e(TAG, "Failed to upload note: $throwable")
-        pushState(NoteViewState.UploadError(R.string.upload_error_generic))
+        pushState(NoteViewState.Error(R.string.upload_error_generic))
     }
 
     private fun parseResponse(uploadResponse: Response<ResponseBody>?) {
         if (uploadResponse?.isSuccessful == true) {
             Log.d(TAG, "Note upload successful!")
-            pushState(NoteViewState.UploadSuccess(R.string.upload_success))
+            pushState(NoteViewState.Error(R.string.upload_success))
         } else {
             showNetworkError(Throwable())
         }

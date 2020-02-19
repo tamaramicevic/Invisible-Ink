@@ -16,13 +16,13 @@ data class Note(
 
 sealed class NoteViewState : ViewState {
     object Empty : NoteViewState()
+    data class ImageSelected(val image: Bitmap) : NoteViewState()
     data class Draft(val draft: Note) : NoteViewState()
-    data class InvalidNote(@StringRes val message: Int) : NoteViewState()
-    data class UploadError(@StringRes val message: Int) : NoteViewState()
-    data class UploadSuccess(@StringRes val message: Int) : NoteViewState()
+    data class Error(@StringRes val message: Int) : NoteViewState()
 }
 
 sealed class NoteViewEvent : ViewEvent {
+    object AddImage : NoteViewEvent()
     data class Upload(val note: Note) : NoteViewEvent()
 }
 
