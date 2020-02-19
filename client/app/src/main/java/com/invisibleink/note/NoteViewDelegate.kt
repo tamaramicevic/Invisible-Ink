@@ -1,5 +1,7 @@
 package com.invisibleink.note
 
+import android.app.DatePickerDialog
+import android.view.ViewGroup
 import android.widget.Button
 import android.widget.EditText
 import android.widget.ImageButton
@@ -8,15 +10,25 @@ import com.invisibleink.R
 import com.invisibleink.architecture.BaseViewDelegate
 import com.invisibleink.architecture.ViewProvider
 import com.invisibleink.extensions.showSnackbar
+import org.joda.time.DateTime
+import org.joda.time.format.DateTimeFormat
+import org.joda.time.format.DateTimeFormatter
 
 class NoteViewDelegate(viewProvider: ViewProvider) :
     BaseViewDelegate<NoteViewState, NoteViewEvent, NoteDestination>(viewProvider) {
 
+    companion object {
+        private val DATE_FORMATTER: DateTimeFormatter = DateTimeFormat.forPattern("yyyy/MM/dd")
+    }
+
+    private val root: ViewGroup = viewProvider.findViewById(R.id.root)
+    private val context = root.context
     private val title: EditText = viewProvider.findViewById(R.id.title)
     private val body: EditText = viewProvider.findViewById(R.id.body)
     private val addPhotoButton: ImageButton = viewProvider.findViewById(R.id.addPhoto)
     private val uploadButton: Button = viewProvider.findViewById(R.id.uploadButton)
     private val expirationButton: Button = viewProvider.findViewById(R.id.expirationButton)
+    private var expirationDate: DateTime? = null
 
     init {
         uploadButton.setOnClickListener { pushEvent(NoteViewEvent.Upload(composeNote())) }
@@ -32,16 +44,53 @@ class NoteViewDelegate(viewProvider: ViewProvider) :
         is NoteViewState.UploadSuccess -> showMessage(viewState.message)
     }
 
-    private fun clearNoteContent() = Unit // TODO: Ensure all the note fields are cleared
+    private fun clearNoteContent() {
+        title.text.clear()
+        body.text.clear()
+        addPhotoButton.setImageResource(R.drawable.ic_add_a_photo_black_24dp)
+    }
 
-    private fun showDraftContent(note: Note) = Unit // TODO: Update all the fields for the draft
+    private fun showDraftContent(note: Note) {
+        title.setText(note.title)
+        body.setText(note.body)
+
+        if (note.image != null) {
+            addPhotoButton.setImageBitmap(note.image)
+        }
+
+        if (note.expiration != null) {
+            expirationDate = note.expiration
+            showExpirationDate()
+        }
+    }
 
     private fun showMessage(@StringRes message: Int) = title.showSnackbar(message)
 
-    private fun showDatePicker() = Unit // TODO: Display a date picker
+    private fun showDatePicker() {
+        DatePickerDialog(context).apply {
+            setOnDateSetListener { _, year, month, day ->
+                expirationDate = DateTime()
+                    .withYear(year)
+                    .withMonthOfYear(month)
+                    .withDayOfMonth(day)
+
+                showExpirationDate()
+            }
+            show()
+        }
+    }
 
     private fun showAddPhoto() = Unit // TODO: Display with an intent chooser
 
     private fun composeNote(): Note = Note(title.text.toString(), body.text.toString())
 
+    private fun showExpirationDate() {
+        val expirationString = expirationDate?.toString(DATE_FORMATTER)
+        if (expirationString != null) {
+            expirationButton.text =
+                context.getString(R.string.expiration_date_format, expirationString)
+        } else {
+            expirationButton.text = context.getString(R.string.expiration_date_default)
+        }
+    }
 }
