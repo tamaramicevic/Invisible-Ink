@@ -1,0 +1,60 @@
+digraph L {
+    fontsize = 18
+    fontname = Arial
+    labelloc = "t"
+    labeljust = "l"
+    rankdir="TB"
+
+    // System feature title
+    label = <<b>Project Network Diagram    </b> - independent nodes are highlighted in red.<br/><br/>>
+
+    // System feature 2 | naming: [systemfeature.functionalreq.[basenodes+]]
+    node [shape=record fontname=Arial fontsize=12 fillcolor="#FFFFFF"]
+    "2.1.1" [label="Client sends a GET request for notes with location of user"] //depends on 2.3.1
+    "2.1.2" [label="Client should receive and package response for GET request"] //depends on 2.1.1, 2.3.1
+    "2.2.1" [label="Define quantitative radius of allowed notes"] //independent
+    "2.2.2.1" [label="Define query to retrieve notes based on given location"] 
+    "2.2.3" [label="Compute distance between user's location and location of notes"] //depends on 2.2.2.1
+    "2.2.4" [label="Compare distance between user & notes with allowed radius distance"] //depends on 2.2.1, 2.2.3
+    "2.3.1" [label="Define a server endpoint for get-notes requests"]
+    "2.3.2" [label="Convert array populated with applicable notes to JSON object"] //depends on 2.3.3
+    "2.3.3" [label="Server returns JSON object will all applicable notes to client"] //depends on 2.1.1, 2.2.4, 2.3.1
+    "2.4.1.1" [label="Create a layout interface for showing a note"]
+    "2.4.1.2" [label="Render the notes based on location in AR"] //depends on 2.4.1.1, 2.3.3, 2.1.2
+    "2.5.1" [label="Client should determine distance between all displayed notes and user"] //depends on 2.3.3
+    "2.5.2" [label="Define a distance where the full note is viewed"]
+    "2.5.3" [label="Create a layout interface for notes with content blurred at certain distance"]
+    "2.5.4" [label="Based on distance, the notes should alternate between full and blurred views"] //depends on 2.5.1, 2.5.2, 2.5.3, 
+    "2.6.1.1" [label="Create an 'unactive' view of grouped notes in a layered view"]
+    "2.6.1.2" [label="Create an 'active' view of grouped notes"]
+    "2.6.1.3" [label="Clicking on the grouped notes will 'activate' the notes"] //depends on 2.4.1.2, 2.6.1.1, 2.6.1.2
+    "2.6.1.4" [label="Swiping on 'active' grouped notes will go through the stack of notes"] //depends on 2.6.1.3
+    "2.6.2" [label="Define a radius that groups notes that are within that radius of each other"]
+    "2.6.3.1" [label="Determine distance between notes"]
+    "2.6.3.2" [label="Compare computed distance between notes and the defined radius"] //depends on 2.6.2, 2.6.3.1
+    "2.7.1" [label="Add check to verify that GPS permissions are provided"]
+    "2.7.2" [label="Add ability to ask user to provide GPS permissions"] //depends on 2.7.1
+    "2.7.3" [label="Implement error message if GPS permissions not provided"] //depends on 2.7.1
+
+    "2.3.1" -> "2.1.1", "2.1.2", "2.3.3"
+    "2.1.1" -> "2.1.2", "2.3.3"
+    "2.2.2.1" -> "2.2.3"
+    "2.2.1" -> "2.2.4"
+    "2.2.3" -> "2.2.4", "2.4.1.2"
+    "2.3.3" -> "2.3.2", "2.5.1"
+    "2.2.4" -> "2.3.3"
+    "2.4.1.1" -> "2.4.1.2", "2.6.1.3"
+    "2.1.2" -> "2.4.1.2"
+    "2.5.1" -> "2.5.4"
+    "2.5.2" -> "2.5.4"
+    "2.5.3" -> "2.5.4"
+    "2.4.1.2" -> "2.6.1.3"
+    "2.6.1.3" -> "2.6.1.4"
+    "2.6.2" -> "2.6.3.2"
+    "2.6.3.1" -> "2.6.3.2"
+    "2.7.1" -> "2.7.2", "2.7.3"
+
+
+    
+
+}
