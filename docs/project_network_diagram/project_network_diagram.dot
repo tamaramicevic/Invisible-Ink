@@ -1,0 +1,66 @@
+digraph L {
+    fontsize = 18
+    fontname = Arial
+    labelloc = "t"
+    labeljust = "l"
+    rankdir="LR"
+    label = <<b>Project Network Diagram</b> - tasks with no dependecies are shown in red<br/><br/>>
+
+    /* ---------- Independent tasks ---------- */
+    node [shape=record fontname=Arial fontsize=12 style=filled fillcolor="#FFCCCC"]
+    0 [label="Create layout for note view"]
+    1 [label="Define Retrofit interface for note-post endpoint"]
+    2 [label="Define a server endpoint for note-post requests"]
+    3 [label="Define server queries for adding to the notes database"]
+    4 [label="Implement note input validation logic"]
+    5 [label="Create and send intent for importing photo"]
+    6 [label="Create file for saving photo temporarily"]
+    7 [label="Update permissions to allow GPS access while the app is in use"]
+    8 [label="Implement code for retrieving the devices GPS coordinates"]
+    9 [label="Add human readable messages to string resources"]
+    10 [label="Implement network layer for vote requests"]
+    11 [label="Define server API endpoint for vote requests"]
+    12 [label="Define client interface for fetch-notes endpoint"]
+    13 [label="Maintain a local, per-device, persistent store of votes"]
+
+    /* ---------- Dependent tasks ---------- */
+    node [fillcolor="#FFFFFF"]
+    0.1 [label="Inflate note view when tab is selected"]
+    0.2 [label="Add voting buttons and score to note layout"]
+    0.3 [label="Implement callbacks for vote button clicks"]
+    0 -> 0.1, 0.2; 0.2 -> 0.3;
+
+    1.1 [label="Add callback to handle result of note-post requests"]
+    1 -> 1.1;
+
+    4.1 [label="Write validation logic unit tests"]
+    4.2 [label="Invoke validation logic from view listeners"]
+    4.3 [label="Display human readable error message for invalid notes"]
+    4 -> 4.1, 4.2; 4.2 -> 4.3;
+
+    5.1 [label="Display photo as thumbnail upon successful import"]
+    5.2 [label="Display human readable error message for failed import"]
+    5 -> 5.1, 5.2;
+
+    6.1 [label="Create and send intent for taking photo"]
+    6.2 [label="Display photo as thumbnail upon successful capture"]
+    6.3 [label="Display human readable error message for failed capture"]
+    6 -> 6.1; 6.1 -> 6.2; 6.1 -> 6.3;
+
+    8.1 [label="Include GPS coordinates in note-post requests"]
+    8 -> 8.1; 1 -> 8.1;
+
+    9.1 [label="Implement logic for selecting message upon request success/failure"]
+    9 -> 9.1; 1 -> 9.1;
+
+    11.1 [label="Implement server logic for updating vote database"]
+    11 -> 11.1;
+
+    12.1 [label="Parse net score from fetch-notes response"]
+    12.2 [label="Update note score label on note load"]
+    12 -> 12.1; 12 -> 12.2;
+
+    13.1 [label="Enable/disable vote buttons for previous votes on note load"]
+    13.2 [label="Update post-store upon future votes"]
+    13 -> 13.1; 13 -> 13.2;
+}

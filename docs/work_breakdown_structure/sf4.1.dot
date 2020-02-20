@@ -54,7 +54,7 @@ digraph L {
     // Sub-tasks of func-req-5
     5.1 [label="Update permissions to allow GPS access while the app is in use"]
     5.2 [label="Implement code for retrieving the devices GPS coordinates"]
-    5.3 [label="Append coordinates as query parameters to note-post requests"]
+    5.3 [label="Include GPS coordinates in note-post requests"]
     5 -> 5.1, 5.2, 5.3
 
     // Sub-tasks of func-req-6
