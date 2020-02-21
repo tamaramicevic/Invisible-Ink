@@ -69,7 +69,8 @@ digraph G {
 
     "6.3.1" [label="Determine distance between notes"]
     "6.3.2" [label="Compare computed distance between notes and the defined radius"]
-    6.3 -> {"6.3.1", "6.3.2"}
+    "6.3.3" [label="Apply grouped or non-grouped view"]
+    6.3 -> {"6.3.1", "6.3.2", "6.3.3"}
 
     7.1 [label="Add check to verify that GPS permissions are provided"]
     7.2 [label="Add ability to ask user to provide GPS permissions"]
