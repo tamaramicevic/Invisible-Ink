@@ -23,7 +23,10 @@ digraph L {
     // Sub-tasks of func-req-1
     1.1 [label="Add voting buttons and score to note layout"]
     1.2 [label="Implement callbacks for vote button clicks"]
-    1 -> 1.1, 1.2
+    1.3 [label="Implement network layer for vote requests"]
+    1.4 [label="Define server API endpoint for vote requests"]
+    1.5 [label="Implement server logic for updating vote database"]
+    1 -> 1.1, 1.2, 1.3, 1.4, 1.5
 
     // Sub-tasks of func-req-2
     2.1 [label="Define client interface for fetch-notes endpoint"]
