@@ -8,7 +8,6 @@ digraph L {
 
     /* ---------- Independent tasks ---------- */
     node [shape=record fontname=Arial fontsize=12 style=filled fillcolor="#FFCCCC"]
-    0 [label="Create layout for note view"]
     1 [label="Define Retrofit interface for note-post endpoint"]
     2 [label="Define a server endpoint for note-post requests"]
     3 [label="Define server queries for adding to the notes database"]
@@ -27,11 +26,10 @@ digraph L {
     15 [label="Define query to retrieve notes based on given location"]
     16 [label="Define a server endpoint for get-notes requests"]
     17 [label="Convert array populated with applicable notes to JSON object"]
-    18 [label="Create a layout interface for showing a note"]
+    18 [label="Create layout for note view"]
     19 [label="Define a distance where the full note is viewed"]
     20 [label="Create a layout interface for notes with content blurred at certain distance"]
     21 [label="Define a radius that groups notes that are within that radius of each other"]
-    22 [label="Add check to verify that GPS permissions are provided"]
     
     23 [label="Button on note will lead to layout for reporting a note on click"]
     24 [label="Define Retrofit interface for report-note client endpoint"]
@@ -42,11 +40,7 @@ digraph L {
 
     /* ---------- Dependent tasks ---------- */
     node [fillcolor="#FFFFFF"]
-    0.1 [label="Inflate note view when tab is selected"]
-    0.2 [label="Add voting buttons and score to note layout"]
-    0.3 [label="Implement callbacks for vote button clicks"]
-    0 -> 0.1, 0.2; 0.2 -> 0.3;
-
+   
     1.1 [label="Add callback to handle result of note-post requests"]
     1 -> 1.1;
 
@@ -112,19 +106,19 @@ digraph L {
     
     18.0 [label="Create an 'unactive' view of grouped notes in a layered view"]
     18.1 [label="Create an 'active' view of grouped notes"]
-    18 -> 14.4, 18.0, 18.1;
+    18.2 [label="Inflate note view when tab is selected"]
+    18.3 [label="Add voting buttons and score to note layout"]
+    18.4 [label="Implement callbacks for vote button clicks"]
+    18 -> 14.4, 18.0, 18.1, 18.2, 18.3, 18.4;
     18.0 -> 14.3, 14.7;
     18.1 -> 14.7;
+    
 
     19 -> 14.8
 
     20 -> 14.8
 
     21 -> 14.9
-
-    22.0 [label="Add ability to ask user to provide GPS permissions"]
-    22.1 [label="Implement error message if GPS permissions not provided"]
-    22 -> 22.0, 22.1;
 
     23 [label="Button on note will lead to layout for reporting a note on click"]
     23.0 [label="Add text asking if the user is sure about reporting"]
