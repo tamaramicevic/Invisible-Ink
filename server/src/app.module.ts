@@ -5,6 +5,11 @@ import { AppService } from './app.service';
 import { DebugSentimentAnalysisController } from './debug-sentiment-analysis/debug-sentiment-analysis.controller';
 import { TextAnalyticsModule } from './text-analytics/text-analytics.module';
 import { TextAnalyticsService } from './text-analytics/text-analytics.service';
+import { UploadNoteController } from './upload-note/upload-note.controller';
+import { UploadImageController } from './upload-image/upload-image.controller';
+import { RetrieveNotesController } from './retrieve-notes/retrieve-notes.controller';
+import { ReportController } from './report/report.controller';
+import { VoteController } from './vote/vote.controller';
 
 @Module({
   imports: [
@@ -13,7 +18,7 @@ import { TextAnalyticsService } from './text-analytics/text-analytics.service';
       isGlobal: true,
     }),
   ],
-  controllers: [AppController, DebugSentimentAnalysisController],
+  controllers: [AppController, DebugSentimentAnalysisController, UploadNoteController, UploadImageController, RetrieveNotesController, ReportController, VoteController],
   providers: [AppService, TextAnalyticsService],
 })
 export class AppModule {}
