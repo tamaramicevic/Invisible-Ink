@@ -9,7 +9,10 @@ import com.invisibleink.explore.map.MapExploreFragment
 
 class ExploreFragment : Fragment() {
 
-    enum class ExploreViewMode { MAP, AR }
+    enum class ExploreViewMode(val fragmentFactory: () -> Fragment) {
+        MAP(::MapExploreFragment),
+        AR(::ArExploreFragment)
+    }
 
     private var exploreViewMode = ExploreViewMode.MAP
 
@@ -65,16 +68,11 @@ class ExploreFragment : Fragment() {
     }
 
     private fun showExploreViewMode(exploreViewMode: ExploreViewMode) {
-        requireActivity().invalidateOptionsMenu()
         this.exploreViewMode = exploreViewMode
-        val exploreFragment: Fragment = if (exploreViewMode == ExploreViewMode.MAP) {
-            MapExploreFragment()
-        } else {
-            ArExploreFragment()
-        }
+        requireActivity().invalidateOptionsMenu()
 
         childFragmentManager.beginTransaction()
-            .replace(R.id.fragmentContainer, exploreFragment)
+            .replace(R.id.fragmentContainer, exploreViewMode.fragmentFactory.invoke())
             .commit()
     }
 }

@@ -5,14 +5,17 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.fragment.app.Fragment
+import com.google.ar.sceneform.AnchorNode
+import com.google.ar.sceneform.Node
+import com.google.ar.sceneform.rendering.ViewRenderable
+import com.google.ar.sceneform.ux.ArFragment
 import com.invisibleink.R
 import com.invisibleink.architecture.ViewProvider
 import com.invisibleink.extensions.findViewOrThrow
 import com.invisibleink.injection.InvisibleInkApplication
 import javax.inject.Inject
 
-class ArExploreFragment : Fragment(), ViewProvider {
+class ArExploreFragment : ArFragment(), ViewProvider {
 
     @Inject
     lateinit var presenter: ArExplorePresenter
@@ -25,7 +28,29 @@ class ArExploreFragment : Fragment(), ViewProvider {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        return inflater.inflate(R.layout.fragment_ar_explore, container, false)
+        val view = super.onCreateView(inflater, container, savedInstanceState)
+
+        /**
+         * Render a text view when a plane is tapped
+         */
+        setOnTapArPlaneListener { hitResult, _, _ ->
+            ViewRenderable.builder()
+                .setView(requireActivity().baseContext, R.layout.fragment_ar_explore).build()
+                .thenAccept { renderable ->
+                    val anchor = hitResult.createAnchor()
+                    val anchorNode = AnchorNode(anchor)
+                    anchorNode.setParent(arSceneView.scene)
+
+                    Node().run {
+                        this.renderable = renderable
+                        setParent(anchorNode)
+                    }
+
+                    arSceneView.scene.addChild(anchorNode)
+                }
+        }
+
+        return view
     }
 
     override fun onAttach(context: Context) {
