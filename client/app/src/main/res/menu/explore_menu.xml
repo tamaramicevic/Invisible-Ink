@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <item
+        android:id="@+id/arExploreItem"
+        android:icon="@drawable/ic_photo_camera_24dp"
+        android:title="@string/ar_explore_mode"
+        android:visible="false"
+        app:showAsAction="ifRoom" />
+
+    <item
+        android:id="@+id/mapExploreItem"
+        android:icon="@drawable/ic_location_alt_24dp"
+        android:title="@string/map_explore_mode"
+        android:visible="false"
+        app:showAsAction="ifRoom" />
+
+</menu>

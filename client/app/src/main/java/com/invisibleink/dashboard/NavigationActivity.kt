@@ -4,9 +4,7 @@ import android.os.Bundle
 import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
-import com.google.android.material.bottomnavigation.BottomNavigationItemView
 import com.google.android.material.bottomnavigation.BottomNavigationView
-import com.google.android.material.navigation.NavigationView
 import com.invisibleink.R
 import com.invisibleink.explore.ExploreFragment
 import com.invisibleink.favorites.FavoritesFragment
@@ -43,7 +41,7 @@ class NavigationActivity : AppCompatActivity(),
     override fun onNavigationItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
             R.id.exploreTab -> showContent(NavigationContent.EXPLORE)
-            R.id.favoritesTab -> showContent(NavigationContent.FAVORITES)
+//            R.id.favoritesTab -> showContent(NavigationContent.FAVORITES)
             R.id.noteTab -> showContent(NavigationContent.NOTE)
             R.id.settingsTab -> showContent(NavigationContent.SETTINGS)
         }

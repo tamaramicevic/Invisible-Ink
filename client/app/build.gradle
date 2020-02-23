@@ -31,6 +31,7 @@ def joda_version = "2.10.5"
 def rx_version = "2.1.0"
 def easy_image_version = "3.0.3"
 def google_maps_version = "17.0.0"
+def ar_core_version = "1.15.0"
 
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
@@ -71,4 +72,8 @@ dependencies {
 
     // Google maps
     implementation "com.google.android.gms:play-services-maps:$google_maps_version"
+
+    // ArCore
+    implementation "com.google.ar:core:$ar_core_version"
+    implementation "com.google.ar.sceneform.ux:sceneform-ux:$ar_core_version"
 }

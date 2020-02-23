@@ -1,87 +1,80 @@
 package com.invisibleink.explore
 
-import android.content.Context
 import android.os.Bundle
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
 import androidx.fragment.app.Fragment
-import com.google.android.gms.maps.MapView
 import com.invisibleink.R
-import com.invisibleink.architecture.ViewProvider
-import com.invisibleink.extensions.findViewOrThrow
-import com.invisibleink.injection.InvisibleInkApplication
-import javax.inject.Inject
+import com.invisibleink.explore.ar.ArExploreFragment
+import com.invisibleink.explore.map.MapExploreFragment
 
-class ExploreFragment : Fragment(), ViewProvider {
+class ExploreFragment : Fragment() {
 
-    @Inject
-    lateinit var presenter: ExplorePresenter
-    private lateinit var viewDelegate: ExploreViewDelegate
+    enum class ExploreViewMode { MAP, AR }
 
-    override fun <T : View> findViewById(id: Int): T = findViewOrThrow(id)
+    private var exploreViewMode = ExploreViewMode.MAP
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setHasOptionsMenu(true)
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        return inflater.inflate(R.layout.fragment_map, container, false)
+        return inflater.inflate(R.layout.fragment_explore, container, false)
     }
 
-    override fun onAttach(context: Context) {
-        super.onAttach(context)
-        (context.applicationContext as InvisibleInkApplication).appComponent.inject(this)
-    }
-
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-        viewDelegate = ExploreViewDelegate(this)
-        viewDelegate.mapView?.onCreate(savedInstanceState)
-        presenter.attach(viewDelegate)
-    }
-
-    override fun onDestroyView() {
-        super.onDestroyView()
-        presenter.detach()
-    }
-
-    /**
-     * When using a [MapView] all life-cycle methods must be forwarded.
-     * See: https://developers.google.com/android/reference/com/google/android/gms/maps/MapView
-     */
     override fun onStart() {
         super.onStart()
-        viewDelegate.mapView?.onStart()
+        showExploreViewMode(exploreViewMode)
     }
 
-    override fun onResume() {
-        super.onResume()
-        viewDelegate.mapView?.onResume()
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        super.onCreateOptionsMenu(menu, inflater)
+        inflater.inflate(R.menu.explore_menu, menu)
     }
 
-    override fun onPause() {
-        super.onPause()
-        viewDelegate.mapView?.onPause()
+    override fun onPrepareOptionsMenu(menu: Menu) {
+        val mapExploreItem = menu.findItem(R.id.mapExploreItem)
+        val arExploreItem = menu.findItem(R.id.arExploreItem)
+
+        if (exploreViewMode == ExploreViewMode.MAP) {
+            mapExploreItem.isVisible = false
+            arExploreItem.isVisible = true
+        } else {
+            mapExploreItem.isVisible = true
+            arExploreItem.isVisible = false
+        }
+
+        super.onPrepareOptionsMenu(menu)
     }
 
-    override fun onStop() {
-        super.onStop()
-        viewDelegate.mapView?.onStop()
+    override fun onOptionsItemSelected(item: MenuItem): Boolean = when (item.itemId) {
+        R.id.mapExploreItem -> {
+            showExploreViewMode(ExploreViewMode.MAP)
+            true
+        }
+        R.id.arExploreItem -> {
+            showExploreViewMode(ExploreViewMode.AR)
+            true
+        }
+        else ->
+            super.onOptionsItemSelected(item)
     }
 
-    override fun onDestroy() {
-        super.onDestroy()
-        viewDelegate.mapView?.onDestroy()
-    }
+    private fun showExploreViewMode(exploreViewMode: ExploreViewMode) {
+        requireActivity().invalidateOptionsMenu()
+        this.exploreViewMode = exploreViewMode
+        val exploreFragment: Fragment = if (exploreViewMode == ExploreViewMode.MAP) {
+            MapExploreFragment()
+        } else {
+            ArExploreFragment()
+        }
 
-    override fun onSaveInstanceState(outState: Bundle) {
-        super.onSaveInstanceState(outState)
-        viewDelegate.mapView?.onSaveInstanceState(outState)
-    }
-
-    override fun onLowMemory() {
-        super.onLowMemory()
-        viewDelegate.mapView?.onLowMemory()
+        childFragmentManager.beginTransaction()
+            .replace(R.id.fragmentContainer, exploreFragment)
+            .commit()
     }
 }

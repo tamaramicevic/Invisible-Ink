@@ -1,4 +1,4 @@
-package com.invisibleink.explore
+package com.invisibleink.explore.map
 
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
@@ -10,8 +10,8 @@ import com.invisibleink.architecture.BaseViewDelegate
 import com.invisibleink.architecture.ViewProvider
 
 
-class ExploreViewDelegate(viewProvider: ViewProvider) :
-    BaseViewDelegate<ExploreViewState, ExploreViewEvent, ExploreDestination>(viewProvider) {
+class MapExploreViewDelegate(viewProvider: ViewProvider) :
+    BaseViewDelegate<MapExploreViewState, MapExploreViewEvent, MapExploreDestination>(viewProvider) {
 
     val mapView: MapView? = viewProvider.findViewById(R.id.exploreMapView)
     private lateinit var map: GoogleMap
@@ -25,7 +25,7 @@ class ExploreViewDelegate(viewProvider: ViewProvider) :
         }
     }
 
-    override fun render(viewState: ExploreViewState): Unit? {
+    override fun render(viewState: MapExploreViewState): Unit? {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 }

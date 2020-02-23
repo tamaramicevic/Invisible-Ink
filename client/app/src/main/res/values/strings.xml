@@ -7,6 +7,10 @@
     <string name="note_content">Note</string>
     <string name="settings_content">Settings</string>
 
+    <!-- Menu Items -->
+    <string name="ar_explore_mode">Explore in AR</string>
+    <string name="map_explore_mode">Explore on Map</string>
+
     <!-- Note Tab -->
     <string name="upload">Upload</string>
     <string name="title_hint">Title</string>
@@ -26,6 +30,5 @@
     <string name="error_adding_image">Failed to add photo</string>
     <string name="missing_permission_camera">Camera permission is required for this action</string>
     <string name="missing_permission_storage">Storage permission is required for this action</string>
-    <string name="title_activity_maps">Map</string>
 
 </resources>

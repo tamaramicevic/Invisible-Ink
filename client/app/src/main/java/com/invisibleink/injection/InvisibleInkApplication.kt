@@ -1,7 +1,8 @@
 package com.invisibleink.injection
 
 import android.app.Application
-import com.invisibleink.explore.ExploreFragment
+import com.invisibleink.explore.ar.ArExploreFragment
+import com.invisibleink.explore.map.MapExploreFragment
 import com.invisibleink.injection.modules.NetworkModule
 import com.invisibleink.note.NoteFragment
 import dagger.Component
@@ -10,8 +11,9 @@ import dagger.Component
 interface ApplicationComponent {
 
     // Field injection for activities/fragments
-    fun inject(obj: ExploreFragment)
     fun inject(obj: NoteFragment)
+    fun inject(obj: ArExploreFragment)
+    fun inject(obj: MapExploreFragment)
 }
 
 class InvisibleInkApplication : Application() {
