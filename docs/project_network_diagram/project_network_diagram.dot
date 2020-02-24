@@ -31,7 +31,6 @@ digraph L {
     20 [label="Create a layout interface for notes with content blurred at certain distance"]
     21 [label="Define a radius that groups notes that are within that radius of each other"]
     
-    23 [label="Button on note will lead to layout for reporting a note on click"]
     24 [label="Define Retrofit interface for report-note client endpoint"]
     25 [label="Define a server endpoint for report-note requests"]
     26 [label="Create a table named ReportedNotes with noteID and optionalReport"]
@@ -167,7 +166,7 @@ digraph L {
     30.4 [label="Implement threshold-bound zooming"]
     30.5 [label="Populate Map-view according to zoom-level"]
     30.6 [label="Group notes very close together in Map-view"]
-    30.7 [label="Display grouped notes with count indicatorin Map-view"]
+    30.7 [label="Display grouped notes with count indicator in Map-view"]
     30 -> 30.0, 30.1, 30.4, 30.6;
     30.0 -> 30.2, 30.3;
     30.4 -> 30.5;
