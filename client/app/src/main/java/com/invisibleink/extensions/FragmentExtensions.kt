@@ -3,6 +3,7 @@ package com.invisibleink.extensions
 import android.view.View
 import androidx.annotation.IdRes
 import androidx.fragment.app.Fragment
+import com.google.android.gms.maps.MapFragment
 import com.invisibleink.architecture.ViewProvider
 
 /**
