@@ -37,9 +37,9 @@ digraph L {
     26 [label="Create a table named ReportedNotes with noteID and optionalReport"]
     27 [label="Add human readable messages to string resources to display to user"]
         
-    28 [label="[server] Implement Text-Analytics service to scan for bad sentiment"]
-    29 [label="[server] Implement Auto-Content-Moderation Service to scan for PIIs"]
-    30 [label="[client] Create layout for Map-view"]
+    28 [label="Implement Text-Analytics service to scan for bad sentiment"]
+    29 [label="Implement Auto-Content-Moderation Service to scan for PIIs"]
+    30 [label="Create layout for Map-view"]
     
     /* ---------- Dependent tasks ---------- */
     node [fillcolor="#FFFFFF"]
@@ -89,10 +89,10 @@ digraph L {
     14.8 [label="Based on distance, the notes should alternate between full and blurred views"]
     14.9 [label="Compare computed distance between notes and the defined radius"]
     14.10 [label="Swiping on 'active' grouped notes will go through the stack of notes"]
-    14.11 [label="[server] Filter applicable notes based on request search terms"]
-    14.12 [label="[server] Return filtered notes as response if applicable"]
-    14.13 [label="[server] Use provided pre-built filters to serve notes"]
-    14.14 [label="[server] Serve notes according to zoom-level"]
+    14.11 [label="Filter applicable notes based on request search terms"]
+    14.12 [label="Return filtered notes as response if applicable"]
+    14.13 [label="Use provided pre-built filters to serve notes"]
+    14.14 [label="Serve notes according to zoom-level"]
     14 -> 14.0, 14.14;
     14.0 -> 14.1;
     14.14 -> 14.1;
@@ -107,10 +107,10 @@ digraph L {
     15.0 -> 14.0;
 
     16.0 [label="Client sends a GET request for notes with location of user"]
-    16.1 [label="[client] Gather search terms from search bar"]
-    16.2 [label="[client] Append search terms to notes GET request"]
-    16.3 [label="[client] Include pre-built filters in GET request for notes"]
-    16.4 [label="[client] Include zoom-level in GET request for notes"]
+    16.1 [label="Gather search terms from search bar"]
+    16.2 [label="Append search terms to notes GET request"]
+    16.3 [label="Include pre-built filters in GET request for notes"]
+    16.4 [label="Include zoom-level in GET request for notes"]
     16 -> 16.0, 14.2, 14.1, 16.1, 16.2, 16.3, 16.4;
     16.0 -> 14.1, 14.2;
 
@@ -151,23 +151,23 @@ digraph L {
     27.0 [label="Create layout to display the result to user"]
     27 -> 27.0;
 
-    28.0 [label="[server] Create an Interceptor using Text-Analytics service"]
-    28.1 [label="[client] Show dialog when server returns DetectedBadSentiment error response"]
+    28.0 [label="Create an Interceptor using Text-Analytics service"]
+    28.1 [label="Show dialog when server returns DetectedBadSentiment error response"]
     28 -> 28.0; 28.0 -> 28.1;
 
-    29.0 [label="[server] Create an Interceptor using Auto-Content-Moderation"]
-    29.1 [label="[client] Show dialog when server returns DetectedPII error response"]
+    29.0 [label="Create an Interceptor using Auto-Content-Moderation"]
+    29.1 [label="Show dialog when server returns DetectedPII error response"]
     29 -> 29.0; 29.0 -> 29.1;
     
-    30.0 [label="[client] Create drop-down option for pre-built filters"]
-    30.1 [label="[client] Create search bar for Map-view"]
-    30.2 [label="[client] Track applied filters in state"]
-    30.3 [label="[client] Refresh when new pre-built filter applied"]
+    30.0 [label="Create drop-down option for pre-built filters"]
+    30.1 [label="Create search bar for Map-view"]
+    30.2 [label="Track applied filters in state"]
+    30.3 [label="Refresh when new pre-built filter applied"]
 
-    30.4 [label="[client] Implement threshold-bound zooming"]
-    30.5 [label="[client] Populate Map-view according to zoom-level"]
-    30.6 [label="[client] Group notes very close together in Map-view"]
-    30.7 [label="[client] Display grouped notes with count indicatorin Map-view"]
+    30.4 [label="Implement threshold-bound zooming"]
+    30.5 [label="Populate Map-view according to zoom-level"]
+    30.6 [label="Group notes very close together in Map-view"]
+    30.7 [label="Display grouped notes with count indicatorin Map-view"]
     30 -> 30.0, 30.1, 30.4, 30.6;
     30.0 -> 30.2, 30.3;
     30.4 -> 30.5;
