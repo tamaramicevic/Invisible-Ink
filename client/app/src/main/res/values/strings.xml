@@ -31,4 +31,21 @@
     <string name="missing_permission_camera">Camera permission is required for this action</string>
     <string name="missing_permission_storage">Storage permission is required for this action</string>
 
+    <!-- Preferences -->
+    <string name="pref_category_advanced_key">pref_category_advanced</string>
+    <string name="pref_category_advanced_title">Advanced</string>
+    <string name="pref_category_help_key">pref_category_help</string>
+    <string name="pref_category_help_title">Help</string>
+
+    <string name="pref_server_address_key">pref_server_address</string>
+    <string name="pref_server_address_title">Note Server Address</string>
+    <string name="pref_server_address_summary">Connect to custom Note server</string>
+
+    <string name="pref_faq_key">pref_faq</string>
+    <string name="pref_faq_title">FAQ</string>
+    <string name="pref_faq_summary">Learn more about InvisibleInk</string>
+
+    <string name="pref_feedback_key">pref_feedback</string>
+    <string name="pref_feedback_title">Feedback</string>
+    <string name="pref_feedback_summary">Report technical issues or suggest new features</string>
 </resources>
