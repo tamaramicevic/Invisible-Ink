@@ -2,10 +2,10 @@ import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
+import { CosmosDbModule } from './cosmos-db/cosmos-db.module';
 import { DebugSentimentAnalysisController } from './debug-sentiment-analysis/debug-sentiment-analysis.controller';
 import { TextAnalyticsModule } from './text-analytics/text-analytics.module';
 import { TextAnalyticsService } from './text-analytics/text-analytics.service';
-import { CosmosDbModule } from './cosmos-db/cosmos-db.module';
 
 @Module({
   imports: [
