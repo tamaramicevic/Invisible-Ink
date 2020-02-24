@@ -30,6 +30,9 @@ digraph L {
     labeljust = "l"
     rankdir="TB"
 
+    // System feature title
+    label = <<b>Anonymous Geo-tagged Notes</b> - functional requirements are highlighted in red.<br/><br/>>
+
     // System feature
     node [shape=record fontname=Arial fontsize=12 fillcolor="lightblue"]
     0 [label="Map-View"]
@@ -43,63 +46,30 @@ digraph L {
     6 [label="Map-Client-Note-Filter"]
     node [fillcolor="#FFFFFF"]
     0 -> 1, 2, 3, 4, 5, 6
-
-    subgraph cluster_1 {
-		style=filled;
-		color=lightgrey;
-		node [style=filled,color=white];
-        1.1 [label="[client] Implement notes GET request"]
-        1.2 [label="[server] Serve notes according to location"]
-        1.3 [label="[server] Serve notes according to zoom-level"]
-        1 -> 1.1, 1.2, 1.3
-	}
-    subgraph cluster_2 {
-		style=filled;
-		color=lightgrey;
-		node [style=filled,color=white];
-        2.1 [label="[client] Implement threshold-bound zooming"]
-        2.2 [label="[client] Populate Map-view according to zoom-level"]
-        2 -> 2.1, 2.2
-	}
-    subgraph cluster_3 {
-		style=filled;
-		color=lightgrey;
-		node [style=filled,color=white];
-        3.1 [label="[client] Include location in GET request for notes"]
-        3.2 [label="[client] Include zoom-level in GET request for notes"]
-        3.3 [label="[client] Receive and package response for GET request"]
-        3 -> 3.1, 3.2, 3.3
-	}
-    subgraph cluster_4 {
-		style=filled;
-		color=lightgrey;
-		node [style=filled,color=white];
-        4.1 [label="[client] Group notes very close together"]
-        4.2 [label="[client] Display grouped notes with count indicator"]
-        4 -> 4.1, 4.2
-	}
-    subgraph cluster_5 {
-		style=filled;
-		color=lightgrey;
-		node [style=dashed,color=white];
-        5.1 [label="Refer to System Requirement 4.5"]
-        5 -> 5.1
-	}
-    subgraph cluster_6 {
-		style=filled;
-		color=lightgrey;
-		node [style=filled,color=white];
-        RequestLogic [label="Request Logic" fillcolor="yellow"]
-        UXLogic [label="UX Logic" fillcolor="yellow"]
-        6.1 [label="[client] Include pre-built filters in GET request for notes"]
-        6.2 [label="[server] Use provided pre-built filters to serve notes"]
-        6.3 [label="[client] Create drop-down option for pre-built filters"]
-        6.4 [label="[client] Refresh when new pre-built filter applied"]
-        6.5 [label="[client] Track applied filters in state"]
-        6 -> RequestLogic, UXLogic
-        RequestLogic -> 6.1, 6.2, 6.4
-        UXLogic -> 6.3, 6.5
-	}
-
-    label = <<b>4.3 Map View</b><br/><br/> Blue: System Requirement<br/> Pink: Functional Requirement<br/> White: Task <br/> Yellow: Logical Grouping>
+    1.1 [label="[client] Implement notes GET request"]
+    1.2 [label="[server] Serve notes according to location"]
+    1.3 [label="[server] Serve notes according to zoom-level"]
+    1 -> 1.1, 1.2, 1.3
+    2.1 [label="[client] Implement threshold-bound zooming"]
+    2.2 [label="[client] Populate Map-view according to zoom-level"]
+    2 -> 2.1, 2.2
+    3.1 [label="[client] Include location in GET request for notes"]
+    3.2 [label="[client] Include zoom-level in GET request for notes"]
+    3.3 [label="[client] Receive and package response for GET request"]
+    3 -> 3.1, 3.2, 3.3
+    4.1 [label="[client] Group notes very close together"]
+    4.2 [label="[client] Display grouped notes with count indicator"]
+    4 -> 4.1, 4.2
+    5.1 [label="Refer to System Requirement 4.5"]
+    5 -> 5.1
+    RequestLogic [label="Request Logic" fillcolor="yellow"]
+    UXLogic [label="UX Logic" fillcolor="yellow"]
+    6.1 [label="[client] Include pre-built filters in GET request for notes"]
+    6.2 [label="[server] Use provided pre-built filters to serve notes"]
+    6.3 [label="[client] Create drop-down option for pre-built filters"]
+    6.4 [label="[client] Refresh when new pre-built filter applied"]
+    6.5 [label="[client] Track applied filters in state"]
+    6 -> RequestLogic, UXLogic
+    RequestLogic -> 6.1, 6.2, 6.4
+    UXLogic -> 6.3, 6.5
 }

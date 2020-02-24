@@ -14,37 +14,25 @@ digraph L
     labelloc = "t"
     labeljust = "l"
     rankdir="TB"
+
+    // System feature title
+    label = <<b>Anonymous Geo-tagged Notes</b> - functional requirements are highlighted in red.<br/><br/>>
+
     size="10.25, 7.75";
     overlap="compress"
-    node [shape = rect, color=lightblue, style=filled]; "4.5 SearchableContent";  // System Reqs
-    node [shape = rect, color="#FFCCCC"];                    // Functional Reqs
+    node [shape=record fontname=Arial fontsize=12 fillcolor="lightblue"] "4.5 SearchableContent";  // System Reqs
+    node [style=filled fillcolor="#FFCCCC"]
     "4.5.1 Client-Search-Request" 
     "4.5.2 Client-Search-Params" 
     "4.5.3 Client-Search-Filter";                              
-    node [shape = rect, color=black];      // Tasks
     "4.5 SearchableContent" -> "4.5.1 Client-Search-Request";
     "4.5 SearchableContent" -> "4.5.2 Client-Search-Params"; 
     "4.5 SearchableContent" -> "4.5.3 Client-Search-Filter";        
-    subgraph cluster_0 {
-		style=filled;
-		color=lightgrey;
-		node [style=filled,color=white];
-        "4.5.1 Client-Search-Request" -> "[client] Implement notes GET request"
-	}
-    subgraph cluster_1 {
-		style=filled;
-		color=lightgrey;
-		node [style=filled,color=white];
-        "4.5.2 Client-Search-Params" -> "[client] Gather search terms from search bar"
-        "4.5.2 Client-Search-Params" -> "[client] Append search terms to notes GET request"
-	}
-    subgraph cluster_2 {
-		style=filled;
-		color=lightgrey;
-		node [style=filled,color=white];
-        "4.5.3 Client-Search-Filter" -> "[server] Filter applicable notes based on request search terms"
-        "4.5.3 Client-Search-Filter" -> "[server] Return filtered notes as response if applicable"
-	}
+    node [fillcolor="#FFFFFF"]
+    "4.5.1 Client-Search-Request" -> "[client] Implement notes GET request"
+    "4.5.2 Client-Search-Params" -> "[client] Gather search terms from search bar"
+    "4.5.2 Client-Search-Params" -> "[client] Append search terms to notes GET request"
+    "4.5.3 Client-Search-Filter" -> "[server] Filter applicable notes based on request search terms"
+    "4.5.3 Client-Search-Filter" -> "[server] Return filtered notes as response if applicable"
     
-    label = <<b>4.5 Searchable Content</b><br/><br/> Blue: System Requirement<br/> Pink: Functional Requirement<br/> White: Task>
 }

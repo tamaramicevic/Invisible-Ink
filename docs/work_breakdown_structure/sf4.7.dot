@@ -18,36 +18,24 @@ digraph
     labelloc = "t"
     labeljust = "l"
     rankdir="TB"
+
+    // System feature title
+    label = <<b>Anonymous Geo-tagged Notes</b> - functional requirements are highlighted in red.<br/><br/>>
+
     overlap="compress"
-    node [shape = rect, color=lightblue, style=filled]; "4.7 AutomatedContentModeration";  // System Reqs
-    node [shape = rect, color="#FFCCCC"];                             // Functional Reqs
+    node [shape=record fontname=Arial fontsize=12 fillcolor="lightblue"] "4.7 AutomatedContentModeration";  // System Reqs
+    node [style=filled fillcolor="#FFCCCC"]
     "4.7.1 Auto-Negative-Note-Scan" 
     "4.7.2 Auto-Negative-Note-Inform" 
     "4.7.3 Auto-Negative-Note-Show";                              
-    node [shape = rect, color=black, nodesep=0.75];               // Tasks
     "4.7 AutomatedContentModeration" -> "4.7.1 Auto-Negative-Note-Scan";
     "4.7 AutomatedContentModeration" -> "4.7.2 Auto-Negative-Note-Inform";
     "4.7 AutomatedContentModeration" -> "4.7.3 Auto-Negative-Note-Show";
-    subgraph cluster_0 {
-		style=filled;
-		color=lightgrey;
-		node [style=filled,color=white];
-        "4.7.1 Auto-Negative-Note-Scan" -> "[server] Implement Text-Analytics service to scan for bad sentiment"
-        "4.7.1 Auto-Negative-Note-Scan" -> "[server] Implement Auto-Content-Moderation Service to scan for PIIs"
-	}
-    subgraph cluster_1 {
-		style=filled;
-		color=lightgrey;
-		node [style=filled,color=white];
-        "4.7.2 Auto-Negative-Note-Inform" -> "[server] Create an Interceptor using Text-Analytics service"
-        "4.7.2 Auto-Negative-Note-Inform" -> "[server] Create an Interceptor using Auto-Content-Moderation"
-	}
-    subgraph cluster_2 {
-		style=filled;
-		color=lightgrey;
-		node [style=filled,color=white];
-        "4.7.3 Auto-Negative-Note-Show" -> "[client] Show dialog when server returns DetectedPII error response"
-        "4.7.3 Auto-Negative-Note-Show" -> "[client] Show dialog when server returns DetectedBadSentiment error response"
-	}
-    label = <<b>4.7 Automated Content Moderation</b><br/><br/> Blue: System Requirement<br/> Pink: Functional Requirement<br/> White: Task>
+    node [fillcolor="#FFFFFF"]
+    "4.7.1 Auto-Negative-Note-Scan" -> "[server] Implement Text-Analytics service to scan for bad sentiment"
+    "4.7.1 Auto-Negative-Note-Scan" -> "[server] Implement Auto-Content-Moderation Service to scan for PIIs"
+    "4.7.2 Auto-Negative-Note-Inform" -> "[server] Create an Interceptor using Text-Analytics service"
+    "4.7.2 Auto-Negative-Note-Inform" -> "[server] Create an Interceptor using Auto-Content-Moderation"
+    "4.7.3 Auto-Negative-Note-Show" -> "[client] Show dialog when server returns DetectedPII error response"
+    "4.7.3 Auto-Negative-Note-Show" -> "[client] Show dialog when server returns DetectedBadSentiment error response"
 }
