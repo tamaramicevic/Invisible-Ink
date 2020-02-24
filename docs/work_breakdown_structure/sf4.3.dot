@@ -31,7 +31,7 @@ digraph L {
     rankdir="TB"
 
     // System feature title
-    label = <<b>Anonymous Geo-tagged Notes</b> - functional requirements are highlighted in red.<br/><br/>>
+    label = <<b>Users can view notes in Map View</b> - functional requirements are highlighted in red.<br/><br/>>
 
     // System feature
     node [shape=record fontname=Arial fontsize=12 fillcolor="lightblue"]

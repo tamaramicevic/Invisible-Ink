@@ -20,22 +20,22 @@ digraph
     rankdir="TB"
 
     // System feature title
-    label = <<b>Anonymous Geo-tagged Notes</b> - functional requirements are highlighted in red.<br/><br/>>
+    label = <<b>Automated Content Moderation</b> - functional requirements are highlighted in red.<br/><br/>>
 
     overlap="compress"
-    node [shape=record fontname=Arial fontsize=12 fillcolor="lightblue"] "4.7 AutomatedContentModeration";  // System Reqs
+    node [shape=record fontname=Arial fontsize=12 fillcolor="lightblue"] "AutomatedContentModeration";  // System Reqs
     node [style=filled fillcolor="#FFCCCC"]
-    "4.7.1 Auto-Negative-Note-Scan" 
-    "4.7.2 Auto-Negative-Note-Inform" 
-    "4.7.3 Auto-Negative-Note-Show";                              
-    "4.7 AutomatedContentModeration" -> "4.7.1 Auto-Negative-Note-Scan";
-    "4.7 AutomatedContentModeration" -> "4.7.2 Auto-Negative-Note-Inform";
-    "4.7 AutomatedContentModeration" -> "4.7.3 Auto-Negative-Note-Show";
+    "Auto-Negative-Note-Scan" 
+    "Auto-Negative-Note-Inform" 
+    "Auto-Negative-Note-Show";                              
+    "AutomatedContentModeration" -> "Auto-Negative-Note-Scan";
+    "AutomatedContentModeration" -> "Auto-Negative-Note-Inform";
+    "AutomatedContentModeration" -> "Auto-Negative-Note-Show";
     node [fillcolor="#FFFFFF"]
-    "4.7.1 Auto-Negative-Note-Scan" -> "[server] Implement Text-Analytics service to scan for bad sentiment"
-    "4.7.1 Auto-Negative-Note-Scan" -> "[server] Implement Auto-Content-Moderation Service to scan for PIIs"
-    "4.7.2 Auto-Negative-Note-Inform" -> "[server] Create an Interceptor using Text-Analytics service"
-    "4.7.2 Auto-Negative-Note-Inform" -> "[server] Create an Interceptor using Auto-Content-Moderation"
-    "4.7.3 Auto-Negative-Note-Show" -> "[client] Show dialog when server returns DetectedPII error response"
-    "4.7.3 Auto-Negative-Note-Show" -> "[client] Show dialog when server returns DetectedBadSentiment error response"
+    "Auto-Negative-Note-Scan" -> "Implement Text-Analytics service to scan for bad sentiment"
+    "Auto-Negative-Note-Scan" -> "Implement Auto-Content-Moderation Service to scan for PIIs"
+    "Auto-Negative-Note-Inform" -> "Create an Interceptor using Text-Analytics service"
+    "Auto-Negative-Note-Inform" -> "Create an Interceptor using Auto-Content-Moderation"
+    "Auto-Negative-Note-Show" -> "Show dialog when server returns DetectedPII error response"
+    "Auto-Negative-Note-Show" -> "Show dialog when server returns DetectedBadSentiment error response"
 }

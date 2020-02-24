@@ -16,23 +16,23 @@ digraph L
     rankdir="TB"
 
     // System feature title
-    label = <<b>Anonymous Geo-tagged Notes</b> - functional requirements are highlighted in red.<br/><br/>>
+    label = <<b>Searchable Content</b> - functional requirements are highlighted in red.<br/><br/>>
 
     size="10.25, 7.75";
     overlap="compress"
-    node [shape=record fontname=Arial fontsize=12 fillcolor="lightblue"] "4.5 SearchableContent";  // System Reqs
+    node [shape=record fontname=Arial fontsize=12 fillcolor="lightblue"] "SearchableContent";  // System Reqs
     node [style=filled fillcolor="#FFCCCC"]
-    "4.5.1 Client-Search-Request" 
-    "4.5.2 Client-Search-Params" 
-    "4.5.3 Client-Search-Filter";                              
-    "4.5 SearchableContent" -> "4.5.1 Client-Search-Request";
-    "4.5 SearchableContent" -> "4.5.2 Client-Search-Params"; 
-    "4.5 SearchableContent" -> "4.5.3 Client-Search-Filter";        
+    "Client-Search-Request" 
+    "Client-Search-Params" 
+    "Client-Search-Filter";                              
+    "SearchableContent" -> "Client-Search-Request";
+    "SearchableContent" -> "Client-Search-Params"; 
+    "SearchableContent" -> "Client-Search-Filter";        
     node [fillcolor="#FFFFFF"]
-    "4.5.1 Client-Search-Request" -> "[client] Implement notes GET request"
-    "4.5.2 Client-Search-Params" -> "[client] Gather search terms from search bar"
-    "4.5.2 Client-Search-Params" -> "[client] Append search terms to notes GET request"
-    "4.5.3 Client-Search-Filter" -> "[server] Filter applicable notes based on request search terms"
-    "4.5.3 Client-Search-Filter" -> "[server] Return filtered notes as response if applicable"
+    "Client-Search-Request" -> "Implement notes GET request"
+    "Client-Search-Params" -> "Gather search terms from search bar"
+    "Client-Search-Params" -> "Append search terms to notes GET request"
+    "Client-Search-Filter" -> "Filter applicable notes based on request search terms"
+    "Client-Search-Filter" -> "Return filtered notes as response if applicable"
     
 }
