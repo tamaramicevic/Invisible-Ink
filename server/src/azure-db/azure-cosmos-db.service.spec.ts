@@ -1,15 +1,15 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { CosmosDbService } from './cosmos-db.service';
+import { AzureCosmosDbService } from './azure-cosmos-db.service';
 
-describe('CosmosDbService', () => {
-  let service: CosmosDbService;
+describe('AzureCosmosDbService', () => {
+  let service: AzureCosmosDbService;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      providers: [CosmosDbService],
+      providers: [AzureCosmosDbService],
     }).compile();
 
-    service = module.get<CosmosDbService>(CosmosDbService);
+    service = module.get<AzureCosmosDbService>(AzureCosmosDbService);
   });
 
   it('should be defined', () => {

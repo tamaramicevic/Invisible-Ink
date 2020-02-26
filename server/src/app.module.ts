@@ -2,7 +2,6 @@ import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { CosmosDbModule } from './cosmos-db/cosmos-db.module';
 import { DebugSentimentAnalysisController } from './debug-sentiment-analysis/debug-sentiment-analysis.controller';
 import { ReportController } from './report/report.controller';
 import { RetrieveNotesController } from './retrieve-notes/retrieve-notes.controller';
@@ -11,6 +10,8 @@ import { TextAnalyticsService } from './text-analytics/text-analytics.service';
 import { UploadImageController } from './upload-image/upload-image.controller';
 import { UploadNoteController } from './upload-note/upload-note.controller';
 import { VoteController } from './vote/vote.controller';
+import { AzureDbModule } from './azure-db/azure-db.module';
+import { AzureCosmosDbService } from './azure-db/azure-cosmos-db.service';
 
 @Module({
   imports: [
@@ -18,7 +19,7 @@ import { VoteController } from './vote/vote.controller';
     ConfigModule.forRoot({
       isGlobal: true,
     }),
-    CosmosDbModule,
+    AzureDbModule,
   ],
   controllers: [
     AppController, 
@@ -28,6 +29,6 @@ import { VoteController } from './vote/vote.controller';
     RetrieveNotesController, 
     ReportController, VoteController,
   ],
-  providers: [AppService, TextAnalyticsService],
+  providers: [AppService, TextAnalyticsService, AzureCosmosDbService],
 })
 export class AppModule {}
