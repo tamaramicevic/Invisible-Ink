@@ -31,6 +31,7 @@
 ## Installation
 
 ```bash
+Run this command in the server directory
 $ npm install
 ```
 

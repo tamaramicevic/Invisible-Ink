@@ -5,10 +5,9 @@ digraph L {
     labeljust = "l"
     rankdir="LR"
     label = <<b>Project Network Diagram</b> - tasks with no dependecies are shown in red<br/><br/>>
-
+   
     /* ---------- Independent tasks ---------- */
     node [shape=record fontname=Arial fontsize=12 style=filled fillcolor="#FFCCCC"]
-    0 [label="Create layout for note view"]
     1 [label="Define Retrofit interface for note-post endpoint"]
     2 [label="Define a server endpoint for note-post requests"]
     3 [label="Define server queries for adding to the notes database"]
@@ -23,13 +22,27 @@ digraph L {
     12 [label="Define client interface for fetch-notes endpoint"]
     13 [label="Maintain a local, per-device, persistent store of votes"]
 
+    14 [label="Define quantitative radius of allowed notes"]
+    15 [label="Define query to retrieve notes based on given location"]
+    16 [label="Define a server endpoint for get-notes requests"]
+    17 [label="Convert array populated with applicable notes to JSON object"]
+    18 [label="Create layout for note view"]
+    19 [label="Define a distance where the full note is viewed"]
+    20 [label="Create a layout interface for notes with content blurred at certain distance"]
+    21 [label="Define a radius that groups notes that are within that radius of each other"]
+    
+    24 [label="Define Retrofit interface for report-note client endpoint"]
+    25 [label="Define a server endpoint for report-note requests"]
+    26 [label="Create a table named ReportedNotes with noteID and optionalReport"]
+    27 [label="Add human readable messages to string resources to display to user"]
+        
+    28 [label="Implement Text-Analytics service to scan for bad sentiment"]
+    29 [label="Implement Auto-Content-Moderation Service to scan for PIIs"]
+    30 [label="Create layout for Map-view"]
+    
     /* ---------- Dependent tasks ---------- */
     node [fillcolor="#FFFFFF"]
-    0.1 [label="Inflate note view when tab is selected"]
-    0.2 [label="Add voting buttons and score to note layout"]
-    0.3 [label="Implement callbacks for vote button clicks"]
-    0 -> 0.1, 0.2; 0.2 -> 0.3;
-
+   
     1.1 [label="Add callback to handle result of note-post requests"]
     1 -> 1.1;
 
@@ -63,4 +76,99 @@ digraph L {
     13.1 [label="Enable/disable vote buttons for previous votes on note load"]
     13.2 [label="Update post-store upon future votes"]
     13 -> 13.1; 13 -> 13.2;
+
+    14.0 [label="Compare distance between user & notes with allowed radius distance"]
+    14.1 [label="Server returns JSON object will all applicable notes to client"]
+    14.2 [label="Client should receive and package response for GET request"]
+    14.3 [label="Apply grouped or non-grouped view"]
+    14.4 [label="Render the notes based on location in AR"]
+    14.5 [label="Client should determine distance between all displayed notes and user"]
+    14.6 [label="Determine distance between notes"]
+    14.7 [label="Clicking on the grouped notes will 'activate' the notes"]
+    14.8 [label="Based on distance, the notes should alternate between full and blurred views"]
+    14.9 [label="Compare computed distance between notes and the defined radius"]
+    14.10 [label="Swiping on 'active' grouped notes will go through the stack of notes"]
+    14.11 [label="Filter applicable notes based on request search terms"]
+    14.12 [label="Return filtered notes as response if applicable"]
+    14.13 [label="Use provided pre-built filters to serve notes"]
+    14.14 [label="Serve notes according to zoom-level"]
+    14 -> 14.0, 14.14;
+    14.0 -> 14.1;
+    14.14 -> 14.1;
+    14.1 -> 14.2, 14.11, 14.12, 14.13;
+    14.2 -> 14.4, 14.5, 14.6;
+    14.4 -> 14.7, 23; 14.5 -> 14.8; 14.6 -> 14.9;
+    14.7 -> 14.10; 14.9 -> 14.3;
+    14.3 -> 14.4;
+
+    15.0 [label="Compute distance between user's location and location of notes"]
+    15 -> 15.0;
+    15.0 -> 14.0;
+
+    16.0 [label="Client sends a GET request for notes with location of user"]
+    16.1 [label="Gather search terms from search bar"]
+    16.2 [label="Append search terms to notes GET request"]
+    16.3 [label="Include pre-built filters in GET request for notes"]
+    16.4 [label="Include zoom-level in GET request for notes"]
+    16 -> 16.0, 14.2, 14.1, 16.1, 16.2, 16.3, 16.4;
+    16.0 -> 14.1, 14.2;
+
+    17 -> 14.1
+    
+    18.0 [label="Create an 'unactive' view of grouped notes in a layered view"]
+    18.1 [label="Create an 'active' view of grouped notes"]
+    18.2 [label="Inflate note view when tab is selected"]
+    18.3 [label="Add voting buttons and score to note layout"]
+    18.4 [label="Implement callbacks for vote button clicks"]
+    18 -> 14.4, 18.0, 18.1, 18.2, 18.3, 18.4;
+    18.0 -> 14.3, 14.7;
+    18.1 -> 14.7;
+    
+
+    19 -> 14.8
+
+    20 -> 14.8
+
+    21 -> 14.9
+
+    23 [label="Button on note will lead to layout for reporting a note on click"]
+    23.0 [label="Add text asking if the user is sure about reporting"]
+    23.1 [label="Add a textbox for optional comments attached to reports"]
+    23.2 [label="Add 'Report' button to submit the report with it's optional comment"]
+    23.4 [label="Implement logic for selecting message upon request success/failure"]
+    23 -> 23.0, 23.1, 23.2; 23.2 -> 24.0; 24.0 -> 23.4; 23.4 -> 27.0;
+
+    24.0 [label="Client sends a post request to server with noteID and optionalReport"]
+    24 -> 24.0;
+
+    25 -> 24.0;
+
+
+    26.0 [label="Define query to add reports to table with provided variables"]
+    26 -> 26.0;
+
+    27.0 [label="Create layout to display the result to user"]
+    27 -> 27.0;
+
+    28.0 [label="Create an Interceptor using Text-Analytics service"]
+    28.1 [label="Show dialog when server returns DetectedBadSentiment error response"]
+    28 -> 28.0; 28.0 -> 28.1;
+
+    29.0 [label="Create an Interceptor using Auto-Content-Moderation"]
+    29.1 [label="Show dialog when server returns DetectedPII error response"]
+    29 -> 29.0; 29.0 -> 29.1;
+    
+    30.0 [label="Create drop-down option for pre-built filters"]
+    30.1 [label="Create search bar for Map-view"]
+    30.2 [label="Track applied filters in state"]
+    30.3 [label="Refresh when new pre-built filter applied"]
+
+    30.4 [label="Implement threshold-bound zooming"]
+    30.5 [label="Populate Map-view according to zoom-level"]
+    30.6 [label="Group notes very close together in Map-view"]
+    30.7 [label="Display grouped notes with count indicator in Map-view"]
+    30 -> 30.0, 30.1, 30.4, 30.6;
+    30.0 -> 30.2, 30.3;
+    30.4 -> 30.5;
+    30.6 -> 30.7;
 }

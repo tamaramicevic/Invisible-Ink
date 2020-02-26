@@ -1,0 +1,24 @@
+digraph L {
+    label = <<b>Work Breakdown Structure</b> - note, each system feature is provided as a separate work breakdown tree for readability.<br/><br/>>;
+    fontsize = 18
+    fontname = Arial
+    labelloc = "t"
+    labeljust = "l"
+    rankdir="TB"
+
+    // Project Root
+    node [shape=record fontname=Arial fontsize=12]
+    0 [label="Invisible Ink Project"]
+
+    1 [label=<Anonymous Geo-Tagged Notes <br/>(see file sf4.1.png)>]
+    2 [label=<Users can view notes in AR <br/>(see file sf4.2.png)>]
+    3 [label=<Users can view notes in Map View <br/>(see file sf4.3.png)>]
+    4 [label=<Content Rating System <br/>(see file sf4.4.png)>]
+    5 [label=<Searchable Content <br/>(see file sf4.5.png)>]
+    6 [label=<Content Moderation by Reporting <br/>(see file sf4.6.png)>]
+    7 [label=<Automated Content Moderation <br/>(see file sf4.7.png)>]
+
+    // System Features
+    node [style=filled fillcolor="#FFCCCC"]
+    0 -> 1, 2, 3, 4, 5, 6, 7
+}
