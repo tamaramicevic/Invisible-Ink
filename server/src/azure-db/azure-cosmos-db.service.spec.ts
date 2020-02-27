@@ -1,3 +1,4 @@
+import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import { AzureCosmosDbService } from './azure-cosmos-db.service';
 
@@ -6,7 +7,7 @@ describe('AzureCosmosDbService', () => {
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      providers: [AzureCosmosDbService],
+      providers: [AzureCosmosDbService, ConfigService],
     }).compile();
 
     service = module.get<AzureCosmosDbService>(AzureCosmosDbService);

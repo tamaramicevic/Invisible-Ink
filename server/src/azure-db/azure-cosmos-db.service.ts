@@ -1,5 +1,5 @@
 import { CosmosClient } from '@azure/cosmos';
-import { Injectable } from '@nestjs/common';
+import { Injectable, OnApplicationBootstrap } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 
 import { Note } from '../shared/models/note';
@@ -8,7 +8,7 @@ import { NoteSchema } from './models/note-schema';
 import { ReportedNoteSchema } from './models/reported-note-schema';
 
 @Injectable()
-export class AzureCosmosDbService {
+export class AzureCosmosDbService implements OnApplicationBootstrap {
     private readonly mCosmosDbClient: CosmosClient;
 
     // Database IDs
@@ -30,8 +30,7 @@ export class AzureCosmosDbService {
             key: authKey,
           });
 
-        this.Initialize();
-
+        /* Note:    There should be no logic like this in constructors
         // dummy values
         const note: Note = {
             NoteId: '22',
@@ -46,9 +45,10 @@ export class AzureCosmosDbService {
         };
 
         this.UploadNote(note);
+        */
     }
 
-    async Initialize(): Promise<void> {
+    async onApplicationBootstrap() {
         // Create DB if it doesn't exist
         try {
             await this.mCosmosDbClient.databases.createIfNotExists({ id: this.mDBId });
@@ -56,13 +56,13 @@ export class AzureCosmosDbService {
             // tslint:disable-next-line
             console.log('Error creating database:\n', error);
         }
-
+  
         // Create the containers if they don't exist
         try {
             await this.mCosmosDbClient.database(this.mDBId).containers.createIfNotExists({ id: this.mNoteContainerId });
             await this.mCosmosDbClient.database(this.mDBId).containers.createIfNotExists({ id: this.mNoteLifetimeLogContainerId });
             await this.mCosmosDbClient.database(this.mDBId).containers.createIfNotExists({ id: this.mReportedNotesContainerId });
-
+  
             const iterator = this.mCosmosDbClient.database(this.mDBId).containers.readAll();
             const { resources: containersList } = await iterator.fetchAll();
             // tslint:disable-next-line
@@ -73,9 +73,9 @@ export class AzureCosmosDbService {
             // tslint:disable-next-line
             console.log('Error creating containers:\n', error);
         }
-
+  
         return;
-    }
+      }
 
     async UploadNote(note: Note): Promise<void> {
         try {
