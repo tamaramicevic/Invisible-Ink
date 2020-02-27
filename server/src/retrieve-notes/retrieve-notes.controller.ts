@@ -13,6 +13,7 @@ const notesResponse: RetrieveNotesResponse = {
             Score: 32,
             Lat: 53.527381,
             Lon: -113.527821,
+            ExpiresInHours: 24,
         },
         {
             NoteId: '42',
@@ -22,6 +23,7 @@ const notesResponse: RetrieveNotesResponse = {
             Score: 64,
             Lat: 53.527481, 
             Lon: -113.527821,
+            ExpiresInHours: 24,
         },
         {
             NoteId: '661',
@@ -31,6 +33,7 @@ const notesResponse: RetrieveNotesResponse = {
             Score: 128,
             Lat: 53.527381, 
             Lon: 113.527851,
+            ExpiresInHours: 24,
         },
         {
             NoteId: '133',
@@ -40,6 +43,7 @@ const notesResponse: RetrieveNotesResponse = {
             Score: 256,
             Lat: 53.527351, 
             Lon: -113.527421,
+            ExpiresInHours: 24,
         },
         {
             NoteId: '252341',
@@ -49,6 +53,7 @@ const notesResponse: RetrieveNotesResponse = {
             Score: 512,
             Lat: 53.527381, 
             Lon: -113.527826,
+            ExpiresInHours: 24,
         },
 
     ],
