@@ -10,8 +10,6 @@ import { TextAnalyticsService } from './text-analytics/text-analytics.service';
 import { UploadImageController } from './upload-image/upload-image.controller';
 import { UploadNoteController } from './upload-note/upload-note.controller';
 import { VoteController } from './vote/vote.controller';
-import { AzureDbModule } from './azure-db/azure-db.module';
-import { AzureCosmosDbService } from './azure-db/azure-cosmos-db.service';
 
 @Module({
   imports: [
@@ -19,7 +17,6 @@ import { AzureCosmosDbService } from './azure-db/azure-cosmos-db.service';
     ConfigModule.forRoot({
       isGlobal: true,
     }),
-    AzureDbModule,
   ],
   controllers: [
     AppController, 
@@ -29,6 +26,6 @@ import { AzureCosmosDbService } from './azure-db/azure-cosmos-db.service';
     RetrieveNotesController, 
     ReportController, VoteController,
   ],
-  providers: [AppService, TextAnalyticsService, AzureCosmosDbService],
+  providers: [AppService, TextAnalyticsService],
 })
 export class AppModule {}
