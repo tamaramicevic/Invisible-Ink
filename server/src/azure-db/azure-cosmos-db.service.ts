@@ -3,6 +3,7 @@ import { Injectable, OnApplicationBootstrap } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { Point } from 'geojson';
 
+import { NoteSearchParams } from 'src/shared/models/note-search-params';
 import { Note } from '../shared/models/note';
 import { NoteLifetimeLogSchema } from './models/note-lifetime-log-schema';
 import { NoteSchema } from './models/note-schema';
@@ -70,7 +71,7 @@ export class AzureCosmosDbService implements OnApplicationBootstrap {
             // tslint:disable-next-line
             console.log('Error creating containers:\n', error);
         }
-  
+        console.log('Azure CosmosDb successfully initialized');
         return;
       }
 
@@ -83,18 +84,24 @@ export class AzureCosmosDbService implements OnApplicationBootstrap {
             // TODO: might need to verify coordinates are correctly entered
             const loc: Point = { type: 'Point', coordinates: [note.Lat, note.Lon]};
 
+            // Create timestamp
+            const expiryDate: Date = new Date(note.TimeStamp);
+            expiryDate.setHours(expiryDate.getHours() + note.ExpiresInHours);
+
             const dbNote: NoteSchema = {
                 Title: note.Title,
                 Body: note.Body,
                 ImageId: note.ImageId,
                 TimeStamp: note.TimeStamp,
+                ExpiryTime: expiryDate.toISOString(),
                 Score: note.Score,
                 Location: loc,
             };
     
             const { item } = await noteContainer.items.create(dbNote);
 
-            const dbNoteLifetimeLog: NoteLifetimeLogSchema = {
+            // TODO: Evaluate if this needs to be removed
+            /*const dbNoteLifetimeLog: NoteLifetimeLogSchema = {
                 NoteId: item.id,
                 Timestamp: note.TimeStamp,
                 Lifetime: note.ExpiresInHours,
@@ -102,7 +109,7 @@ export class AzureCosmosDbService implements OnApplicationBootstrap {
 
             await noteLifetimeLogContainer.items.create(dbNoteLifetimeLog);
 
-            const { resources: results } = await noteLifetimeLogContainer.items.readAll().fetchAll();
+            const { resources: results } = await noteLifetimeLogContainer.items.readAll().fetchAll();*/
 
         } catch (error) {
             // tslint:disable-next-line
@@ -112,18 +119,22 @@ export class AzureCosmosDbService implements OnApplicationBootstrap {
         return;
     }
 
-    async RetrieveNotes(): Promise<Note[]> {
+    async RetrieveNotes(searchParams: NoteSearchParams): Promise<Note[]> {
         try {
             const { database } = await this.mCosmosDbClient.databases.createIfNotExists({ id: this.mDBId });
             const { container: noteContainer } = await database.containers.createIfNotExists({ id: this.mNoteContainerId });
 
             const querySpec = {
-                query: 'SELECT * FROM Notes n WHERE n.Score > @score',
+                query: 'SELECT * FROM Notes n WHERE ST_DISTANCE(n.Location, @userLocation) <= @range',
                 parameters: [
-                {
-                    name: '@score',
-                    value: 0,
-                },
+                    {
+                        name: '@userLocation',
+                        value: JSON.stringify(searchParams.UserLocation),
+                    },
+                    {
+                        name: '@range',
+                        value: searchParams.Range,
+                    },
                 ],
             };
             

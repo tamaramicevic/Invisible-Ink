@@ -5,6 +5,7 @@ export interface NoteSchema {
     Body: string;
     ImageId?: string;
     TimeStamp: string;
+    ExpiryTime: string;
     Score: number;
     Location: Point;
 }
