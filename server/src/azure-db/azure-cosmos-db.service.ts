@@ -66,10 +66,6 @@ export class AzureCosmosDbService implements OnApplicationBootstrap {
   
             const iterator = this.mCosmosDbClient.database(this.mDBId).containers.readAll();
             const { resources: containersList } = await iterator.fetchAll();
-            // tslint:disable-next-line
-            console.log('List of active containers:\n')
-            // tslint:disable-next-line
-            console.log(containersList);
         } catch (error) {
             // tslint:disable-next-line
             console.log('Error creating containers:\n', error);
@@ -107,11 +103,7 @@ export class AzureCosmosDbService implements OnApplicationBootstrap {
             await noteLifetimeLogContainer.items.create(dbNoteLifetimeLog);
 
             const { resources: results } = await noteLifetimeLogContainer.items.readAll().fetchAll();
-            for (const itemReturned of results) {
-                const resultString = JSON.stringify(itemReturned);
-                // tslint:disable-next-line
-                console.log(`Item returned ${resultString}\n`)
-            }
+
         } catch (error) {
             // tslint:disable-next-line
             console.log('Error uploading note:\n', error);
@@ -121,38 +113,43 @@ export class AzureCosmosDbService implements OnApplicationBootstrap {
     }
 
     async RetrieveNotes(): Promise<Note[]> {
-        const { database } = await this.mCosmosDbClient.databases.createIfNotExists({ id: this.mDBId });
-        const { container: noteContainer } = await database.containers.createIfNotExists({ id: this.mNoteContainerId });
+        try {
+            const { database } = await this.mCosmosDbClient.databases.createIfNotExists({ id: this.mDBId });
+            const { container: noteContainer } = await database.containers.createIfNotExists({ id: this.mNoteContainerId });
 
-        const querySpec = {
-            query: 'SELECT * FROM Notes n WHERE n.Score > @score',
-            parameters: [
-              {
-                name: '@score',
-                value: 0,
-              },
-            ],
-          };
-        
-        const { resources: retreivedNotes } = await noteContainer.items.query(querySpec).fetchAll();
-
-        const result = retreivedNotes.map(
-            item => {
-                const note = JSON.parse(item);
-                return {
-                    NoteId: note.NoteId,
-                    Title: note.Title,
-                    Body: note.Body,
-                    ImageId: note.ImageId,
-                    TimeStamp: note.TimeStamp,
-                    Score: note.Score,
-                    Lat: note.Location.coordinates[0], // double check this conversion
-                    Lon: note.Location.coordinates[1],
-                    } as Note;
+            const querySpec = {
+                query: 'SELECT * FROM Notes n WHERE n.Score > @score',
+                parameters: [
+                {
+                    name: '@score',
+                    value: 0,
                 },
-            ).filter(item => !!item);
+                ],
+            };
+            
+            const { resources: retreivedNotes } = await noteContainer.items.query(querySpec).fetchAll();
 
-        return result;
+            const result = retreivedNotes.map(
+                item => {
+                    const note = item as NoteSchema;
+                    return {
+                        NoteId: item.id,
+                        Title: note.Title,
+                        Body: note.Body,
+                        ImageId: note.ImageId,
+                        TimeStamp: note.TimeStamp,
+                        Score: note.Score,
+                        Lat: note.Location.coordinates[0], // double check this conversion
+                        Lon: note.Location.coordinates[1],
+                        } as Note;
+                    },
+                ).filter(item => !!item);
+
+            return result;
+        } catch (error) {
+            // tslint:disable-next-line
+            console.log('Error retrieving note:\n', error);
+        }
     }
 
     async ReportNote(): Promise<void> {
