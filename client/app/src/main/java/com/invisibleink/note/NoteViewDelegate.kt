@@ -84,7 +84,11 @@ class NoteViewDelegate(viewProvider: ViewProvider) :
 
     private fun showAddPhoto() = pushEvent(NoteViewEvent.AddImage)
 
-    private fun composeNote(): NoteContent = NoteContent(title.text.toString(), body.text.toString())
+    private fun composeNote(): NoteContent = NoteContent(
+        title = title.text.toString(),
+        body = body.text.toString(),
+        expiration = expirationDate
+    )
 
     private fun showExpirationDate() {
         val expirationString = expirationDate?.toString(DATE_FORMATTER)

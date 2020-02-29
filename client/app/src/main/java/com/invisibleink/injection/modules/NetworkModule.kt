@@ -1,5 +1,6 @@
 package com.invisibleink.injection.modules
 
+import com.invisibleink.utils.gson.createGson
 import dagger.Module
 import dagger.Provides
 import retrofit2.Retrofit
@@ -12,8 +13,8 @@ object NetworkModule {
     @Provides
     fun provideRetrofit(): Retrofit =
         Retrofit.Builder()
-            .baseUrl("http://TODO")
-            .addConverterFactory(GsonConverterFactory.create())
+            .baseUrl("https://jsonplaceholder.typicode.com/todos/1/")
+            .addConverterFactory(GsonConverterFactory.create(createGson()))
             .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
             .build()
 }
