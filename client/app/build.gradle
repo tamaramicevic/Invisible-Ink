@@ -35,7 +35,7 @@ def ok_http_version = "4.3.1"
 def joda_version = "2.10.5"
 def rx_version = "2.1.0"
 def easy_image_version = "3.0.3"
-def google_maps_version = "17.0.0"
+def google_play_services_version = "17.0.0"
 def ar_core_version = "1.15.0"
 def preference_version = "1.1.0"
 
@@ -79,7 +79,8 @@ dependencies {
     implementation "com.github.jkwiecien:EasyImage:$easy_image_version"
 
     // Google maps
-    implementation "com.google.android.gms:play-services-maps:$google_maps_version"
+    implementation "com.google.android.gms:play-services-maps:$google_play_services_version"
+    implementation "com.google.android.gms:play-services-location:$google_play_services_version"
 
     // ArCore
     implementation "com.google.ar:core:$ar_core_version"

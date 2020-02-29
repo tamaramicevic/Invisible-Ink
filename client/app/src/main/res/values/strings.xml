@@ -11,19 +11,20 @@
     <string name="ar_explore_mode">Explore in AR</string>
     <string name="map_explore_mode">Explore on Map</string>
 
-    <!-- Note Tab -->
+    <!-- NoteContent Tab -->
     <string name="upload">Upload</string>
     <string name="title_hint">Title</string>
     <string name="body_hint">Body</string>
     <string name="expiration_date_default">Add Expiration Date</string>
     <string name="expiration_date_format">Expires on %s</string>
 
-    <!-- Note API -->
-    <string name="upload_error_generic">Failed to upload note.</string>
-    <string name="invalid_note_title">The note must contain a non-empty title.</string>
-    <string name="invalid_note_body">The note must contain a non-empty body.</string>
-    <string name="valid_note">Valid note!</string>
-    <string name="upload_success">Successfully uploaded note!</string>
+    <!-- NoteContent API -->
+    <string name="upload_error_generic">Failed to upload noteContent.</string>
+    <string name="upload_error_invalid_location">Failed to retrieve device location.</string>
+    <string name="invalid_note_title">The noteContent must contain a non-empty title.</string>
+    <string name="invalid_note_body">The noteContent must contain a non-empty body.</string>
+    <string name="valid_note">Valid noteContent!</string>
+    <string name="upload_success">Successfully uploaded noteContent!</string>
 
     <!-- Permission messages -->
     <string name="image_picker_title">Add a photo</string>

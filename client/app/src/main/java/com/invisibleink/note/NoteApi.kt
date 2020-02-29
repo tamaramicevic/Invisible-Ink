@@ -1,5 +1,6 @@
 package com.invisibleink.note
 
+import com.invisibleink.models.Note
 import io.reactivex.Observable
 import okhttp3.ResponseBody
 import retrofit2.Response
