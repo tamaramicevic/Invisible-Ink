@@ -1,5 +1,6 @@
 package com.invisibleink.utils.interceptors
 
+import com.invisibleink.extensions.randomDouble
 import okhttp3.Interceptor
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.Protocol
@@ -35,8 +36,10 @@ class FetchNotesInterceptor : Interceptor {
             put("body", "Body of note $id")
             put("expiration", "2020-01-15T22:55:41.492Z")
             put("imageUrl", JSONObject.NULL)
-            put("latitude", 53.0)
-            put("longitude", -113.2425784)
+            put("location", JSONObject().apply {
+                put("latitude", randomDouble(53.523, 53.530))
+                put("longitude", randomDouble(-113.517, -113.531))
+            })
             put("score", (-10..10).random())
         }
 }
