@@ -26,6 +26,9 @@
     <string name="valid_note">Valid noteContent!</string>
     <string name="upload_success">Successfully uploaded noteContent!</string>
 
+    <!-- Fetch notes API -->
+    <string name="error_fetch_notes_generic">Failed to fetch notes</string>
+
     <!-- Permission messages -->
     <string name="image_picker_title">Add a photo</string>
     <string name="error_adding_image">Failed to add photo</string>

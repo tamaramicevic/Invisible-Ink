@@ -22,6 +22,7 @@ class MapExploreViewDelegate(viewProvider: ViewProvider) :
             val quad = LatLng(53.527290, -113.527823)
             map.addMarker(MarkerOptions().position(quad).title("Marker Title").snippet("Marker Description"))
             map.moveCamera(CameraUpdateFactory.newLatLng(quad))
+            pushEvent(MapExploreViewEvent.FetchNotes)
         }
     }
 
