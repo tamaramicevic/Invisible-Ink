@@ -37,6 +37,7 @@ class MapExplorePresenter @Inject constructor(
 
     private fun parseNotes(notes: List<Note>) {
         Log.d("MapExplorePresenter", "Parsing ${notes.size} notes!\nNOTE -> ${notes.joinToString("\nNOTE -> ")}")
+        pushState(MapExploreViewState.Success(notes))
     }
 
     private fun showError(throwable: Throwable) {
