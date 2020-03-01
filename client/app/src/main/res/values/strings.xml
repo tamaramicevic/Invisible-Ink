@@ -18,9 +18,11 @@
     <string name="expiration_date_default">Add Expiration Date</string>
     <string name="expiration_date_format">Expires on %s</string>
 
+    <!-- Generic Errors -->
+    <string name="error_invalid_device_location">Failed to retrieve device location.</string>
+
     <!-- NoteContent API -->
     <string name="upload_error_generic">Failed to upload noteContent.</string>
-    <string name="upload_error_invalid_location">Failed to retrieve device location.</string>
     <string name="invalid_note_title">The noteContent must contain a non-empty title.</string>
     <string name="invalid_note_body">The noteContent must contain a non-empty body.</string>
     <string name="valid_note">Valid noteContent!</string>
