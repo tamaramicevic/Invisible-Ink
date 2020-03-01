@@ -30,7 +30,6 @@ export class UploadNoteController {
         try {
             await this.azureCosmosDbService.UploadNote(note);
         } catch (error) {
-            console.log(error);
             return {success: false, error: ErrorCondition.UPLOAD_FAILED };
         }
 

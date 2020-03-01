@@ -73,11 +73,11 @@ export class RetrieveNotesController {
         // tslint:disable-next-line
         console.dir(requestBody);
 
-        // TODO: For now hard-coding range: 1km
+        // TODO: For now hard-coding range: 100km
         // Keywords: null
         try {
             const result: RetrieveNotesResponse = {
-                notes: await this.azureCosmosDbService.RetrieveNotes({UserLocation: requestBody.Location, Range: 1000, Keywords: []}),
+                notes: await this.azureCosmosDbService.RetrieveNotes({UserLocation: requestBody.Location, Range: 100000, Keywords: []}),
             };
             return result;
         } catch (error) { 

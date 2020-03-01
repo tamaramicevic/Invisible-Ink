@@ -31,23 +31,6 @@ export class AzureCosmosDbService implements OnApplicationBootstrap {
             endpoint,
             key: authKey,
           });
-
-        /* Note:    There should be no logic like this in constructors
-        // dummy values
-        const note: Note = {
-            NoteId: '22',
-            Title: 'TestNote',
-            Body: 'This is a test note',
-            TimeStamp: Date.now().toString(),
-            Score: 9,
-            Lat: 98.4569839,
-            Lon: 114.2364167,
-            ImageId: '22a',
-            ExpiresInHours: 24,
-        };
-
-        this.UploadNote(note);
-        */
     }
 
     async onApplicationBootstrap() {
@@ -71,7 +54,6 @@ export class AzureCosmosDbService implements OnApplicationBootstrap {
             // tslint:disable-next-line
             console.log('Error creating containers:\n', error);
         }
-        console.log('Azure CosmosDb successfully initialized');
         return;
       }
 
@@ -89,28 +71,17 @@ export class AzureCosmosDbService implements OnApplicationBootstrap {
             expiryDate.setHours(expiryDate.getHours() + note.ExpiresInHours);
 
             const dbNote: NoteSchema = {
-                Title: note.Title,
-                Body: note.Body,
-                ImageId: note.ImageId,
-                TimeStamp: note.TimeStamp,
-                ExpiryTime: expiryDate.toISOString(),
-                Score: note.Score,
-                Location: loc,
+                title: note.Title,
+                body: note.Body,
+                imageId: note.ImageId,
+                timeStamp: note.TimeStamp,
+                expiryTime: expiryDate.toISOString(),
+                score: note.Score,
+                location: loc,
             };
     
             const { item } = await noteContainer.items.create(dbNote);
-
-            // TODO: Evaluate if this needs to be removed
-            /*const dbNoteLifetimeLog: NoteLifetimeLogSchema = {
-                NoteId: item.id,
-                Timestamp: note.TimeStamp,
-                Lifetime: note.ExpiresInHours,
-            };
-
-            await noteLifetimeLogContainer.items.create(dbNoteLifetimeLog);
-
-            const { resources: results } = await noteLifetimeLogContainer.items.readAll().fetchAll();*/
-
+            
         } catch (error) {
             // tslint:disable-next-line
             console.log('Error uploading note:\n', error);
@@ -123,35 +94,37 @@ export class AzureCosmosDbService implements OnApplicationBootstrap {
         try {
             const { database } = await this.mCosmosDbClient.databases.createIfNotExists({ id: this.mDBId });
             const { container: noteContainer } = await database.containers.createIfNotExists({ id: this.mNoteContainerId });
-
             const querySpec = {
-                query: 'SELECT * FROM Notes n WHERE ST_DISTANCE(n.Location, @userLocation) <= @range',
+                query: 'SELECT * FROM Notes note WHERE ST_DISTANCE(note.location, {\'type\': \'Point\', \'coordinates\':[@lat, @lon]}) < @range',
                 parameters: [
                     {
-                        name: '@userLocation',
-                        value: JSON.stringify(searchParams.UserLocation),
+                        name: '@lat',
+                        value: searchParams.UserLocation.coordinates[0],
+                    },
+                    {
+                        name: '@lon',
+                        value: searchParams.UserLocation.coordinates[1],
                     },
                     {
                         name: '@range',
                         value: searchParams.Range,
                     },
                 ],
-            };
+            }; 
             
             const { resources: retreivedNotes } = await noteContainer.items.query(querySpec).fetchAll();
-
             const result = retreivedNotes.map(
                 item => {
                     const note = item as NoteSchema;
                     return {
                         NoteId: item.id,
-                        Title: note.Title,
-                        Body: note.Body,
-                        ImageId: note.ImageId,
-                        TimeStamp: note.TimeStamp,
-                        Score: note.Score,
-                        Lat: note.Location.coordinates[0], // double check this conversion
-                        Lon: note.Location.coordinates[1],
+                        Title: note.title,
+                        Body: note.body,
+                        ImageId: note.imageId,
+                        TimeStamp: note.timeStamp,
+                        Score: note.score,
+                        Lat: note.location.coordinates[0], // double check this conversion
+                        Lon: note.location.coordinates[1],
                         } as Note;
                     },
                 ).filter(item => !!item);
