@@ -56,7 +56,7 @@ class NotePresenter @Inject constructor(retrofit: Retrofit) :
                     .subscribe(this::parseResponse, this::showNetworkError)
             )
         } else {
-            pushState(NoteViewState.Error(R.string.upload_error_invalid_location))
+            pushState(NoteViewState.Error(R.string.error_invalid_device_location))
         }
     }
 

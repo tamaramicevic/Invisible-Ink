@@ -4,6 +4,7 @@ import androidx.annotation.StringRes
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.MapView
+import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.LatLngBounds
 import com.google.android.gms.maps.model.MarkerOptions
@@ -27,25 +28,39 @@ class MapExploreViewDelegate(viewProvider: ViewProvider) :
     init {
         mapView?.getMapAsync {
             map = it
-            val quad = LatLng(53.527290, -113.527823)
-            map.addMarker(MarkerOptions().position(quad).title("Marker Title").snippet("Marker Description"))
-            map.moveCamera(CameraUpdateFactory.newLatLng(quad))
             pushEvent(MapExploreViewEvent.FetchNotes)
         }
     }
 
     override fun render(viewState: MapExploreViewState): Unit? = when (viewState) {
         is MapExploreViewState.Error -> showMessage(viewState.message)
-        is MapExploreViewState.Success -> showNotes(viewState.notes)
+        is MapExploreViewState.Success -> showNotes(viewState.deviceLocation, viewState.notes)
     }
 
-    private fun showNotes(notes: List<Note>) {
-        val boundsBuilder = LatLngBounds.Builder()
-        notes.forEach { note ->
-            map.addMarker(MarkerOptions().position(note.location))
-            boundsBuilder.include(note.location)
+    private fun showNotes(deviceLocation: LatLng, notes: List<Note>) {
+        val boundsBuilder = LatLngBounds.Builder().include(deviceLocation)
+        val locations = notes
+            .map { MarkerOptions().position(it.location) }
+            .toMutableList()
+            .also { markers ->
+                markers.add(
+                    MarkerOptions()
+                        .position(deviceLocation)
+                        .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE))
+                )
+            }
+
+        locations.forEach { marker ->
+            map.addMarker(marker)
+            boundsBuilder.include(marker.position)
         }
-        map.moveCamera(CameraUpdateFactory.newLatLngBounds(boundsBuilder.build(), MAP_BOUNDS_PADDING))
+
+        map.moveCamera(
+            CameraUpdateFactory.newLatLngBounds(
+                boundsBuilder.build(),
+                MAP_BOUNDS_PADDING
+            )
+        )
     }
 
     private fun showMessage(@StringRes message: Int) = mapView?.showSnackbar(message)

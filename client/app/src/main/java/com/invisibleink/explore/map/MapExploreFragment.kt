@@ -5,15 +5,15 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.fragment.app.Fragment
 import com.google.android.gms.maps.MapView
 import com.invisibleink.R
 import com.invisibleink.architecture.ViewProvider
 import com.invisibleink.extensions.findViewOrThrow
 import com.invisibleink.injection.InvisibleInkApplication
+import com.invisibleink.location.LocationFragment
 import javax.inject.Inject
 
-class MapExploreFragment : Fragment(), ViewProvider {
+class MapExploreFragment : LocationFragment(), ViewProvider {
 
     @Inject
     lateinit var presenter: MapExplorePresenter
@@ -38,6 +38,7 @@ class MapExploreFragment : Fragment(), ViewProvider {
         super.onViewCreated(view, savedInstanceState)
         viewDelegate = MapExploreViewDelegate(this)
         viewDelegate.mapView?.onCreate(savedInstanceState)
+        presenter.locationProvider = this
         presenter.attach(viewDelegate)
     }
 

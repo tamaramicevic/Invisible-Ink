@@ -1,8 +1,8 @@
 package com.invisibleink.explore.map
 
-import android.util.Log
 import com.invisibleink.R
 import com.invisibleink.architecture.BasePresenter
+import com.invisibleink.location.LocationProvider
 import com.invisibleink.models.Note
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
@@ -17,6 +17,7 @@ class MapExplorePresenter @Inject constructor(
 
     private val exploreApi = retrofit.create(MapExploreApi::class.java)
     private val disposable = CompositeDisposable()
+    var locationProvider: LocationProvider? = null
 
     override fun onEvent(viewEvent: MapExploreViewEvent) = when (viewEvent) {
         MapExploreViewEvent.FetchNotes -> fetchNotes()
@@ -36,8 +37,14 @@ class MapExplorePresenter @Inject constructor(
     }
 
     private fun parseNotes(notes: List<Note>) {
-        Log.d("MapExplorePresenter", "Parsing ${notes.size} notes!\nNOTE -> ${notes.joinToString("\nNOTE -> ")}")
-        pushState(MapExploreViewState.Success(notes))
+        val deviceLocation = locationProvider?.getCurrentLocation()
+
+        val viewState = if (deviceLocation != null) {
+            MapExploreViewState.Success(deviceLocation, notes)
+        } else {
+            MapExploreViewState.Error(R.string.error_invalid_device_location)
+        }
+        pushState(viewState)
     }
 
     private fun showError(throwable: Throwable) {
