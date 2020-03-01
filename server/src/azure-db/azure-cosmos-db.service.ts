@@ -3,9 +3,9 @@ import { Injectable, OnApplicationBootstrap } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { Point } from 'geojson';
 
+import { Vote } from 'src/shared/models/vote';
 import { NoteSearchParams } from 'src/shared/models/note-search-params';
 import { Note } from '../shared/models/note';
-import { NoteLifetimeLogSchema } from './models/note-lifetime-log-schema';
 import { NoteSchema } from './models/note-schema';
 import { ReportedNoteSchema } from './models/reported-note-schema';
 
@@ -17,7 +17,6 @@ export class AzureCosmosDbService implements OnApplicationBootstrap {
     private readonly mDBId: string;
     private readonly mNoteContainerId: string;
     private readonly mReportedNotesContainerId: string;
-    private readonly mNoteLifetimeLogContainerId: string;
     
     constructor(private readonly configService: ConfigService) {
         const endpoint: string = this.configService.get<string>('AZURE-COSMOS-DATABASE-END-POINT') || '<database services endpoint>';
@@ -25,8 +24,7 @@ export class AzureCosmosDbService implements OnApplicationBootstrap {
         this.mDBId = this.configService.get<string>('AZURE-COSMOS-DATABASE-ID') || '<database id>';
         this.mNoteContainerId = this.configService.get<string>('AZURE-COSMOS-NOTESCONTAINER-ID') || '<notes container id>';
         this.mReportedNotesContainerId = this.configService.get<string>('AZURE-COSMOS-REPORTSCONTAINER-ID') || '<reported notes container id>';
-        this.mNoteLifetimeLogContainerId = this.configService.get<string>('AZURE-COSMOS-LIFETIMECONTAINER-ID') || '<note lifetime log container id>';
-
+        
         this.mCosmosDbClient = new CosmosClient({
             endpoint,
             key: authKey,
@@ -45,7 +43,6 @@ export class AzureCosmosDbService implements OnApplicationBootstrap {
         // Create the containers if they don't exist
         try {
             await this.mCosmosDbClient.database(this.mDBId).containers.createIfNotExists({ id: this.mNoteContainerId });
-            await this.mCosmosDbClient.database(this.mDBId).containers.createIfNotExists({ id: this.mNoteLifetimeLogContainerId });
             await this.mCosmosDbClient.database(this.mDBId).containers.createIfNotExists({ id: this.mReportedNotesContainerId });
   
             const iterator = this.mCosmosDbClient.database(this.mDBId).containers.readAll();
@@ -60,7 +57,6 @@ export class AzureCosmosDbService implements OnApplicationBootstrap {
     async UploadNote(note: Note): Promise<void> {
         try {
             const { database } = await this.mCosmosDbClient.databases.createIfNotExists({ id: this.mDBId });
-            const { container: noteLifetimeLogContainer } = await database.containers.createIfNotExists({ id: this.mNoteLifetimeLogContainerId });
             const { container: noteContainer } = await database.containers.createIfNotExists({ id: this.mNoteContainerId });
 
             // TODO: might need to verify coordinates are correctly entered
@@ -134,15 +130,47 @@ export class AzureCosmosDbService implements OnApplicationBootstrap {
             // tslint:disable-next-line
             console.log('Error retrieving note:\n', error);
         }
-    }
 
-    async ReportNote(): Promise<void> {
-        // TODO : needs implementation
         return;
     }
 
-    async VoteNote(): Promise<void> {
-        // TODO : needs implementation
+    async ReportNote(report: ReportedNoteSchema): Promise<void> {
+        try {
+            const { database } = await this.mCosmosDbClient.databases.createIfNotExists({ id: this.mDBId });
+            const { container: reportedNotesContainer } = await database.containers.createIfNotExists({ id: this.mReportedNotesContainerId });
+
+            const dbReport: ReportedNoteSchema = {
+                NoteId: report.NoteId,
+                OptionalReport: report.OptionalReport,
+            };
+    
+            const { item } = await reportedNotesContainer.items.create(dbReport);
+
+        } catch (error) {
+            // tslint:disable-next-line
+            console.log('Error reporting note:\n', error);
+        }
+
+        return;
+    }
+
+    async VoteNote(vote: Vote): Promise<void> {
+        try {
+            const { database } = await this.mCosmosDbClient.databases.createIfNotExists({ id: this.mDBId });
+            const { container: noteContainer } = await database.containers.createIfNotExists({ id: this.mNoteContainerId });
+
+            const item = noteContainer.item(vote.NoteId, undefined);
+            const { resource: note } = await item.read();
+
+            // depending on how we're passing from client
+            // either total score to update to, or [-1, +1] value to add
+            note.Score = vote.Score;
+
+            const { resource: updatedNote } = await noteContainer.items.upsert(note);
+
+        } catch (error) {
+            console.log('Error applying vote to note:\n', error);
+        }
         return;
     }
 }
