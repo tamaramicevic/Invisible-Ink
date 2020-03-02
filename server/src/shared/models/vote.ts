@@ -1,4 +1,4 @@
 export interface Vote {
     NoteId: string;
-    Score: number;
+    Rate: boolean; // true is up-vote, false is down-vote
 }
