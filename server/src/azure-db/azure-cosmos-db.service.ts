@@ -3,8 +3,8 @@ import { Injectable, OnApplicationBootstrap } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { Point } from 'geojson';
 
-import { Vote } from 'src/shared/models/vote';
 import { NoteSearchParams } from 'src/shared/models/note-search-params';
+import { Vote } from 'src/shared/models/vote';
 import { Note } from '../shared/models/note';
 import { NoteSchema } from './models/note-schema';
 import { ReportedNoteSchema } from './models/reported-note-schema';
@@ -52,6 +52,7 @@ export class AzureCosmosDbService implements OnApplicationBootstrap {
             console.log('Error creating containers:\n', error);
         }
 
+        // tslint:disable-next-line
         console.log('Azure CosmosDb successfully initialized');
 
         return;
@@ -72,7 +73,6 @@ export class AzureCosmosDbService implements OnApplicationBootstrap {
             const dbNote: NoteSchema = {
                 Title: note.Title,
                 Body: note.Body,
-                ImageId: note.ImageId,
                 TimeStamp: note.TimeStamp,
                 ExpiryTime: expiryDate.toISOString(),
                 Score: note.Score,
@@ -117,7 +117,6 @@ export class AzureCosmosDbService implements OnApplicationBootstrap {
                         NoteId: item.id,
                         Title: note.Title,
                         Body: note.Body,
-                        ImageId: note.ImageId,
                         TimeStamp: note.TimeStamp,
                         Score: note.Score,
                         Lat: note.Location.coordinates[0], // double check this conversion
@@ -142,7 +141,7 @@ export class AzureCosmosDbService implements OnApplicationBootstrap {
 
             const dbReport: ReportedNoteSchema = {
                 NoteId: report.NoteId,
-                OptionalReport: report.OptionalReport
+                OptionalReport: report.OptionalReport,
             };
     
             const { item } = await reportedNotesContainer.items.create(dbReport);
@@ -170,6 +169,7 @@ export class AzureCosmosDbService implements OnApplicationBootstrap {
             const { resource: updatedNote } = await noteContainer.items.upsert(note);
 
         } catch (error) {
+            // tslint:disable-next-line
             console.log('Error applying vote to note:\n', error);
         }
         return;

@@ -1,4 +1,4 @@
 export interface Vote {
-    NoteId: string,
-    Score: number
+    NoteId: string;
+    Score: number;
 }

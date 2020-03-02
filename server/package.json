@@ -24,6 +24,7 @@
     "@azure/ai-text-analytics": "^1.0.0-preview.1",
     "@azure/cosmos": "^3.6.2",
     "@azure/identity": "^1.0.2",
+    "@azure/storage-blob": "^12.1.0",
     "@nestjs/common": "^6.7.2",
     "@nestjs/config": "^0.2.2",
     "@nestjs/core": "^6.7.2",
