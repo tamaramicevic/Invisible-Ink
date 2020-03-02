@@ -30,8 +30,6 @@ export class UploadNoteController {
         try {
             await this.azureCosmosDbService.UploadNote(note);
         } catch (error) {
-            // tslint:disable-next-line
-            console.log(error);
             return {success: false, error: ErrorCondition.UPLOAD_FAILED };
         }
 

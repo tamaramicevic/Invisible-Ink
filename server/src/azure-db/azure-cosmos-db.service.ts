@@ -51,10 +51,6 @@ export class AzureCosmosDbService implements OnApplicationBootstrap {
             // tslint:disable-next-line
             console.log('Error creating containers:\n', error);
         }
-
-        // tslint:disable-next-line
-        console.log('Azure CosmosDb successfully initialized');
-
         return;
       }
 
@@ -71,16 +67,16 @@ export class AzureCosmosDbService implements OnApplicationBootstrap {
             expiryDate.setHours(expiryDate.getHours() + note.ExpiresInHours);
 
             const dbNote: NoteSchema = {
-                Title: note.Title,
-                Body: note.Body,
-                TimeStamp: note.TimeStamp,
-                ExpiryTime: expiryDate.toISOString(),
-                Score: note.Score,
-                Location: loc,
+                title: note.Title,
+                body: note.Body,
+                timeStamp: note.TimeStamp,
+                expiryTime: expiryDate.toISOString(),
+                score: note.Score,
+                location: loc,
             };
     
             const { item } = await noteContainer.items.create(dbNote);
-
+            
         } catch (error) {
             // tslint:disable-next-line
             console.log('Error uploading note:\n', error);
@@ -93,34 +89,36 @@ export class AzureCosmosDbService implements OnApplicationBootstrap {
         try {
             const { database } = await this.mCosmosDbClient.databases.createIfNotExists({ id: this.mDBId });
             const { container: noteContainer } = await database.containers.createIfNotExists({ id: this.mNoteContainerId });
-
             const querySpec = {
-                query: 'SELECT * FROM Notes n WHERE ST_DISTANCE(n.Location, @userLocation) <= @range',
+                query: 'SELECT * FROM Notes note WHERE ST_DISTANCE(note.location, {\'type\': \'Point\', \'coordinates\':[@lat, @lon]}) < @range',
                 parameters: [
                     {
-                        name: '@userLocation',
-                        value: JSON.stringify(searchParams.UserLocation),
+                        name: '@lat',
+                        value: searchParams.UserLocation.coordinates[0],
+                    },
+                    {
+                        name: '@lon',
+                        value: searchParams.UserLocation.coordinates[1],
                     },
                     {
                         name: '@range',
                         value: searchParams.Range,
                     },
                 ],
-            };
+            }; 
             
             const { resources: retreivedNotes } = await noteContainer.items.query(querySpec).fetchAll();
-
             const result = retreivedNotes.map(
                 item => {
                     const note = item as NoteSchema;
                     return {
                         NoteId: item.id,
-                        Title: note.Title,
-                        Body: note.Body,
-                        TimeStamp: note.TimeStamp,
-                        Score: note.Score,
-                        Lat: note.Location.coordinates[0], // double check this conversion
-                        Lon: note.Location.coordinates[1],
+                        Title: note.title,
+                        Body: note.body,
+                        TimeStamp: note.timeStamp,
+                        Score: note.score,
+                        Lat: note.location.coordinates[0], // double check this conversion
+                        Lon: note.location.coordinates[1],
                         } as Note;
                     },
                 ).filter(item => !!item);
