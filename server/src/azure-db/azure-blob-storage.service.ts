@@ -15,10 +15,14 @@ export class AzureBlobStorageService implements OnApplicationBootstrap {
         this.mContainerId = this.configService.get<string>('AZURE-BLOB-CONTAINER-ID') || '<blob container id>';
         
         const sharedKeyCredential: StorageSharedKeyCredential = new StorageSharedKeyCredential(account, accountKey);
-        this.mBlobStorageClient = new BlobServiceClient(
-            storageURL,
-            sharedKeyCredential,
-          );
+        try {
+            this.mBlobStorageClient = new BlobServiceClient(
+                storageURL,
+                sharedKeyCredential,
+              );
+
+        } catch (error) { /* TODO: Place an error log here */ }
+        
     }
 
     async onApplicationBootstrap() {
