@@ -1,4 +1,5 @@
 import { Controller, Get, Req } from '@nestjs/common';
+import { AzureCosmosDbService } from 'src/azure-db/azure-cosmos-db.service';
 import { RetrieveNotesRequest } from './models/retrieve-notes-request';
 import { RetrieveNotesResponse } from './models/retrieve-notes-response';
 
@@ -13,6 +14,7 @@ const notesResponse: RetrieveNotesResponse = {
             Score: 32,
             Lat: 53.527381,
             Lon: -113.527821,
+            ExpiresInHours: 24,
         },
         {
             NoteId: '42',
@@ -22,6 +24,7 @@ const notesResponse: RetrieveNotesResponse = {
             Score: 64,
             Lat: 53.527481, 
             Lon: -113.527821,
+            ExpiresInHours: 24,
         },
         {
             NoteId: '661',
@@ -31,6 +34,7 @@ const notesResponse: RetrieveNotesResponse = {
             Score: 128,
             Lat: 53.527381, 
             Lon: 113.527851,
+            ExpiresInHours: 24,
         },
         {
             NoteId: '133',
@@ -40,6 +44,7 @@ const notesResponse: RetrieveNotesResponse = {
             Score: 256,
             Lat: 53.527351, 
             Lon: -113.527421,
+            ExpiresInHours: 24,
         },
         {
             NoteId: '252341',
@@ -49,6 +54,7 @@ const notesResponse: RetrieveNotesResponse = {
             Score: 512,
             Lat: 53.527381, 
             Lon: -113.527826,
+            ExpiresInHours: 24,
         },
 
     ],
@@ -56,6 +62,9 @@ const notesResponse: RetrieveNotesResponse = {
 
 @Controller('retrieve-notes')
 export class RetrieveNotesController {
+
+    constructor(private readonly azureCosmosDbService: AzureCosmosDbService) {}
+
     @Get()
     async RetrieveNotes(@Req() request): Promise<RetrieveNotesResponse> {
         const requestBody: RetrieveNotesRequest = JSON.parse(JSON.stringify(request.body));
@@ -63,6 +72,16 @@ export class RetrieveNotesController {
         console.log(`GET notes request received with following params:`);
         // tslint:disable-next-line
         console.dir(requestBody);
-        return notesResponse;
+
+        // TODO: For now hard-coding range: 100km
+        // Keywords: null
+        try {
+            const result: RetrieveNotesResponse = {
+                notes: await this.azureCosmosDbService.RetrieveNotes({UserLocation: requestBody.Location, Range: 100000, Keywords: []}),
+            };
+            return result;
+        } catch (error) { 
+            return null; 
+        }
     }
 }

@@ -7,4 +7,5 @@ export interface Note {
     Lat: number;
     Lon: number;
     ImageId?: string;
+    ExpiresInHours: number;
 }
