@@ -132,17 +132,54 @@ export class AzureCosmosDbService implements OnApplicationBootstrap {
         return;
     }
 
+    async GetNoteReportByNoteId(noteId: string): Promise<ReportedNoteSchema> {
+        try {
+            const { database } = await this.mCosmosDbClient.databases.createIfNotExists({ id: this.mDBId });
+            const { container: reportContainer } = await database.containers.createIfNotExists({ id: this.mReportedNotesContainerId });
+            const querySpec = {
+            query: 'SELECT * FROM c WHERE c.NoteId = @noteId',
+            parameters: [
+                {
+                    name: '@noteId',
+                    value: noteId,
+                },
+            ],
+            };
+            const { resources: retrievedNote } = await reportContainer.items.query(querySpec).fetchAll();
+            return retrievedNote.length === 0 ? null : retrievedNote[0];
+        } catch (error) {
+            // tslint:disable-next-line
+            console.log('Error retrieving note: ', error);
+        }
+    }
+
+    async GetNoteById(noteId: string): Promise<Note> {
+        try {
+            const { database } = await this.mCosmosDbClient.databases.createIfNotExists({ id: this.mDBId });
+            const { container: noteContainer } = await database.containers.createIfNotExists({ id: this.mNoteContainerId });
+            const querySpec = {
+            query: 'SELECT * FROM c WHERE c.id = @noteId',
+            parameters: [
+                {
+                    name: '@noteId',
+                    value: noteId,
+                },
+            ],
+            };
+            const { resources: retrievedNote } = await noteContainer.items.query(querySpec).fetchAll();
+            return retrievedNote.length === 0 ? null : retrievedNote[0];
+        } catch (error) {
+            // tslint:disable-next-line
+            console.log('Error retrieving note: ', error);
+        }
+    }
+
     async ReportNote(report: ReportedNoteSchema): Promise<void> {
         try {
             const { database } = await this.mCosmosDbClient.databases.createIfNotExists({ id: this.mDBId });
             const { container: reportedNotesContainer } = await database.containers.createIfNotExists({ id: this.mReportedNotesContainerId });
-
-            const dbReport: ReportedNoteSchema = {
-                NoteId: report.NoteId,
-                OptionalReport: report.OptionalReport,
-            };
     
-            const { item } = await reportedNotesContainer.items.create(dbReport);
+            const { item } = await reportedNotesContainer.items.create(report);
 
         } catch (error) {
             // tslint:disable-next-line

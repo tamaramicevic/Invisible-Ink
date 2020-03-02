@@ -1,4 +1,5 @@
 export interface ReportedNoteSchema {
     NoteId: string;
-    OptionalReport?: string;
+    Type: string;
+    Comment?: string;
 }
