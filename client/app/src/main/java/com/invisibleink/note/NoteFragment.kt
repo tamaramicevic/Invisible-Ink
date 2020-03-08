@@ -8,7 +8,6 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.fragment.app.Fragment
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.maps.model.LatLng
@@ -18,6 +17,7 @@ import com.invisibleink.extensions.findViewOrThrow
 import com.invisibleink.extensions.hasCameraPermission
 import com.invisibleink.extensions.hasExternalWritePermission
 import com.invisibleink.injection.InvisibleInkApplication
+import com.invisibleink.location.LocationFragment
 import com.invisibleink.location.LocationProvider
 import com.invisibleink.permissions.onLocationPermissionGranted
 import com.invisibleink.permissions.requireLocationPermission
@@ -28,7 +28,7 @@ import pl.aprilapps.easyphotopicker.MediaFile
 import pl.aprilapps.easyphotopicker.MediaSource
 import javax.inject.Inject
 
-class NoteFragment : Fragment(), ViewProvider, NotePresenter.ImageSelector, LocationProvider {
+class NoteFragment : LocationFragment(), ViewProvider, NotePresenter.ImageSelector, LocationProvider {
 
     companion object {
         private const val REQUEST_LOCATION = 0

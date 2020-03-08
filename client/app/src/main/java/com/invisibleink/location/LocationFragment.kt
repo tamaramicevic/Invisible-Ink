@@ -2,16 +2,22 @@ package com.invisibleink.location
 
 import android.location.Location
 import android.os.Bundle
+import android.os.Looper
 import androidx.fragment.app.Fragment
-import com.google.android.gms.location.FusedLocationProviderClient
-import com.google.android.gms.location.LocationServices
+import com.google.android.gms.location.*
 import com.google.android.gms.maps.model.LatLng
 import com.invisibleink.permissions.onLocationPermissionGranted
 import com.invisibleink.permissions.requireLocationPermission
 
 /**
- * Abstract fragment that caches updates from the device's [FusedLocationProviderClient]
- * to keep track of the "current" location.
+ * Abstract fragment that provides a wrapper around the Android [FusedLocationProviderClient]
+ * service.
+ *
+ * Extend this fragment if your fragment is interested in:
+ *
+ *   - Getting the most recent device location, see [getCurrentLocation].
+ *   - Easy verification of location permissions, see [onLocationPermissionGranted].
+ *   - Receive location updates whenever the device moves, see [addLocationChangeListener].
  */
 abstract class LocationFragment : Fragment(), LocationProvider {
 
@@ -19,16 +25,45 @@ abstract class LocationFragment : Fragment(), LocationProvider {
         private const val REQUEST_LOCATION = 0
     }
 
-    private lateinit var locationProvider: FusedLocationProviderClient
-    private var lastLocation: LatLng? = null
-
     /**
-     * Hook for subclasses to perform an action once location permissions are
-     * checked and granted.
+     * Override this hook to implement custom behavior when location permissions are checked and
+     * granted after the fragment is created.
      */
     open fun onLocationPermissionGranted() {}
 
+    /**
+     * Retrieve the device's most recently known location, if available.
+     */
     override fun getCurrentLocation(): LatLng? = lastLocation
+
+    /**
+     * Receive a callback, via [onLocationChangeCallback], whenever the Android system detects
+     * that the device location has changed.
+     */
+    override fun addLocationChangeListener(onLocationChangeCallback: (LatLng) -> Unit?) {
+        locationChangedListener = onLocationChangeCallback
+    }
+
+    private lateinit var locationProvider: FusedLocationProviderClient
+    private var locationRequest = LocationRequest.create().apply {
+        interval = 10000
+        fastestInterval = 5000
+        priority = LocationRequest.PRIORITY_HIGH_ACCURACY
+    }
+
+    private var locationChangedListener: ((LatLng) -> Unit?)? = null
+    private var lastLocation: LatLng? = null
+
+    // Forward location changes to the optional locationChangedListener
+    private var locationCallback = object : LocationCallback() {
+        override fun onLocationResult(locationResult: LocationResult?) {
+            locationResult ?: return
+            val lastLatLng =
+                LatLng(locationResult.lastLocation.latitude, locationResult.lastLocation.longitude)
+            this@LocationFragment.lastLocation = lastLatLng
+            locationChangedListener?.invoke(lastLatLng)
+        }
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -57,5 +92,10 @@ abstract class LocationFragment : Fragment(), LocationProvider {
             }
             onLocationPermissionGranted()
         }
+        locationProvider.requestLocationUpdates(
+            locationRequest,
+            locationCallback,
+            Looper.getMainLooper()
+        )
     }
 }

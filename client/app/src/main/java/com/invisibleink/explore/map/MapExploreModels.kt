@@ -8,6 +8,7 @@ import com.invisibleink.architecture.ViewState
 import com.invisibleink.models.Note
 
 sealed class MapExploreViewState : ViewState {
+    object Loading: MapExploreViewState()
     data class Success(val deviceLocation: LatLng, val notes: List<Note>): MapExploreViewState()
     data class Error(@StringRes val message: Int) : MapExploreViewState()
 }

@@ -11,16 +11,31 @@ import retrofit2.Retrofit
 import javax.inject.Inject
 
 class MapExplorePresenter @Inject constructor(
-    private val retrofit: Retrofit
+    retrofit: Retrofit
 ) :
     BasePresenter<MapExploreViewState, MapExploreViewEvent, MapExploreDestination>() {
 
     private val exploreApi = retrofit.create(MapExploreApi::class.java)
     private val disposable = CompositeDisposable()
     var locationProvider: LocationProvider? = null
+    private var recentNotes: List<Note> = listOf()
 
     override fun onEvent(viewEvent: MapExploreViewEvent) = when (viewEvent) {
         MapExploreViewEvent.FetchNotes -> fetchNotes()
+    }
+
+    override fun onAttach() {
+        super.onAttach()
+        pushState(MapExploreViewState.Loading)
+        locationProvider?.addLocationChangeListener {
+            // Only re-fetch notes if we have none. Otherwise just update the device
+            // location on the map.
+            if (recentNotes.isEmpty()) {
+                fetchNotes()
+            } else {
+                showNotes(recentNotes)
+            }
+        }
     }
 
     override fun onDetach() {
@@ -28,19 +43,25 @@ class MapExplorePresenter @Inject constructor(
     }
 
     private fun fetchNotes() {
-        disposable.add(
-            exploreApi.fetchNotes()
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(this::parseNotes, this::showError)
-        )
+        val deviceLocation = locationProvider?.getCurrentLocation()
+        if (deviceLocation != null) {
+            disposable.add(
+                exploreApi.fetchNotes(deviceLocation.longitude, deviceLocation.latitude)
+                    .subscribeOn(Schedulers.io())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe(this::showNotes, this::showError)
+            )
+        } else {
+            pushState(MapExploreViewState.Error(R.string.error_invalid_device_location))
+        }
     }
 
-    private fun parseNotes(notes: List<Note>) {
+    private fun showNotes(notes: List<Note>) {
         val deviceLocation = locationProvider?.getCurrentLocation()
+        recentNotes = notes
 
         val viewState = if (deviceLocation != null) {
-            MapExploreViewState.Success(deviceLocation, notes)
+            MapExploreViewState.Success(deviceLocation, recentNotes)
         } else {
             MapExploreViewState.Error(R.string.error_invalid_device_location)
         }
