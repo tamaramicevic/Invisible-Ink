@@ -54,4 +54,23 @@
     <string name="pref_feedback_key">pref_feedback</string>
     <string name="pref_feedback_title">Feedback</string>
     <string name="pref_feedback_summary">Report technical issues or suggest new features</string>
+
+    <string name="pref_category_dev_key">pref_category_dev</string>
+    <string name="pref_category_dev_title">Development</string>
+
+    <string name="pref_category_vote_db_clear_key">pref_category_vote_db_clear</string>
+    <string name="pref_category_vote_db_clear_title">Clear Votes</string>
+    <string name="pref_category_vote_db_clear_summary">Clear the device store of note votes</string>
+
+    <string name="pref_category_vote_db_upvote_key">pref_category_vote_db_upvote</string>
+    <string name="pref_category_vote_db_upvote_title">Up-vote</string>
+    <string name="pref_category_vote_db_upvote_summary">Add a random up-vote to the db</string>
+
+    <string name="pref_category_vote_db_downvote_key">pref_category_vote_db_downvote</string>
+    <string name="pref_category_vote_db_downvote_title">Down-vote</string>
+    <string name="pref_category_vote_db_downvote_summary">Add a random down-vote to the db</string>
+
+    <string name="pref_category_vote_db_load_all_key">pref_category_vote_db_load_all</string>
+    <string name="pref_category_vote_db_load_all_title">Log All</string>
+    <string name="pref_category_vote_db_load_all_summary">Output all the votes in the logs</string>
 </resources>

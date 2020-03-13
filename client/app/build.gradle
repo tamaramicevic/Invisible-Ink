@@ -38,6 +38,7 @@ def easy_image_version = "3.0.3"
 def google_play_services_version = "17.0.0"
 def ar_core_version = "1.15.0"
 def preference_version = "1.1.0"
+def room_version = "2.2.4"
 
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
@@ -85,4 +86,8 @@ dependencies {
     // ArCore
     implementation "com.google.ar:core:$ar_core_version"
     implementation "com.google.ar.sceneform.ux:sceneform-ux:$ar_core_version"
+
+    // Room database
+    implementation "androidx.room:room-runtime:$room_version"
+    kapt "androidx.room:room-compiler:$room_version" // For Kotlin use kapt instead of annotationProcessor
 }

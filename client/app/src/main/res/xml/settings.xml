@@ -29,4 +29,32 @@
 
     </PreferenceCategory>
 
+    <PreferenceCategory
+        app:key="@string/pref_category_dev_key"
+        app:title="@string/pref_category_dev_title">
+
+        <Preference
+            app:key="@string/pref_category_vote_db_load_all_key"
+            app:summary="@string/pref_category_vote_db_load_all_summary"
+            app:title="@string/pref_category_vote_db_load_all_title" />
+
+
+        <Preference
+            app:key="@string/pref_category_vote_db_clear_key"
+            app:summary="@string/pref_category_vote_db_clear_summary"
+            app:title="@string/pref_category_vote_db_clear_title" />
+
+        <Preference
+            app:key="@string/pref_category_vote_db_upvote_key"
+            app:summary="@string/pref_category_vote_db_upvote_summary"
+            app:title="@string/pref_category_vote_db_upvote_title" />
+
+        <Preference
+            app:key="@string/pref_category_vote_db_downvote_key"
+            app:summary="@string/pref_category_vote_db_downvote_summary"
+            app:title="@string/pref_category_vote_db_downvote_title" />
+
+
+    </PreferenceCategory>
+
 </PreferenceScreen>
