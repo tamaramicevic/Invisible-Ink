@@ -1,12 +1,91 @@
 <?xml version="1.0" encoding="utf-8"?>
-<TextView xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/planetInfoCard"
-    android:layout_width="wrap_content"
+<RelativeLayout xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/activity_main"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="250dp"
     android:layout_height="wrap_content"
-    android:layout_weight="1"
-    android:background="@android:drawable/editbox_background"
-    android:gravity="center"
-    android:orientation="vertical"
-    android:padding="6dp"
-    android:text="@string/ar_explore_mode"
-    android:textAlignment="center" />
+    tools:context=".dashboard.NavigationActivity">
+
+    <RelativeLayout
+        android:id="@+id/noteLayout"
+        android:layout_width="match_parent"
+        android:layout_height="200dp"
+        android:paddingLeft="12dp"
+        android:paddingRight="12dp"
+        android:paddingTop="12dp"
+        android:paddingBottom="12dp"
+        android:background="@color/cardview_light_background"
+        android:layout_alignParentTop="true" >
+
+        <TextView
+            android:id="@+id/noteTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            style="@style/TextAppearance.Widget.AppCompat.Toolbar.Title"
+            android:textSize="23sp"
+            android:text="Note Title" />
+
+        <TextView
+            android:id="@+id/noteBody"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/noteTitle"
+            android:text="This is an example of what a note should look like!" />
+
+        <TextView
+            android:id="@+id/noteExpiry"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:textSize="8sp"
+            android:text="Expires: " />
+
+        <ImageButton
+            android:id="@+id/noteReport"
+            android:layout_width="26dp"
+            android:layout_height="28dp"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentBottom="true"
+            app:srcCompat="@drawable/ic_report_foreground" />
+
+    </RelativeLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_below="@+id/noteLayout"
+        android:gravity="center_horizontal" >
+
+        <ImageButton
+            android:id="@+id/noteUpvote"
+            android:layout_width="45dp"
+            android:layout_height="match_parent"
+            android:layout_marginLeft="32dp"
+            app:srcCompat="@drawable/ic_downvote_foreground" />
+
+        <TextView
+            android:id="@+id/noteScore"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_toRightOf="@+id/noteUpvote"
+            android:layout_toEndOf="@+id/noteUpvote"
+            android:layout_toLeftOf="@+id/noteDownvote"
+            android:paddingLeft="5dp"
+            android:paddingRight="5dp"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            android:text="3" />
+
+        <ImageButton
+            android:id="@+id/noteDownvote"
+            android:layout_width="45dp"
+            android:layout_height="40dp"
+            android:layout_marginRight="32dp"
+            app:srcCompat="@drawable/ic_upvote_foreground" />
+
+    </LinearLayout>
+
+</RelativeLayout>

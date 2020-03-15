@@ -2,9 +2,13 @@ package com.invisibleink.explore.ar
 
 import android.content.Context
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageButton
+import android.widget.Toast
+import com.google.ar.core.ArCoreApk
 import com.google.ar.sceneform.AnchorNode
 import com.google.ar.sceneform.Node
 import com.google.ar.sceneform.rendering.ViewRenderable
@@ -40,6 +44,18 @@ class ArExploreFragment : ArFragment(), ViewProvider {
                     val anchor = hitResult.createAnchor()
                     val anchorNode = AnchorNode(anchor)
                     anchorNode.setParent(arSceneView.scene)
+
+                    renderable.view.findViewById<ImageButton>(R.id.noteReport).setOnClickListener {
+                        Toast.makeText(requireActivity().baseContext, "Report Note!", Toast.LENGTH_LONG).show()
+                    }
+
+                    renderable.view.findViewById<ImageButton>(R.id.noteUpvote).setOnClickListener {
+                        Toast.makeText(requireActivity().baseContext, "Upvote Note!", Toast.LENGTH_LONG).show()
+                    }
+
+                    renderable.view.findViewById<ImageButton>(R.id.noteDownvote).setOnClickListener {
+                        Toast.makeText(requireActivity().baseContext, "Downvote Note!", Toast.LENGTH_LONG).show()
+                    }
 
                     Node().run {
                         this.renderable = renderable
