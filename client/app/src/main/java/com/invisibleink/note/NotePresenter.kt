@@ -28,7 +28,7 @@ class NotePresenter @Inject constructor(retrofit: Retrofit) :
     var locationProvider: LocationProvider? = null
 
     override fun onEvent(viewEvent: NoteViewEvent): Unit? = when (viewEvent) {
-        is NoteViewEvent.Upload -> uploadNote(viewEvent.noteContent)
+        is NoteViewEvent.Upload -> uploadNote(viewEvent.noteSeed)
         is NoteViewEvent.AddImage -> imageSelector?.onAddImageSelected()
     }
 
@@ -40,8 +40,8 @@ class NotePresenter @Inject constructor(retrofit: Retrofit) :
         disposable.dispose()
     }
 
-    private fun uploadNote(noteContent: NoteContent) {
-        val (isValid, error) = isValidNote(noteContent)
+    private fun uploadNote(noteSeed: NoteSeed) {
+        val (isValid, error) = isValidNote(noteSeed)
         if (!isValid) {
             pushState(NoteViewState.Error(error))
             return
@@ -50,7 +50,7 @@ class NotePresenter @Inject constructor(retrofit: Retrofit) :
         val location = locationProvider?.getCurrentLocation()
         if (location != null) {
             disposable.add(
-                noteApi.uploadNote(noteContent.createNote(location))
+                noteApi.uploadNote(noteSeed.apply { this.location = location })
                     .subscribeOn(Schedulers.io())
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe(this::parseResponse, this::showNetworkError)
@@ -60,9 +60,9 @@ class NotePresenter @Inject constructor(retrofit: Retrofit) :
         }
     }
 
-    private fun isValidNote(noteContent: NoteContent): Pair<Boolean, Int> = when {
-        noteContent.title.isEmpty() -> false to R.string.invalid_note_title
-        noteContent.body.isEmpty() -> false to R.string.invalid_note_title
+    private fun isValidNote(noteSeed: NoteSeed): Pair<Boolean, Int> = when {
+        noteSeed.title.isEmpty() -> false to R.string.invalid_note_title
+        noteSeed.body.isEmpty() -> false to R.string.invalid_note_title
         else -> true to R.string.valid_note
     }
 

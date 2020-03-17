@@ -50,16 +50,16 @@ class NoteViewDelegate(viewProvider: ViewProvider) :
         addPhotoButton.setImageResource(R.drawable.ic_add_a_photo_black_24dp)
     }
 
-    private fun showDraftContent(noteContent: NoteContent) {
-        title.setText(noteContent.title)
-        body.setText(noteContent.body)
+    private fun showDraftContent(noteSeed: NoteSeed) {
+        title.setText(noteSeed.title)
+        body.setText(noteSeed.body)
 
-        if (noteContent.image != null) {
-            addPhotoButton.setImageBitmap(noteContent.image)
+        if (noteSeed.image != null) {
+            addPhotoButton.setImageBitmap(noteSeed.image)
         }
 
-        if (noteContent.expiration != null) {
-            expirationDate = noteContent.expiration
+        if (noteSeed.expiration != null) {
+            expirationDate = noteSeed.expiration
             showExpirationDate()
         }
     }
@@ -84,7 +84,7 @@ class NoteViewDelegate(viewProvider: ViewProvider) :
 
     private fun showAddPhoto() = pushEvent(NoteViewEvent.AddImage)
 
-    private fun composeNote(): NoteContent = NoteContent(
+    private fun composeNote(): NoteSeed = NoteSeed(
         title = title.text.toString(),
         body = body.text.toString(),
         expiration = expirationDate

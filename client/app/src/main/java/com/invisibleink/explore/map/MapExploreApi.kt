@@ -2,14 +2,11 @@ package com.invisibleink.explore.map
 
 import com.invisibleink.models.Note
 import io.reactivex.Observable
-import retrofit2.http.GET
-import retrofit2.http.Query
+import retrofit2.http.Body
+import retrofit2.http.POST
 
 interface MapExploreApi {
 
-    @GET("notes")
-    fun fetchNotes(
-        @Query("longitude") longitude: Double,
-        @Query("latitude") latitude: Double
-    ): Observable<List<Note>>
+    @POST("notes")
+    fun fetchNotes(@Body fetchNotesRequest: FetchNotesRequest): Observable<List<Note>>
 }

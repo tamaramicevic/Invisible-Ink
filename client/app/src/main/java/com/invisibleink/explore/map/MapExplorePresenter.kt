@@ -45,8 +45,11 @@ class MapExplorePresenter @Inject constructor(
     private fun fetchNotes() {
         val deviceLocation = locationProvider?.getCurrentLocation()
         if (deviceLocation != null) {
+            // TODO (Fraser): remove hardcoded filter
+            val tempFilter = SearchFilter("covid-19", withImage = true, options = PrebuiltOptions.BEST)
+
             disposable.add(
-                exploreApi.fetchNotes(deviceLocation.longitude, deviceLocation.latitude)
+                exploreApi.fetchNotes(FetchNotesRequest(deviceLocation, tempFilter))
                     .subscribeOn(Schedulers.io())
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe(this::showNotes, this::showError)

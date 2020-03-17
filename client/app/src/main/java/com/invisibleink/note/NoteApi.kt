@@ -1,6 +1,5 @@
 package com.invisibleink.note
 
-import com.invisibleink.models.Note
 import io.reactivex.Observable
 import okhttp3.ResponseBody
 import retrofit2.Response
@@ -10,5 +9,5 @@ import retrofit2.http.POST
 interface NoteApi {
 
     @POST("upload")
-    fun uploadNote(@Body note: Note): Observable<Response<ResponseBody>>
+    fun uploadNote(@Body noteSeed: NoteSeed): Observable<Response<ResponseBody>>
 }
