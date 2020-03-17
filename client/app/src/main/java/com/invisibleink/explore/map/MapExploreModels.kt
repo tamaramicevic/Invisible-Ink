@@ -31,6 +31,7 @@ sealed class MapExploreViewState : ViewState {
 
 sealed class MapExploreViewEvent : ViewEvent {
     object FetchNotes: MapExploreViewEvent()
+    data class SearchNotes(val query: String?): MapExploreViewEvent()
 }
 
 sealed class MapExploreDestination : Destination

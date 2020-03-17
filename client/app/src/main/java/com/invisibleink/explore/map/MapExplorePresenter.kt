@@ -21,7 +21,8 @@ class MapExplorePresenter @Inject constructor(
     private var recentNotes: List<Note> = listOf()
 
     override fun onEvent(viewEvent: MapExploreViewEvent) = when (viewEvent) {
-        MapExploreViewEvent.FetchNotes -> fetchNotes()
+        is MapExploreViewEvent.FetchNotes -> fetchNotes()
+        is MapExploreViewEvent.SearchNotes -> searchNotes(viewEvent.query)
     }
 
     override fun onAttach() {
@@ -57,6 +58,18 @@ class MapExplorePresenter @Inject constructor(
         } else {
             pushState(MapExploreViewState.Error(R.string.error_invalid_device_location))
         }
+    }
+
+    private fun searchNotes(query: String?) {
+        if (query == null) {
+            pushState(MapExploreViewState.Error(R.string.error_empty_search))
+            return
+        }
+
+        pushState(MapExploreViewState.Loading)
+        exploreApi.fetchNotes()
+
+
     }
 
     private fun showNotes(notes: List<Note>) {

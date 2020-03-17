@@ -1,7 +1,9 @@
 package com.invisibleink.explore.map
 
+import android.util.Log
 import android.view.View
 import android.widget.ProgressBar
+import android.widget.SearchView
 import androidx.annotation.StringRes
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
@@ -25,11 +27,20 @@ class MapExploreViewDelegate(viewProvider: ViewProvider) :
     }
 
     val mapView: MapView? = viewProvider.findViewById(R.id.exploreMapView)
+    private val searchView: SearchView = viewProvider.findViewById(R.id.mapExploreSearchView)
     private val loadingSpinner: ProgressBar = viewProvider.findViewById(R.id.exploreMapProgressBar)
     private var map: GoogleMap? = null
 
     init {
         mapView?.getMapAsync { map = it }
+        searchView.setOnQueryTextListener(object: SearchView.OnQueryTextListener {
+            override fun onQueryTextChange(newText: String?) = false
+
+            override fun onQueryTextSubmit(query: String?): Boolean {
+                pushEvent(MapExploreViewEvent.SearchNotes(query))
+                return true
+            }
+        })
     }
 
     override fun render(viewState: MapExploreViewState): Unit? = when (viewState) {

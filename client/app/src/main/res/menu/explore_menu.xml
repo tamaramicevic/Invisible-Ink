@@ -2,6 +2,13 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
+<!--    <item-->
+<!--        android:id="@+id/mapExploreSearchItem"-->
+<!--        android:icon="@android:drawable/ic_menu_search"-->
+<!--        android:title="@string/search"-->
+<!--        app:actionViewClass="androidx.appcompat.widget.SearchView"-->
+<!--        app:showAsAction="always" />-->
+
     <item
         android:id="@+id/arExploreItem"
         android:icon="@drawable/ic_photo_camera_24dp"
