@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="0dp"
+    android:background="@color/gray50"
+    android:gravity="center"
+    android:padding="@dimen/spacing_l">
+
+    <LinearLayout
+        android:id="@+id/searchRow"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <EditText
+            android:id="@+id/searchKeywords"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:hint="@string/search_hint" />
+
+        <ImageButton
+            android:id="@+id/optionsToggleButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_arrow_drop_down_black_24dp" />
+
+        <ImageButton
+            android:id="@+id/searchButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_search_black_24dp" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/searchOptions"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/spacing_m"
+        android:orientation="horizontal"
+        android:visibility="gone"
+        app:layout_constraintEnd_toEndOf="@id/searchRow"
+        app:layout_constraintStart_toStartOf="@id/searchRow"
+        app:layout_constraintTop_toBottomOf="@id/searchRow"
+        app:layout_constraintWidth_default="wrap">
+
+        <Spinner
+            android:id="@+id/imageFilterOption"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:entries="@array/image_options" />
+
+        <Spinner
+            android:id="@+id/limitFilterOption"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:entries="@array/limit_options" />
+
+        <Spinner
+            android:id="@+id/rankingFilterOption"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:entries="@array/rank_options" />
+    </LinearLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

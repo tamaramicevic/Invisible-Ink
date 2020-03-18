@@ -76,4 +76,44 @@
     <string name="pref_category_vote_db_load_all_key">pref_category_vote_db_load_all</string>
     <string name="pref_category_vote_db_load_all_title">Log All</string>
     <string name="pref_category_vote_db_load_all_summary">Output all the votes in the logs</string>
+
+    <!-- Search filter options -->
+    <string name="search_hint">Keywords</string>
+
+    <!-- Image filter options -->
+    <string name="filter_image_options">pref_category_vote_db_load_all</string>
+    <string name="image_options_no_preference">No Preference</string>
+    <string name="image_options_with_image">Contains image</string>
+    <string name="image_options_without_image">Does not contain image</string>
+
+    <string-array name="image_options">
+        <item>@string/image_options_no_preference</item>
+        <item>@string/image_options_with_image</item>
+        <item>@string/image_options_without_image</item>
+    </string-array>
+
+    <!-- Limit filter options -->
+    <string name="limit_options_no_preference">All Notes</string>
+    <string name="limit_options_note_limit_template">%d Notes</string>
+
+    <string-array name="limit_options">
+        <item>@string/limit_options_no_preference</item>
+        <item>5 Notes</item>
+        <item>10 Notes</item>
+        <item>100 Notes</item>
+    </string-array>
+
+    <!-- Rank filter options -->
+    <string name="rank_options_no_preference">Relevant</string>
+    <string name="rank_options_newest">Newest</string>
+    <string name="rank_options_best">Best</string>
+    <string name="rank_options_worst">Worst</string>
+
+    <string-array name="rank_options">
+        <item>@string/rank_options_no_preference</item>
+        <item>@string/rank_options_newest</item>
+        <item>@string/rank_options_best</item>
+        <item>@string/rank_options_worst</item>
+    </string-array>
+
 </resources>

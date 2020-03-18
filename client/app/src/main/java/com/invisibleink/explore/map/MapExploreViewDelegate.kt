@@ -1,8 +1,9 @@
 package com.invisibleink.explore.map
 
+import android.content.Context
 import android.view.View
-import android.widget.ProgressBar
-import android.widget.SearchView
+import android.view.ViewGroup
+import android.widget.*
 import androidx.annotation.StringRes
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
@@ -26,20 +27,42 @@ class MapExploreViewDelegate(viewProvider: ViewProvider) :
     }
 
     val mapView: MapView? = viewProvider.findViewById(R.id.exploreMapView)
-    private val searchView: SearchView = viewProvider.findViewById(R.id.mapExploreSearchView)
+    private val searchButton: ImageButton = viewProvider.findViewById(R.id.searchButton)
+    private val searchKeywords: EditText = viewProvider.findViewById(R.id.searchKeywords)
+    private val searchOptionsToggle: ImageButton =
+        viewProvider.findViewById(R.id.optionsToggleButton)
+    private val searchOptions: ViewGroup = viewProvider.findViewById(R.id.searchOptions)
+    private val searchImageOptions: Spinner = viewProvider.findViewById(R.id.imageFilterOption)
+    private val searchLimitOptions: Spinner = viewProvider.findViewById(R.id.limitFilterOption)
+    private val searchRankingOptions: Spinner = viewProvider.findViewById(R.id.rankingFilterOption)
     private val loadingSpinner: ProgressBar = viewProvider.findViewById(R.id.exploreMapProgressBar)
     private var map: GoogleMap? = null
+    private val context: Context = searchButton.context
 
     init {
         mapView?.getMapAsync { map = it }
-        searchView.setOnQueryTextListener(object: SearchView.OnQueryTextListener {
-            override fun onQueryTextChange(newText: String?) = false
+        searchButton.setOnClickListener {
+            pushEvent(
+                MapExploreViewEvent.SearchNotes(
+                    query = parseQuery(searchKeywords.text.toString()),
+                    withImage = parseImageOptions(searchImageOptions.selectedItem.toString()),
+                    limit = parseLimitOptions(searchLimitOptions.selectedItem.toString()),
+                    options = parseRankOptions(searchRankingOptions.selectedItem.toString())
+                )
+            )
+        }
 
-            override fun onQueryTextSubmit(query: String?): Boolean {
-                pushEvent(MapExploreViewEvent.SearchNotes(query))
-                return true
+        searchOptions.visibility = View.GONE
+        searchOptionsToggle.setOnClickListener {
+            val optionsVisible = searchOptions.visibility == View.VISIBLE
+            val (toggledVisibility, toggledResource) = if (optionsVisible) {
+                View.GONE to R.drawable.ic_arrow_drop_down_black_24dp
+            } else {
+                View.VISIBLE to R.drawable.ic_arrow_drop_up_black_24dp
             }
-        })
+            searchOptions.visibility = toggledVisibility
+            searchOptionsToggle.setImageResource(toggledResource)
+        }
     }
 
     override fun render(viewState: MapExploreViewState): Unit? = when (viewState) {
@@ -84,4 +107,25 @@ class MapExploreViewDelegate(viewProvider: ViewProvider) :
             )
         }
     }
+
+    private fun parseQuery(keywords: String?): String? = when (keywords) {
+        "" -> null
+        else -> keywords
+    }
+
+    private fun parseImageOptions(selectedItem: String): Boolean? = when (selectedItem) {
+        context.getString(R.string.image_options_with_image) -> true
+        context.getString(R.string.image_options_without_image) -> false
+        else -> null
+    }
+
+    private fun parseRankOptions(selectedItem: String): PrebuiltOptions? = when (selectedItem) {
+        context.getString(R.string.rank_options_newest) -> PrebuiltOptions.NEWEST
+        context.getString(R.string.rank_options_best) -> PrebuiltOptions.BEST
+        context.getString(R.string.rank_options_worst) -> PrebuiltOptions.WORST
+        else -> null
+    }
+
+    private fun parseLimitOptions(selectedItem: String): Int? =
+        selectedItem.split(" ").first().toIntOrNull()
 }

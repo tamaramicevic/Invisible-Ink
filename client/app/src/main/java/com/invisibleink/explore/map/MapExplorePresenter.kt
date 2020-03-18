@@ -49,7 +49,12 @@ class MapExplorePresenter @Inject constructor(
         val deviceLocation = locationProvider?.getCurrentLocation()
         if (deviceLocation != null) {
             disposable.add(
-                exploreApi.fetchNotes(FetchNotesRequest(deviceLocation, searchFilter ?: SearchFilter.EMPTY_FILTER))
+                exploreApi.fetchNotes(
+                    FetchNotesRequest(
+                        deviceLocation,
+                        searchFilter ?: SearchFilter.EMPTY_FILTER
+                    )
+                )
                     .subscribeOn(Schedulers.io())
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe(this::showNotes, this::showError)
@@ -59,23 +64,14 @@ class MapExplorePresenter @Inject constructor(
         }
     }
 
-    private fun searchNotes(searchEvent: MapExploreViewEvent.SearchNotes) {
-        if (!isValidSearch(searchEvent)) {
-            pushState(MapExploreViewState.Error(R.string.error_invalid_search))
-        }
-
-        fetchNotes(
-            SearchFilter(
-                keywords = searchEvent.query,
-                limit = searchEvent.limit,
-                withImage = searchEvent.withImage,
-                options = searchEvent.options
-            )
+    private fun searchNotes(searchEvent: MapExploreViewEvent.SearchNotes) = fetchNotes(
+        SearchFilter(
+            keywords = searchEvent.query,
+            limit = searchEvent.limit,
+            withImage = searchEvent.withImage,
+            options = searchEvent.options
         )
-    }
-
-    private fun isValidSearch(searchEvent: MapExploreViewEvent.SearchNotes) =
-        !searchEvent.query.isNullOrEmpty()
+    )
 
     private fun showNotes(notes: List<Note>) {
         val deviceLocation = locationProvider?.getCurrentLocation()
