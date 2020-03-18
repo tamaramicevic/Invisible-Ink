@@ -16,7 +16,11 @@ data class SearchFilter(
     val limit: Int? = null,
     val withImage: Boolean? = null,
     val options: PrebuiltOptions? = null
-)
+) {
+    companion object {
+        val EMPTY_FILTER = SearchFilter()
+    }
+}
 
 data class FetchNotesRequest(
     val location: LatLng,
@@ -24,14 +28,19 @@ data class FetchNotesRequest(
 )
 
 sealed class MapExploreViewState : ViewState {
-    object Loading: MapExploreViewState()
-    data class Success(val deviceLocation: LatLng, val notes: List<Note>): MapExploreViewState()
+    object Loading : MapExploreViewState()
+    data class Success(val deviceLocation: LatLng, val notes: List<Note>) : MapExploreViewState()
     data class Error(@StringRes val message: Int) : MapExploreViewState()
 }
 
 sealed class MapExploreViewEvent : ViewEvent {
-    object FetchNotes: MapExploreViewEvent()
-    data class SearchNotes(val query: String?): MapExploreViewEvent()
+    object FetchNotes : MapExploreViewEvent()
+    data class SearchNotes(
+        val query: String?,
+        val limit: Int? = null,
+        val withImage: Boolean? = null,
+        val options: PrebuiltOptions? = null
+    ) : MapExploreViewEvent()
 }
 
 sealed class MapExploreDestination : Destination

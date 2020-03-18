@@ -22,7 +22,7 @@ class MapExplorePresenter @Inject constructor(
 
     override fun onEvent(viewEvent: MapExploreViewEvent) = when (viewEvent) {
         is MapExploreViewEvent.FetchNotes -> fetchNotes()
-        is MapExploreViewEvent.SearchNotes -> searchNotes(viewEvent.query)
+        is MapExploreViewEvent.SearchNotes -> searchNotes(viewEvent)
     }
 
     override fun onAttach() {
@@ -43,14 +43,13 @@ class MapExplorePresenter @Inject constructor(
         disposable.dispose()
     }
 
-    private fun fetchNotes() {
+    private fun fetchNotes(searchFilter: SearchFilter? = null) {
+        pushState(MapExploreViewState.Loading)
+
         val deviceLocation = locationProvider?.getCurrentLocation()
         if (deviceLocation != null) {
-            // TODO (Fraser): remove hardcoded filter
-            val tempFilter = SearchFilter("covid-19", withImage = true, options = PrebuiltOptions.BEST)
-
             disposable.add(
-                exploreApi.fetchNotes(FetchNotesRequest(deviceLocation, tempFilter))
+                exploreApi.fetchNotes(FetchNotesRequest(deviceLocation, searchFilter ?: SearchFilter.EMPTY_FILTER))
                     .subscribeOn(Schedulers.io())
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe(this::showNotes, this::showError)
@@ -60,17 +59,23 @@ class MapExplorePresenter @Inject constructor(
         }
     }
 
-    private fun searchNotes(query: String?) {
-        if (query == null) {
-            pushState(MapExploreViewState.Error(R.string.error_empty_search))
-            return
+    private fun searchNotes(searchEvent: MapExploreViewEvent.SearchNotes) {
+        if (!isValidSearch(searchEvent)) {
+            pushState(MapExploreViewState.Error(R.string.error_invalid_search))
         }
 
-        pushState(MapExploreViewState.Loading)
-        exploreApi.fetchNotes()
-
-
+        fetchNotes(
+            SearchFilter(
+                keywords = searchEvent.query,
+                limit = searchEvent.limit,
+                withImage = searchEvent.withImage,
+                options = searchEvent.options
+            )
+        )
     }
+
+    private fun isValidSearch(searchEvent: MapExploreViewEvent.SearchNotes) =
+        !searchEvent.query.isNullOrEmpty()
 
     private fun showNotes(notes: List<Note>) {
         val deviceLocation = locationProvider?.getCurrentLocation()

@@ -1,6 +1,5 @@
 package com.invisibleink.explore.map
 
-import android.util.Log
 import android.view.View
 import android.widget.ProgressBar
 import android.widget.SearchView

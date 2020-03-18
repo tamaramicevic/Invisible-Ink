@@ -32,6 +32,7 @@
     <!-- Fetch notes API -->
     <string name="error_fetch_notes_generic">Failed to fetch notes</string>
     <string name="error_empty_search">Search query must be non-empty</string>
+    <string name="error_invalid_search">Your search was invalid</string>
 
     <!-- Permission messages -->
     <string name="image_picker_title">Add a photo</string>
