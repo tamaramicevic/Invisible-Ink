@@ -1,7 +1,4 @@
-export interface NoteLocation {
-    latitude: number;
-    longitude: number;
-}
+import { NoteLocation } from '../../shared/models/note-location';
 
 export interface UploadNoteRequest {
     title: string;
