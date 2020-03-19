@@ -18,14 +18,13 @@ export class UploadNoteController {
         console.dir(request.body);
         const requestBody: UploadNoteRequest = JSON.parse(JSON.stringify(request.body));
         const note: Note = {
-            NoteId: null, // Should we get rid of this???
-            Title: requestBody.Title,
-            Body: requestBody.Body,
-            TimeStamp: requestBody.TimeStamp,
+            NoteId: null, // this will get generated on the DB
+            Title: requestBody.title,
+            Body: requestBody.body,
+            Expiration: requestBody.expiration,
             Score: 0,
-            Lat: requestBody.Lat,
-            Lon: requestBody.Lon,
-            ExpiresInHours: requestBody.LifetimeInHours,
+            Lat: requestBody.location.latitude,
+            Lon: requestBody.location.longitude,
         };
         try {
             await this.azureCosmosDbService.UploadNote(note);

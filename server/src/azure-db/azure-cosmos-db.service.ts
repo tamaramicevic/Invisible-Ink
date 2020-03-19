@@ -60,17 +60,18 @@ export class AzureCosmosDbService implements OnApplicationBootstrap {
             const { container: noteContainer } = await database.containers.createIfNotExists({ id: this.mNoteContainerId });
 
             // TODO: might need to verify coordinates are correctly entered
-            const loc: Point = { type: 'Point', coordinates: [note.Lat, note.Lon]};
+            const loc: Point = { type: 'Point', coordinates: [note.Lon, note.Lat]};
 
+            /*
             // Create timestamp
             const expiryDate: Date = new Date(note.TimeStamp);
             expiryDate.setHours(expiryDate.getHours() + note.ExpiresInHours);
+            */
 
             const dbNote: NoteSchema = {
                 title: note.Title,
                 body: note.Body,
-                timeStamp: note.TimeStamp,
-                expiryTime: expiryDate.toISOString(),
+                expiryTime: note.Expiration,
                 score: note.Score,
                 location: loc,
             };
@@ -115,7 +116,7 @@ export class AzureCosmosDbService implements OnApplicationBootstrap {
                         NoteId: item.id,
                         Title: note.title,
                         Body: note.body,
-                        TimeStamp: note.timeStamp,
+                        Expiration: note.expiryTime,
                         Score: note.score,
                         Lat: note.location.coordinates[0], // double check this conversion
                         Lon: note.location.coordinates[1],

@@ -17,7 +17,7 @@ export interface Filter {
 }
 
 export interface RetrieveNotesRequest {
-    Location: Point;
+    location: Point; // [lon, lat]
     Filter?: Filter;
     // TODO: preferences???
 }
