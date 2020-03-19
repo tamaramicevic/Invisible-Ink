@@ -4,6 +4,7 @@ import { RetrieveNotesRequest } from './models/retrieve-notes-request';
 import { RetrieveNotesResponsePayload, NoteResponse } from './models/retrieve-notes-response';
 import { NoteLocation } from 'src/shared/models/note-location';
 import { Note } from 'src/shared/models/note';
+import { Point } from 'geojson';
 
 @Controller('retrieve-notes')
 export class RetrieveNotesController {
@@ -20,9 +21,11 @@ export class RetrieveNotesController {
 
         // TODO: For now hard-coding range: 100km
         // Keywords: null
+        const geoLocation: Point = { type: 'Point', coordinates: [requestBody.location.longitude, requestBody.location.latitude] };
+        const keywords: string[] = requestBody.filter?.keywords?.split(' ');
         try {
             const resultNotes: Note[] = await this.azureCosmosDbService.RetrieveNotes({
-                UserLocation: requestBody.location, Range: 100000, Keywords: []
+                UserLocation: geoLocation, Range: 100000, Keywords: keywords,
             });
             const response: RetrieveNotesResponsePayload = {
                 notes: resultNotes.map(item => {

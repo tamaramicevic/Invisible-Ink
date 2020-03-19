@@ -91,14 +91,14 @@ export class AzureCosmosDbService implements OnApplicationBootstrap {
             const { database } = await this.mCosmosDbClient.databases.createIfNotExists({ id: this.mDBId });
             const { container: noteContainer } = await database.containers.createIfNotExists({ id: this.mNoteContainerId });
             const querySpec = {
-                query: 'SELECT * FROM Notes note WHERE ST_DISTANCE(note.location, {\'type\': \'Point\', \'coordinates\':[@lat, @lon]}) < @range',
+                query: 'SELECT * FROM Notes note WHERE ST_DISTANCE(note.location, {\'type\': \'Point\', \'coordinates\':[@lon, @lat]}) < @range',
                 parameters: [
                     {
-                        name: '@lat',
+                        name: '@lon',
                         value: searchParams.UserLocation.coordinates[0],
                     },
                     {
-                        name: '@lon',
+                        name: '@lat',
                         value: searchParams.UserLocation.coordinates[1],
                     },
                     {
@@ -124,13 +124,24 @@ export class AzureCosmosDbService implements OnApplicationBootstrap {
                     },
                 ).filter(item => !!item);
 
-            return result;
+            return this.FilterNotesBySearchTerms(searchParams.Keywords, result);
         } catch (error) {
             // tslint:disable-next-line
             console.log('Error retrieving note:\n', error);
         }
 
         return;
+    }
+
+    private FilterNotesBySearchTerms(keywords: string[], notes: Note[]): Note[] {
+        if (!Array.isArray(keywords) || !keywords.length) { return notes; }
+
+        return notes.filter(note => {
+            return keywords.some(keyword => {
+                return note.Title.search(new RegExp(keyword, 'i')) !== -1 ||
+                note.Body.search(new RegExp(keyword, 'i')) !== -1;
+            });
+        });
     }
 
     async GetNoteReportByNoteId(noteId: string): Promise<ReportedNoteSchema> {

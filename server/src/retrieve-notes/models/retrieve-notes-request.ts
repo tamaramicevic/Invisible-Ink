@@ -3,6 +3,8 @@ import {
     Point,
 } from 'geojson';
 
+import { NoteLocation } from '../../shared/models/note-location';
+
 export enum PreBuiltFilter {
     BEST_RATED = 'BEST_RATED',
     NEWEST = 'NEWEST',
@@ -10,14 +12,14 @@ export enum PreBuiltFilter {
 }
 
 export interface Filter {
-    keywords?: string[];
+    keywords?: string;
     options?: PreBuiltFilter;
     limit?: number;
     withImage?: boolean;
 }
 
 export interface RetrieveNotesRequest {
-    location: Point; // [lon, lat]
+    location: NoteLocation; // [lon, lat]
     filter?: Filter;
     // TODO: preferences???
 }
