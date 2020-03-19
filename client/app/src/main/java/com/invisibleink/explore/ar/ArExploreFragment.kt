@@ -6,6 +6,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageButton
+import android.widget.ImageView
 import android.widget.Toast
 import com.google.ar.core.*
 import com.google.ar.sceneform.AnchorNode
@@ -126,6 +127,7 @@ class ArExploreFragment : ArFragment(), ViewProvider {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         viewDelegate = ArExploreViewDelegate(this)
+        viewDelegate.arView = arSceneView
         presenter.attach(viewDelegate)
     }
 
