@@ -1,10 +1,10 @@
-import { Controller, Get, Req, Post } from '@nestjs/common';
-import { AzureCosmosDbService } from 'src/azure-db/azure-cosmos-db.service';
-import { RetrieveNotesRequest } from './models/retrieve-notes-request';
-import { RetrieveNotesResponsePayload, NoteResponse } from './models/retrieve-notes-response';
-import { NoteLocation } from 'src/shared/models/note-location';
-import { Note } from 'src/shared/models/note';
+import { Controller, Get, Post, Req } from '@nestjs/common';
 import { Point } from 'geojson';
+import { AzureCosmosDbService } from 'src/azure-db/azure-cosmos-db.service';
+import { Note } from 'src/shared/models/note';
+import { NoteLocation } from 'src/shared/models/note-location';
+import { RetrieveNotesRequest } from './models/retrieve-notes-request';
+import { NoteResponse, RetrieveNotesResponsePayload } from './models/retrieve-notes-response';
 
 @Controller('retrieve-notes')
 export class RetrieveNotesController {
