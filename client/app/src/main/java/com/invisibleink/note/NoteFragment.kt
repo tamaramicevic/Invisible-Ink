@@ -2,7 +2,6 @@ package com.invisibleink.note
 
 import android.content.Context
 import android.content.Intent
-import android.graphics.BitmapFactory
 import android.location.Location
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -28,7 +27,8 @@ import pl.aprilapps.easyphotopicker.MediaFile
 import pl.aprilapps.easyphotopicker.MediaSource
 import javax.inject.Inject
 
-class NoteFragment : LocationFragment(), ViewProvider, NotePresenter.ImageSelector, LocationProvider {
+class NoteFragment : LocationFragment(), ViewProvider, NotePresenter.ImageHandler,
+    LocationProvider {
 
     companion object {
         private const val REQUEST_LOCATION = 0
@@ -86,7 +86,7 @@ class NoteFragment : LocationFragment(), ViewProvider, NotePresenter.ImageSelect
         super.onViewCreated(view, savedInstanceState)
         viewDelegate = NoteViewDelegate(this)
         presenter.run {
-            imageSelector = this@NoteFragment
+            imageHandler = this@NoteFragment
             locationProvider = this@NoteFragment
             attach(viewDelegate)
         }
@@ -116,8 +116,7 @@ class NoteFragment : LocationFragment(), ViewProvider, NotePresenter.ImageSelect
 
                 override fun onMediaFilesPicked(imageFiles: Array<MediaFile>, source: MediaSource) {
                     if (imageFiles.isNotEmpty()) {
-                        val image = BitmapFactory.decodeFile(imageFiles.first().file.path)
-                        viewDelegate.render(NoteViewState.ImageSelected(image))
+                        viewDelegate.render(NoteViewState.ImageSelected(imageFiles.first().file.path))
                     }
                 }
             })
