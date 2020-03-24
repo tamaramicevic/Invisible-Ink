@@ -1,5 +1,6 @@
 package com.invisibleink.explore.ar
 
+import android.util.Log
 import com.invisibleink.R
 import com.invisibleink.architecture.BasePresenter
 import com.invisibleink.location.LocationProvider
@@ -11,7 +12,7 @@ import retrofit2.Retrofit
 import javax.inject.Inject
 
 class ArExplorePresenter @Inject constructor(
-    private val retrofit: Retrofit
+    retrofit: Retrofit
 ) :
     BasePresenter<ArExploreViewState, ArExploreViewEvent, ArExploreDestination>() {
 
@@ -38,11 +39,23 @@ class ArExplorePresenter @Inject constructor(
         }
     }
 
-    private fun fetchNotes() {
+    override fun onDetach() {
+        disposable.dispose()
+    }
+
+    private fun fetchNotes(searchFilter: SearchFilter? = null) {
+        pushState(ArExploreViewState.Loading)
+
         val deviceLocation = locationProvider?.getCurrentLocation()
+        Log.i("RenderingTest", "Presenter device location: $deviceLocation")
         if (deviceLocation != null) {
             disposable.add(
-                exploreApi.fetchNotes(deviceLocation.longitude, deviceLocation.latitude)
+                exploreApi.fetchNotes(
+                    FetchNotesRequest(
+                        deviceLocation,
+                        searchFilter ?: SearchFilter.EMPTY_FILTER
+                    )
+                )
                     .subscribeOn(Schedulers.io())
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe(this::showNotes, this::showError)
