@@ -1,5 +1,5 @@
 import { CosmosClient, Item } from '@azure/cosmos';
-import { Injectable, OnApplicationBootstrap, Logger } from '@nestjs/common';
+import { Injectable, Logger, OnApplicationBootstrap } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { Point } from 'geojson';
 
@@ -109,7 +109,6 @@ export class AzureCosmosDbService implements OnApplicationBootstrap {
             }; 
             
             const { resources: retreivedNotes } = await noteContainer.items.query(querySpec).fetchAll();
-            console.dir(retreivedNotes);
             const result = retreivedNotes.map(
                 item => {
                     const note = item as NoteSchema;

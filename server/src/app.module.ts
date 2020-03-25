@@ -1,3 +1,4 @@
+import { AzureStorageModule } from '@nestjs/azure-storage';
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { AppController } from './app.controller';
@@ -11,7 +12,6 @@ import { TextAnalyticsService } from './text-analytics/text-analytics.service';
 import { UploadImageController } from './upload-image/upload-image.controller';
 import { UploadNoteController } from './upload-note/upload-note.controller';
 import { VoteController } from './vote/vote.controller';
-import { AzureStorageModule } from '@nestjs/azure-storage';
 
 @Module({
   imports: [
