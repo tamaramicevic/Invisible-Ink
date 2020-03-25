@@ -8,4 +8,5 @@ export interface NoteSchema {
     expiryTime: string;
     score: number;
     location: Point;
+    imageUrl?: string;
 }

@@ -1,5 +1,5 @@
 import { CosmosClient, Item } from '@azure/cosmos';
-import { Injectable, OnApplicationBootstrap } from '@nestjs/common';
+import { Injectable, OnApplicationBootstrap, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { Point } from 'geojson';
 
@@ -109,6 +109,7 @@ export class AzureCosmosDbService implements OnApplicationBootstrap {
             }; 
             
             const { resources: retreivedNotes } = await noteContainer.items.query(querySpec).fetchAll();
+            console.dir(retreivedNotes);
             const result = retreivedNotes.map(
                 item => {
                     const note = item as NoteSchema;
@@ -120,6 +121,7 @@ export class AzureCosmosDbService implements OnApplicationBootstrap {
                         Score: note.score,
                         Lat: note.location.coordinates[0], // double check this conversion
                         Lon: note.location.coordinates[1],
+                        ImageId: note.imageUrl ?? null,
                         } as Note;
                     },
                 ).filter(item => !!item);
@@ -217,6 +219,22 @@ export class AzureCosmosDbService implements OnApplicationBootstrap {
         } catch (error) {
             // tslint:disable-next-line
             console.log('Error applying vote to note:\n', error);
+        }
+        return;
+    }
+
+    async AssignImageToNote(noteID: string, imageName: string): Promise<void> {
+        try {
+            const { database } = await this.mCosmosDbClient.databases.createIfNotExists({ id: this.mDBId });
+            const { container: noteContainer } = await database.containers.createIfNotExists({ id: this.mNoteContainerId });
+
+            const item = noteContainer.item(noteID);
+            const { resource: note } = await item.read();
+            note.imageUrl = imageName;
+
+            const { resource: updatedNote } = await noteContainer.items.upsert(note);
+        } catch (error) {
+            Logger.log(`Error assigning imageId to note: `, error);
         }
         return;
     }
