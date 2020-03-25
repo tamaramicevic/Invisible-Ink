@@ -34,7 +34,7 @@ export class RetrieveNotesController {
                         title: item.Title,
                         body: item.Body,
                         expiration: item.Expiration,
-                        imageUrl: null, // TODO: implement images
+                        imageUrl: item.ImageId, // TODO: implement images
                         location: { latitude: item.Lat, longitude: item.Lon } as NoteLocation,
                         score: item.Score,
                     } as NoteResponse;
