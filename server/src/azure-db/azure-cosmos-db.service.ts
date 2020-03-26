@@ -36,8 +36,7 @@ export class AzureCosmosDbService implements OnApplicationBootstrap {
         try {
             await this.mCosmosDbClient.databases.createIfNotExists({ id: this.mDBId });
         } catch (error) {
-            // tslint:disable-next-line
-            console.log('Error creating database:\n', error);
+            Logger.log(`Error creating database: ${error}`, 'AzureCosmosDbService');
         }
   
         // Create the containers if they don't exist
@@ -48,8 +47,7 @@ export class AzureCosmosDbService implements OnApplicationBootstrap {
             const iterator = this.mCosmosDbClient.database(this.mDBId).containers.readAll();
             const { resources: containersList } = await iterator.fetchAll();
         } catch (error) {
-            // tslint:disable-next-line
-            console.log('Error creating containers:\n', error);
+            Logger.log(`Error creating containers: ${error}`, 'AzureCosmosDbService');
         }
         return;
       }
@@ -79,8 +77,7 @@ export class AzureCosmosDbService implements OnApplicationBootstrap {
             const { item } = await noteContainer.items.create(dbNote);
             
         } catch (error) {
-            // tslint:disable-next-line
-            console.log('Error uploading note:\n', error);
+            Logger.log(`Error uploading note: ${error}`, 'AzureCosmosDbService');
         }
 
         return;
@@ -127,8 +124,7 @@ export class AzureCosmosDbService implements OnApplicationBootstrap {
 
             return this.FilterNotesBySearchTerms(searchParams.Keywords, result);
         } catch (error) {
-            // tslint:disable-next-line
-            console.log('Error retrieving note:\n', error);
+            Logger.log(`Error retrieving note: ${error}`, 'AzureCosmosDbService');
         }
 
         return;
@@ -161,8 +157,7 @@ export class AzureCosmosDbService implements OnApplicationBootstrap {
             const { resources: retrievedNote } = await reportContainer.items.query(querySpec).fetchAll();
             return retrievedNote.length === 0 ? null : retrievedNote[0];
         } catch (error) {
-            // tslint:disable-next-line
-            console.log('Error retrieving note: ', error);
+            Logger.log(`Error retrieving note report: ${error}`, 'AzureCosmosDbService');
         }
     }
 
@@ -182,8 +177,7 @@ export class AzureCosmosDbService implements OnApplicationBootstrap {
             const { resources: retrievedNote } = await noteContainer.items.query(querySpec).fetchAll();
             return retrievedNote.length === 0 ? null : retrievedNote[0];
         } catch (error) {
-            // tslint:disable-next-line
-            console.log('Error retrieving note: ', error);
+            Logger.log(`Error retrieving note: ${error}`, 'AzureCosmosDbService');
         }
     }
 
@@ -195,8 +189,7 @@ export class AzureCosmosDbService implements OnApplicationBootstrap {
             const { item } = await reportedNotesContainer.items.create(report);
 
         } catch (error) {
-            // tslint:disable-next-line
-            console.log('Error reporting note:\n', error);
+            Logger.log(`Error reporting note: ${error}`, 'AzureCosmosDbService');
         }
 
         return;
@@ -216,8 +209,7 @@ export class AzureCosmosDbService implements OnApplicationBootstrap {
             const { resource: updatedNote } = await noteContainer.items.upsert(note);
 
         } catch (error) {
-            // tslint:disable-next-line
-            console.log('Error applying vote to note:\n', error);
+            Logger.log(`Error applying vote to note: ${error}`, 'AzureCosmosDbService');
         }
         return;
     }
@@ -233,7 +225,7 @@ export class AzureCosmosDbService implements OnApplicationBootstrap {
 
             const { resource: updatedNote } = await noteContainer.items.upsert(note);
         } catch (error) {
-            Logger.log(`Error assigning imageId to note: `, error);
+            Logger.log(`Error assigning imageId to note: ${error}`, 'AzureCosmosDbService');
         }
         return;
     }
