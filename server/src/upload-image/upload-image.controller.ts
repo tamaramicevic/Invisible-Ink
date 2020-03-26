@@ -34,7 +34,7 @@ export class UploadImageController {
         const storageUrl = await this.azureStorageService.upload(file);
         if (storageUrl !== null) {
             Logger.log(`Successfully uploaded image with ID: ${noteId}`, 'UploadImageController');
-            await this.azureCosmosDbService.AssignImageToNote(noteId, noteId);
+            await this.azureCosmosDbService.AssignImageToNote(noteId, storageUrl);
             return { success: true };
         } else {
             return { success: false, error: 'Image upload failed.' }; 
