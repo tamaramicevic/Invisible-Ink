@@ -10,7 +10,7 @@ interface NoteApi {
     fun uploadNote(@Body noteSeed: NoteSeed): Observable<NoteUploadResponse>
 
     @Multipart
-    @POST("photos/{noteId}")
+    @POST("photo/{noteId}")
     fun uploadImage(@Path(value = "noteId") noteId: String, @Part image: MultipartBody.Part): Observable<ImageUploadResponse>
 }
 
