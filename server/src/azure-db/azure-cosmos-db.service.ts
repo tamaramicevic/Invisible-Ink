@@ -116,8 +116,8 @@ export class AzureCosmosDbService implements OnApplicationBootstrap {
                         Body: note.body,
                         Expiration: note.expiryTime,
                         Score: note.score,
-                        Lat: note.location.coordinates[0], // double check this conversion
-                        Lon: note.location.coordinates[1],
+                        Lat: note.location.coordinates[1], // double check this conversion
+                        Lon: note.location.coordinates[0],
                         ImageId: note.imageUrl ?? null,
                         } as Note;
                     },
