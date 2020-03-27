@@ -56,35 +56,34 @@ class NotePresenter @Inject constructor(retrofit: Retrofit) :
             return
         }
 
-        noteSeed.apply { this.location = location }
-        val validImagePath = noteSeed.imagePath
-        if (validImagePath != null) {
-            uploadNoteWithImage(noteSeed, validImagePath)
-        } else {
-            uploadNoteWithoutImage(noteSeed)
-        }
+        uploadNoteContent(noteSeed.apply { this.location = location })
     }
 
-    private fun uploadNoteWithImage(noteSeed: NoteSeed, validImagePath: String) {
+    private fun uploadImageContent(noteId: String, validImagePath: String) {
         val imageFile = File(validImagePath)
         val requestFile = imageFile.asRequestBody(("multipart/form-data".toMediaTypeOrNull()))
         val requestBody = MultipartBody.Part.createFormData("image", imageFile.path, requestFile)
-        val noteBody = noteSeed.toString().toRequestBody("application/json".toMediaTypeOrNull())
+        val noteIdBody = noteId.toRequestBody("multipart/form-data".toMediaTypeOrNull())
 
         disposable.add(
-            noteApi.uploadNoteWithImage(requestBody, noteBody)
+            noteApi.uploadImage(noteId, requestBody)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(this::parseResponse, this::showNetworkError)
+                .subscribe(this::parseImageUploadResponse, this::showNetworkError)
         )
     }
 
-    private fun uploadNoteWithoutImage(noteSeed: NoteSeed) {
+    private fun uploadNoteContent(noteSeed: NoteSeed) {
         disposable.add(
             noteApi.uploadNote(noteSeed)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(this::parseResponse, this::showNetworkError)
+                .subscribe(
+                    { noteResponse: NoteUploadResponse? ->
+                        this.parseNoteUploadResponse(noteResponse, noteSeed.imagePath)
+                    },
+                    this::showNetworkError
+                )
         )
     }
 
@@ -98,11 +97,25 @@ class NotePresenter @Inject constructor(retrofit: Retrofit) :
         pushState(NoteViewState.Error(R.string.upload_error_generic))
     }
 
-    private fun parseResponse(uploadResponse: NoteUploadResponse?) {
-        if (uploadResponse != null) {
-            pushState(NoteViewState.Error(R.string.upload_success))
+    private fun parseNoteUploadResponse(uploadResponse: NoteUploadResponse?, imagePath: String?) {
+        when {
+            uploadResponse == null -> showNetworkError(Throwable())
+            uploadResponse.success -> {
+                if (imagePath != null && uploadResponse.noteId != null) {
+                    uploadImageContent(uploadResponse.noteId, imagePath)
+                } else {
+                    pushState(NoteViewState.Message(R.string.upload_note_success))
+                }
+            }
+            else -> pushState(NoteViewState.Error(R.string.upload_note_error))
+        }
+    }
+
+    private fun parseImageUploadResponse(uploadResponse: ImageUploadResponse?) {
+        if (uploadResponse != null && uploadResponse.success) {
+            pushState(NoteViewState.Message(R.string.upload_image_success))
         } else {
-            showNetworkError(Throwable())
+            pushState(NoteViewState.Error(R.string.upload_image_error))
         }
     }
 }

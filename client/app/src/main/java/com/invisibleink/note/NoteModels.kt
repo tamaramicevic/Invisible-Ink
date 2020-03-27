@@ -20,6 +20,7 @@ sealed class NoteViewState : ViewState {
     data class ImageSelected(val imagePath: String) : NoteViewState()
     data class Draft(val draft: NoteSeed) : NoteViewState()
     data class Error(@StringRes val message: Int) : NoteViewState()
+    data class Message(@StringRes val message: Int) : NoteViewState()
 }
 
 sealed class NoteViewEvent : ViewEvent {

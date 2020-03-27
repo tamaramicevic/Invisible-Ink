@@ -2,11 +2,7 @@ package com.invisibleink.note
 
 import io.reactivex.Observable
 import okhttp3.MultipartBody
-import okhttp3.RequestBody
-import retrofit2.http.Body
-import retrofit2.http.Multipart
-import retrofit2.http.POST
-import retrofit2.http.Part
+import retrofit2.http.*
 
 interface NoteApi {
 
@@ -14,8 +10,10 @@ interface NoteApi {
     fun uploadNote(@Body noteSeed: NoteSeed): Observable<NoteUploadResponse>
 
     @Multipart
-    @POST("upload")
-    fun uploadNoteWithImage(@Part image: MultipartBody.Part, @Part("note") note: RequestBody): Observable<NoteUploadResponse>
+    @POST("photos/{noteId}")
+    fun uploadImage(@Path(value = "noteId") noteId: String, @Part image: MultipartBody.Part): Observable<ImageUploadResponse>
 }
 
-data class NoteUploadResponse(val message: String)
+data class NoteUploadResponse(val success: Boolean, val error: String?, val noteId: String?)
+
+data class ImageUploadResponse(val success: Boolean, val error: String?)

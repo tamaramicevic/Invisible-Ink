@@ -43,6 +43,7 @@ class NoteViewDelegate(viewProvider: ViewProvider) :
         is NoteViewState.Draft -> showDraftContent(viewState.draft)
         is NoteViewState.ImageSelected -> showImageThumbnail(viewState.imagePath)
         is NoteViewState.Error -> showMessage(viewState.message)
+        is NoteViewState.Message -> showMessage(viewState.message)
     }
 
     private fun clearNoteContent() {
