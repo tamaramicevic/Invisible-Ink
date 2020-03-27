@@ -27,7 +27,7 @@ import com.invisibleink.models.Note
 class ArExploreViewDelegate(viewProvider: ViewProvider) :
     BaseViewDelegate<ArExploreViewState, ArExploreViewEvent, ArExploreDestination>(viewProvider) {
 
-    lateinit var arFragment : ArFragment
+    lateinit var arFragment : ArExploreFragment
     lateinit var arView : ArSceneView
     private var renderable: ViewRenderable? = null
 
@@ -104,45 +104,48 @@ class ArExploreViewDelegate(viewProvider: ViewProvider) :
     private fun showNotes(deviceLocation: LatLng, notes: List<Note>) {
 
         val note = notes[0]
+        Log.i("ImageTest", notes.toString())
 
-            ViewRenderable.builder()
-                .setView(arFragment.requireActivity().baseContext, R.layout.ar_note_view).build()
-                .thenAcceptAsync { renderable ->
+        arFragment.showNotes(deviceLocation, notes)
 
-                    val noteTitle: TextView = viewProvider.findViewById(R.id.noteTitle) as TextView
-                    noteTitle.text = note.title
-
-                    val noteBody: TextView = viewProvider.findViewById(R.id.noteBody) as TextView
-                    noteBody.text = note.body
-
-                    val noteScore: TextView = viewProvider.findViewById(R.id.noteScore) as TextView
-                    noteScore.text = note.score.toString()
-
-                    val noteExpiration: TextView = viewProvider.findViewById(R.id.noteExpiry) as TextView
-                    noteExpiration.text = note.expiration.toString()
-
-                    if (note.imageUrl != null) {
-                        renderable.view.findViewById<ImageButton>(R.id.noteLayout).setOnClickListener {
-                            pushEvent(ArExploreViewEvent.ShowImage)
-                        }
-                    }
-
-                    // checks if buttons work correctly
-                    renderable.view.findViewById<ImageButton>(R.id.noteReport).setOnClickListener {
-                        Toast.makeText(arView.context, "Report Note!", Toast.LENGTH_LONG).show()
-                    }
-
-                    renderable.view.findViewById<ImageButton>(R.id.noteUpvote).setOnClickListener {
-                        Toast.makeText(arView.context, "Upvote Note!", Toast.LENGTH_LONG).show()
-                    }
-
-                    renderable.view.findViewById<ImageButton>(R.id.noteDownvote).setOnClickListener {
-                        Toast.makeText(arView.context, "Downvote Note!", Toast.LENGTH_LONG).show()
-                    }
-
-                    this.renderable = renderable
-                }
-        renderNote()
+//            ViewRenderable.builder()
+//                .setView(arFragment.requireActivity().baseContext, R.layout.ar_note_view).build()
+//                .thenAcceptAsync { renderable ->
+//
+//                    val noteTitle: TextView = viewProvider.findViewById(R.id.noteTitle) as TextView
+//                    noteTitle.text = note.title
+//
+//                    val noteBody: TextView = viewProvider.findViewById(R.id.noteBody) as TextView
+//                    noteBody.text = note.body
+//
+//                    val noteScore: TextView = viewProvider.findViewById(R.id.noteScore) as TextView
+//                    noteScore.text = note.score.toString()
+//
+//                    val noteExpiration: TextView = viewProvider.findViewById(R.id.noteExpiry) as TextView
+//                    noteExpiration.text = note.expiration.toString()
+//
+//                    if (note.imageUrl != null) {
+//                        renderable.view.findViewById<ImageButton>(R.id.noteLayout).setOnClickListener {
+//                            pushEvent(ArExploreViewEvent.ShowImage)
+//                        }
+//                    }
+//
+//                    // checks if buttons work correctly
+//                    renderable.view.findViewById<ImageButton>(R.id.noteReport).setOnClickListener {
+//                        Toast.makeText(arView.context, "Report Note!", Toast.LENGTH_LONG).show()
+//                    }
+//
+//                    renderable.view.findViewById<ImageButton>(R.id.noteUpvote).setOnClickListener {
+//                        Toast.makeText(arView.context, "Upvote Note!", Toast.LENGTH_LONG).show()
+//                    }
+//
+//                    renderable.view.findViewById<ImageButton>(R.id.noteDownvote).setOnClickListener {
+//                        Toast.makeText(arView.context, "Downvote Note!", Toast.LENGTH_LONG).show()
+//                    }
+//
+//                    this.renderable = renderable
+//                }
+//        renderNote()
 //        arView.scene.addOnUpdateListener(arFragment)
 
 

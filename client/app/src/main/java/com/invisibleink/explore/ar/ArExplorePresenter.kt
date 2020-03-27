@@ -25,7 +25,7 @@ class ArExplorePresenter @Inject constructor(
 
     override fun onEvent(viewEvent: ArExploreViewEvent) = when (viewEvent) {
         ArExploreViewEvent.FetchNotes -> fetchNotes()
-        ArExploreViewEvent.ShowImage -> router?.routeTo(ArExploreDestination.ShowImage)
+//        ArExploreViewEvent.ShowImage -> router?.routeTo(ArExploreDestination.ShowImage)
     }
 
     override fun onAttach() {
@@ -68,23 +68,19 @@ class ArExplorePresenter @Inject constructor(
     }
 
     private fun showNotes(notes: List<Note>) {
-//        Log.i("RenderingTest", "Presenter showNotes")
-//        val deviceLocation = locationProvider?.getCurrentLocation()
-//        recentNotes = notes
-//
-//        val viewState = if (deviceLocation != null) {
-//            ArExploreViewState.Success(deviceLocation, recentNotes)
-//        } else {
-//            ArExploreViewState.Error(R.string.error_invalid_device_location)
-//        }
-//        pushState(viewState)
+        Log.i("RenderingTest", "Presenter showNotes")
+        val deviceLocation = locationProvider?.getCurrentLocation()
+        recentNotes = notes
+
+        val viewState = if (deviceLocation != null) {
+            ArExploreViewState.Success(deviceLocation, recentNotes)
+        } else {
+            ArExploreViewState.Error(R.string.error_invalid_device_location)
+        }
+        pushState(viewState)
     }
 
     private fun showError(throwable: Throwable) {
         pushState(ArExploreViewState.Error(R.string.error_fetch_notes_generic))
-    }
-
-    private fun showImage() {
-
     }
 }

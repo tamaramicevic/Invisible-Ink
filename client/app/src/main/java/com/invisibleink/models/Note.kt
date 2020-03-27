@@ -8,6 +8,6 @@ data class Note(
     val body: String,
     val location: LatLng,
     val score: Int = 0,
-    val imageUrl: String? = null,
+    var imageUrl: String? = null,
     val expiration: DateTime? = null
 )

@@ -1,10 +1,7 @@
 package com.invisibleink.explore.ar
 
-import android.R.attr.fragment
-import android.annotation.SuppressLint
 import com.invisibleink.R
 import android.content.Context
-import android.content.Intent
 import android.location.Location
 import android.os.Bundle
 import android.os.Looper
@@ -14,8 +11,8 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageButton
 import android.widget.RelativeLayout
+import android.widget.TextView
 import android.widget.Toast
-import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.FragmentTransaction
 import com.google.android.gms.location.*
 import com.google.android.gms.maps.model.LatLng
@@ -23,29 +20,21 @@ import com.google.ar.core.*
 import com.google.ar.core.Pose
 import com.google.ar.sceneform.AnchorNode
 import com.google.ar.sceneform.FrameTime
-import com.google.ar.sceneform.Node
 import com.google.ar.sceneform.math.Vector3
 import com.google.ar.sceneform.rendering.ViewRenderable
 import com.google.ar.sceneform.ux.ArFragment
 import com.google.ar.sceneform.ux.TransformableNode
-import com.invisibleink.architecture.Router
 import com.invisibleink.architecture.ViewProvider
 import com.invisibleink.extensions.findViewOrThrow
 import com.invisibleink.image.ImageFragment
 import com.invisibleink.injection.InvisibleInkApplication
-import com.invisibleink.location.LocationFragment
 import com.invisibleink.location.LocationProvider
-import com.invisibleink.note.NoteFragment
+import com.invisibleink.models.Note
 import com.invisibleink.permissions.onLocationPermissionGranted
 import com.invisibleink.permissions.requireLocationPermission
 import javax.inject.Inject
-import kotlin.math.PI
-import kotlin.math.atan2
-import kotlin.math.cos
-import kotlin.math.sin
 
-
-class ArExploreFragment : ArFragment(), ViewProvider, Router<ArExploreDestination>, LocationProvider {
+class ArExploreFragment : ArFragment(), ViewProvider, LocationProvider {
 
     companion object {
         private const val REQUEST_LOCATION = 0
@@ -110,13 +99,42 @@ class ArExploreFragment : ArFragment(), ViewProvider, Router<ArExploreDestinatio
     ): View? {
         val view = super.onCreateView(inflater, container, savedInstanceState)
 
+        arSceneView.scene.addOnUpdateListener(this)
+
+        return view
+    }
+
+    fun showNotes(deviceLocation: LatLng, notes: List<Note>) {
+        var note = notes[0]
+
+        Log.i("RenderingTest", "FRAGMENT NOTE: $note")
+
         ViewRenderable.builder()
             .setView(requireActivity().baseContext, R.layout.ar_note_view).build()
             .thenAcceptAsync { renderable ->
 
-                renderable.view.findViewById<RelativeLayout>(R.id.noteLayout).setOnClickListener {
-                    viewDelegate.pushEvent(ArExploreViewEvent.ShowImage)
+                Log.i("RenderingTest", "IMAGE URL: "+note.imageUrl)
+                if (note.imageUrl == null) {
+                    note.imageUrl = "https://invisibleincistorageacc.blob.core.windows.net/note-images/3a2865e6-ad29-485f-b87e-3984abf8f8d6?sv=2019-02-02&ss=bfqt&srt=sco&sp=rwdlacup&se=2020-11-21T05:28:30Z&st=2020-03-25T20:28:30Z&spr=https,http&sig=5aStS3doL7KkrlLqPtqk%2BoeNOpIoKwVOsihjtTMwp5Q%3D"
                 }
+//                if (note.imageUrl != null) {
+                    renderable.view.findViewById<RelativeLayout>(R.id.noteLayout)
+                        .setOnClickListener {
+                            note.imageUrl?.let { it1 -> showImage(it1) }
+                        }
+//                }
+//
+//                val noteTitle: TextView = findViewById<TextView>(R.id.noteTitle)
+//                noteTitle.text = note.title
+//
+//                val noteBody: TextView = findViewById(R.id.noteBody) as TextView
+//                noteBody.text = note.body
+//
+//                    val noteScore: TextView = findViewById(R.id.noteScore) as TextView
+//                    noteScore.text = note.score.toString()
+//
+//                    val noteExpiration: TextView = findViewById(R.id.noteExpiry) as TextView
+//                    noteExpiration.text = note.expiration.toString()
 
                 // checks if buttons work correctly
                 renderable.view.findViewById<ImageButton>(R.id.noteReport).setOnClickListener {
@@ -134,9 +152,7 @@ class ArExploreFragment : ArFragment(), ViewProvider, Router<ArExploreDestinatio
                 this.renderable = renderable
             }
 
-        arSceneView.scene.addOnUpdateListener(this)
-
-        return view
+        Log.i("RenderingTest", this.renderable.toString())
     }
 
     private fun Frame.screenCenter(): Vector3 {
@@ -205,7 +221,6 @@ class ArExploreFragment : ArFragment(), ViewProvider, Router<ArExploreDestinatio
         viewDelegate.arFragment = this
         viewDelegate.arView = arSceneView
         presenter.locationProvider = this
-        presenter.router = this
         presenter.attach(viewDelegate)
     }
 
@@ -230,21 +245,16 @@ class ArExploreFragment : ArFragment(), ViewProvider, Router<ArExploreDestinatio
         locationChangedListener = onLocationChangeCallback
     }
 
-    @SuppressLint("ResourceType")
-    override fun routeTo(destination: ArExploreDestination): Unit = when (destination) {
-        ArExploreDestination.ShowImage -> {
+    private fun showImage(imageUrl: String) {
+        val bundle = Bundle()
+        bundle.putString("IMAGE-URL", imageUrl)
 
-            val imageURL: String = "https://source.unsplash.com/random" // TODO: remove url placeholder
+        val imageFragment = ImageFragment()
+        imageFragment.arguments = bundle
 
-            val imageFragment : ImageFragment = ImageFragment()
-            val bundle = Bundle()
-            bundle.putString("IMAGE-URL", imageURL)
-            imageFragment.arguments = bundle
-
-            val fragmentTransaction: FragmentTransaction? = fragmentManager?.beginTransaction()
-            fragmentTransaction?.replace(R.id.fragmentContainer, imageFragment)?.addToBackStack(null)
-            val commit = fragmentTransaction?.commit()
-        }
+        val fragmentTransaction: FragmentTransaction? = fragmentManager?.beginTransaction()
+        fragmentTransaction?.replace(R.id.fragmentContainer, imageFragment)?.addToBackStack(null)
+        val commit = fragmentTransaction?.commit()
     }
 
 }
