@@ -2,10 +2,9 @@ export interface Note {
     NoteId: string;
     Title: string;
     Body: string;
-    TimeStamp: string;
+    Expiration: string;
     Score: number;
     Lat: number;
     Lon: number;
     ImageId?: string;
-    ExpiresInHours: number;
 }

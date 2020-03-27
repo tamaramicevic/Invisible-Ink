@@ -23,11 +23,14 @@
     <string name="error_invalid_device_location">Failed to retrieve device location.</string>
 
     <!-- NoteContent API -->
-    <string name="upload_error_generic">Failed to upload noteContent.</string>
+    <string name="upload_error_generic">Failed to upload.</string>
+    <string name="upload_note_error">Failed to upload note.</string>
+    <string name="upload_image_error">Failed to upload image.</string>
     <string name="invalid_note_title">The noteContent must contain a non-empty title.</string>
     <string name="invalid_note_body">The noteContent must contain a non-empty body.</string>
     <string name="valid_note">Valid noteContent!</string>
-    <string name="upload_success">Successfully uploaded noteContent!</string>
+    <string name="upload_note_success">Successfully uploaded Note!</string>
+    <string name="upload_image_success">Successfully uploaded Image!</string>
 
     <!-- Fetch notes API -->
     <string name="error_fetch_notes_generic">Failed to fetch notes</string>

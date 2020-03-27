@@ -1,72 +1,18 @@
-import { Controller, Get, Req } from '@nestjs/common';
+import { Controller, Get, Post, Req } from '@nestjs/common';
+import { Point } from 'geojson';
 import { AzureCosmosDbService } from 'src/azure-db/azure-cosmos-db.service';
+import { Note } from 'src/shared/models/note';
+import { NoteLocation } from 'src/shared/models/note-location';
 import { RetrieveNotesRequest } from './models/retrieve-notes-request';
-import { RetrieveNotesResponse } from './models/retrieve-notes-response';
-
-const notesResponse: RetrieveNotesResponse = {
-    notes: 
-    [
-        {
-            NoteId: '21',
-            Title: 'Sample Title 1',
-            Body: 'Sample Body 1',
-            TimeStamp: '2020-02-26T23:02:06Z',
-            Score: 32,
-            Lat: 53.527381,
-            Lon: -113.527821,
-            ExpiresInHours: 24,
-        },
-        {
-            NoteId: '42',
-            Title: 'Sample Title 2',
-            Body: 'Sample Body 2',
-            TimeStamp: '2020-02-26T23:02:06Z',
-            Score: 64,
-            Lat: 53.527481, 
-            Lon: -113.527821,
-            ExpiresInHours: 24,
-        },
-        {
-            NoteId: '661',
-            Title: 'Do long titles look good in the UI? We should use this opportunity to find out don\'t you think? I think it might look weird',
-            Body: 'Some random body, how big should we let the body be do you think?',
-            TimeStamp: '2020-02-26T23:02:06Z',
-            Score: 128,
-            Lat: 53.527381, 
-            Lon: 113.527851,
-            ExpiresInHours: 24,
-        },
-        {
-            NoteId: '133',
-            Title: 'Sample Title 3',
-            Body: 'Sample Body 3',
-            TimeStamp: '2020-02-26T23:02:06Z',
-            Score: 256,
-            Lat: 53.527351, 
-            Lon: -113.527421,
-            ExpiresInHours: 24,
-        },
-        {
-            NoteId: '252341',
-            Title: 'Sample Title 4',
-            Body: 'Sample Body 4',
-            TimeStamp: '2020-02-26T23:02:06Z',
-            Score: 512,
-            Lat: 53.527381, 
-            Lon: -113.527826,
-            ExpiresInHours: 24,
-        },
-
-    ],
-};
+import { NoteResponse, RetrieveNotesResponsePayload } from './models/retrieve-notes-response';
 
 @Controller('retrieve-notes')
 export class RetrieveNotesController {
 
     constructor(private readonly azureCosmosDbService: AzureCosmosDbService) {}
 
-    @Get()
-    async RetrieveNotes(@Req() request): Promise<RetrieveNotesResponse> {
+    @Post()
+    async RetrieveNotes(@Req() request): Promise<RetrieveNotesResponsePayload> {
         const requestBody: RetrieveNotesRequest = JSON.parse(JSON.stringify(request.body));
         // tslint:disable-next-line
         console.log(`GET notes request received with following params:`);
@@ -75,11 +21,26 @@ export class RetrieveNotesController {
 
         // TODO: For now hard-coding range: 100km
         // Keywords: null
+        const geoLocation: Point = { type: 'Point', coordinates: [requestBody.location.longitude, requestBody.location.latitude] };
+        const keywords: string[] = requestBody.filter?.keywords?.split(' ');
         try {
-            const result: RetrieveNotesResponse = {
-                notes: await this.azureCosmosDbService.RetrieveNotes({UserLocation: requestBody.Location, Range: 100000, Keywords: []}),
+            const resultNotes: Note[] = await this.azureCosmosDbService.RetrieveNotes({
+                UserLocation: geoLocation, Range: 100000, Keywords: keywords,
+            });
+            const response: RetrieveNotesResponsePayload = {
+                notes: resultNotes.map(item => {
+                    return {
+                        id: item.NoteId,
+                        title: item.Title,
+                        body: item.Body,
+                        expiration: item.Expiration,
+                        imageUrl: item.ImageId, // TODO: implement images
+                        location: { latitude: item.Lat, longitude: item.Lon } as NoteLocation,
+                        score: item.Score,
+                    } as NoteResponse;
+                }),
             };
-            return result;
+            return response;
         } catch (error) { 
             return null; 
         }

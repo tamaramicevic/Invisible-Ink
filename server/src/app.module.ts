@@ -1,3 +1,4 @@
+import { AzureStorageModule } from '@nestjs/azure-storage';
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { AppController } from './app.controller';
@@ -19,6 +20,11 @@ import { VoteController } from './vote/vote.controller';
       isGlobal: true,
     }),
     AzureDbModule,
+    AzureStorageModule.withConfig({
+      sasKey: process.env['AZURE-STORAGE-SAS-KEY'],
+      accountName: process.env['AZURE-BLOB-STORAGE-ACCOUNT'],
+      containerName: 'note-images',
+    }),
   ],
   controllers: [
     AppController, 

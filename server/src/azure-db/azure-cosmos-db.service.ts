@@ -1,5 +1,5 @@
 import { CosmosClient, Item } from '@azure/cosmos';
-import { Injectable, OnApplicationBootstrap } from '@nestjs/common';
+import { Injectable, Logger, OnApplicationBootstrap } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { Point } from 'geojson';
 
@@ -36,8 +36,7 @@ export class AzureCosmosDbService implements OnApplicationBootstrap {
         try {
             await this.mCosmosDbClient.databases.createIfNotExists({ id: this.mDBId });
         } catch (error) {
-            // tslint:disable-next-line
-            console.log('Error creating database:\n', error);
+            Logger.log(`Error creating database: ${error}`, 'AzureCosmosDbService');
         }
   
         // Create the containers if they don't exist
@@ -48,41 +47,41 @@ export class AzureCosmosDbService implements OnApplicationBootstrap {
             const iterator = this.mCosmosDbClient.database(this.mDBId).containers.readAll();
             const { resources: containersList } = await iterator.fetchAll();
         } catch (error) {
-            // tslint:disable-next-line
-            console.log('Error creating containers:\n', error);
+            Logger.log(`Error creating containers: ${error}`, 'AzureCosmosDbService');
         }
         return;
       }
 
-    async UploadNote(note: Note): Promise<void> {
+    async UploadNote(note: Note): Promise<string> {
         try {
             const { database } = await this.mCosmosDbClient.databases.createIfNotExists({ id: this.mDBId });
             const { container: noteContainer } = await database.containers.createIfNotExists({ id: this.mNoteContainerId });
 
             // TODO: might need to verify coordinates are correctly entered
-            const loc: Point = { type: 'Point', coordinates: [note.Lat, note.Lon]};
+            const loc: Point = { type: 'Point', coordinates: [note.Lon, note.Lat]};
 
+            /*
             // Create timestamp
             const expiryDate: Date = new Date(note.TimeStamp);
             expiryDate.setHours(expiryDate.getHours() + note.ExpiresInHours);
+            */
 
             const dbNote: NoteSchema = {
                 title: note.Title,
                 body: note.Body,
-                timeStamp: note.TimeStamp,
-                expiryTime: expiryDate.toISOString(),
+                expiryTime: note.Expiration,
                 score: note.Score,
                 location: loc,
             };
     
             const { item } = await noteContainer.items.create(dbNote);
             
+            return item.id;
+            
         } catch (error) {
-            // tslint:disable-next-line
-            console.log('Error uploading note:\n', error);
+            Logger.log(`Error uploading note: ${error}`, 'AzureCosmosDbService');
         }
 
-        return;
     }
 
     async RetrieveNotes(searchParams: NoteSearchParams): Promise<Note[]> {
@@ -90,14 +89,14 @@ export class AzureCosmosDbService implements OnApplicationBootstrap {
             const { database } = await this.mCosmosDbClient.databases.createIfNotExists({ id: this.mDBId });
             const { container: noteContainer } = await database.containers.createIfNotExists({ id: this.mNoteContainerId });
             const querySpec = {
-                query: 'SELECT * FROM Notes note WHERE ST_DISTANCE(note.location, {\'type\': \'Point\', \'coordinates\':[@lat, @lon]}) < @range',
+                query: 'SELECT * FROM Notes note WHERE ST_DISTANCE(note.location, {\'type\': \'Point\', \'coordinates\':[@lon, @lat]}) < @range',
                 parameters: [
                     {
-                        name: '@lat',
+                        name: '@lon',
                         value: searchParams.UserLocation.coordinates[0],
                     },
                     {
-                        name: '@lon',
+                        name: '@lat',
                         value: searchParams.UserLocation.coordinates[1],
                     },
                     {
@@ -115,21 +114,32 @@ export class AzureCosmosDbService implements OnApplicationBootstrap {
                         NoteId: item.id,
                         Title: note.title,
                         Body: note.body,
-                        TimeStamp: note.timeStamp,
+                        Expiration: note.expiryTime,
                         Score: note.score,
-                        Lat: note.location.coordinates[0], // double check this conversion
-                        Lon: note.location.coordinates[1],
+                        Lat: note.location.coordinates[1], // double check this conversion
+                        Lon: note.location.coordinates[0],
+                        ImageId: note.imageUrl ?? null,
                         } as Note;
                     },
                 ).filter(item => !!item);
 
-            return result;
+            return this.FilterNotesBySearchTerms(searchParams.Keywords, result);
         } catch (error) {
-            // tslint:disable-next-line
-            console.log('Error retrieving note:\n', error);
+            Logger.log(`Error retrieving note: ${error}`, 'AzureCosmosDbService');
         }
 
         return;
+    }
+
+    private FilterNotesBySearchTerms(keywords: string[], notes: Note[]): Note[] {
+        if (!Array.isArray(keywords) || !keywords.length) { return notes; }
+
+        return notes.filter(note => {
+            return keywords.some(keyword => {
+                return note.Title.search(new RegExp(keyword, 'i')) !== -1 ||
+                note.Body.search(new RegExp(keyword, 'i')) !== -1;
+            });
+        });
     }
 
     async GetNoteReportByNoteId(noteId: string): Promise<ReportedNoteSchema> {
@@ -148,8 +158,7 @@ export class AzureCosmosDbService implements OnApplicationBootstrap {
             const { resources: retrievedNote } = await reportContainer.items.query(querySpec).fetchAll();
             return retrievedNote.length === 0 ? null : retrievedNote[0];
         } catch (error) {
-            // tslint:disable-next-line
-            console.log('Error retrieving note: ', error);
+            Logger.log(`Error retrieving note report: ${error}`, 'AzureCosmosDbService');
         }
     }
 
@@ -169,8 +178,7 @@ export class AzureCosmosDbService implements OnApplicationBootstrap {
             const { resources: retrievedNote } = await noteContainer.items.query(querySpec).fetchAll();
             return retrievedNote.length === 0 ? null : retrievedNote[0];
         } catch (error) {
-            // tslint:disable-next-line
-            console.log('Error retrieving note: ', error);
+            Logger.log(`Error retrieving note: ${error}`, 'AzureCosmosDbService');
         }
     }
 
@@ -182,8 +190,7 @@ export class AzureCosmosDbService implements OnApplicationBootstrap {
             const { item } = await reportedNotesContainer.items.create(report);
 
         } catch (error) {
-            // tslint:disable-next-line
-            console.log('Error reporting note:\n', error);
+            Logger.log(`Error reporting note: ${error}`, 'AzureCosmosDbService');
         }
 
         return;
@@ -203,8 +210,23 @@ export class AzureCosmosDbService implements OnApplicationBootstrap {
             const { resource: updatedNote } = await noteContainer.items.upsert(note);
 
         } catch (error) {
-            // tslint:disable-next-line
-            console.log('Error applying vote to note:\n', error);
+            Logger.log(`Error applying vote to note: ${error}`, 'AzureCosmosDbService');
+        }
+        return;
+    }
+
+    async AssignImageToNote(noteID: string, imageName: string): Promise<void> {
+        try {
+            const { database } = await this.mCosmosDbClient.databases.createIfNotExists({ id: this.mDBId });
+            const { container: noteContainer } = await database.containers.createIfNotExists({ id: this.mNoteContainerId });
+
+            const item = noteContainer.item(noteID);
+            const { resource: note } = await item.read();
+            note.imageUrl = imageName;
+
+            const { resource: updatedNote } = await noteContainer.items.upsert(note);
+        } catch (error) {
+            Logger.log(`Error assigning imageId to note: ${error}`, 'AzureCosmosDbService');
         }
         return;
     }

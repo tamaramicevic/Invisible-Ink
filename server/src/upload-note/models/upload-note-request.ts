@@ -1,10 +1,11 @@
+import { NoteLocation } from '../../shared/models/note-location';
+
 export interface UploadNoteRequest {
-    Title: string;
-    Body: string;
-    TimeStamp: string;
-    LifetimeInHours: number;
-    Lat: number;
-    Lon: number;
+    title: string;
+    body: string;
+    expiration: string;
+    image: string; // TODO: implement this
+    location: NoteLocation;
     // no images for now look into https://docs.nestjs.com/techniques/file-upload
     // for documentation on how to do it
 }

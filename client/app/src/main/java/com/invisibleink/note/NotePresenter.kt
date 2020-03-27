@@ -6,15 +6,18 @@ import com.invisibleink.location.LocationProvider
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.schedulers.Schedulers
-import okhttp3.ResponseBody
-import retrofit2.Response
+import okhttp3.MediaType.Companion.toMediaTypeOrNull
+import okhttp3.MultipartBody
+import okhttp3.RequestBody.Companion.asRequestBody
+import okhttp3.RequestBody.Companion.toRequestBody
 import retrofit2.Retrofit
+import java.io.File
 import javax.inject.Inject
 
 class NotePresenter @Inject constructor(retrofit: Retrofit) :
     BasePresenter<NoteViewState, NoteViewEvent, NoteDestination>() {
 
-    interface ImageSelector {
+    interface ImageHandler {
         fun onAddImageSelected()
     }
 
@@ -24,12 +27,12 @@ class NotePresenter @Inject constructor(retrofit: Retrofit) :
 
     private val noteApi = retrofit.create(NoteApi::class.java)
     private val disposable = CompositeDisposable()
-    var imageSelector: ImageSelector? = null
+    var imageHandler: ImageHandler? = null
     var locationProvider: LocationProvider? = null
 
     override fun onEvent(viewEvent: NoteViewEvent): Unit? = when (viewEvent) {
         is NoteViewEvent.Upload -> uploadNote(viewEvent.noteSeed)
-        is NoteViewEvent.AddImage -> imageSelector?.onAddImageSelected()
+        is NoteViewEvent.AddImage -> imageHandler?.onAddImageSelected()
     }
 
     override fun onAttach() {
@@ -48,16 +51,40 @@ class NotePresenter @Inject constructor(retrofit: Retrofit) :
         }
 
         val location = locationProvider?.getCurrentLocation()
-        if (location != null) {
-            disposable.add(
-                noteApi.uploadNote(noteSeed.apply { this.location = location })
-                    .subscribeOn(Schedulers.io())
-                    .observeOn(AndroidSchedulers.mainThread())
-                    .subscribe(this::parseResponse, this::showNetworkError)
-            )
-        } else {
+        if (location == null) {
             pushState(NoteViewState.Error(R.string.error_invalid_device_location))
+            return
         }
+
+        uploadNoteContent(noteSeed.apply { this.location = location })
+    }
+
+    private fun uploadImageContent(noteId: String, validImagePath: String) {
+        val imageFile = File(validImagePath)
+        val requestFile = imageFile.asRequestBody(("multipart/form-data".toMediaTypeOrNull()))
+        val requestBody = MultipartBody.Part.createFormData("image", imageFile.path, requestFile)
+        val noteIdBody = noteId.toRequestBody("multipart/form-data".toMediaTypeOrNull())
+
+        disposable.add(
+            noteApi.uploadImage(noteId, requestBody)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(this::parseImageUploadResponse, this::showNetworkError)
+        )
+    }
+
+    private fun uploadNoteContent(noteSeed: NoteSeed) {
+        disposable.add(
+            noteApi.uploadNote(noteSeed)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(
+                    { noteResponse: NoteUploadResponse? ->
+                        this.parseNoteUploadResponse(noteResponse, noteSeed.imagePath)
+                    },
+                    this::showNetworkError
+                )
+        )
     }
 
     private fun isValidNote(noteSeed: NoteSeed): Pair<Boolean, Int> = when {
@@ -70,11 +97,25 @@ class NotePresenter @Inject constructor(retrofit: Retrofit) :
         pushState(NoteViewState.Error(R.string.upload_error_generic))
     }
 
-    private fun parseResponse(uploadResponse: Response<ResponseBody>?) {
-        if (uploadResponse?.isSuccessful == true) {
-            pushState(NoteViewState.Error(R.string.upload_success))
+    private fun parseNoteUploadResponse(uploadResponse: NoteUploadResponse?, imagePath: String?) {
+        when {
+            uploadResponse == null -> showNetworkError(Throwable())
+            uploadResponse.success -> {
+                if (imagePath != null && uploadResponse.noteId != null) {
+                    uploadImageContent(uploadResponse.noteId, imagePath)
+                } else {
+                    pushState(NoteViewState.Message(R.string.upload_note_success))
+                }
+            }
+            else -> pushState(NoteViewState.Error(R.string.upload_note_error))
+        }
+    }
+
+    private fun parseImageUploadResponse(uploadResponse: ImageUploadResponse?) {
+        if (uploadResponse != null && uploadResponse.success) {
+            pushState(NoteViewState.Message(R.string.upload_image_success))
         } else {
-            showNetworkError(Throwable())
+            pushState(NoteViewState.Error(R.string.upload_image_error))
         }
     }
 }

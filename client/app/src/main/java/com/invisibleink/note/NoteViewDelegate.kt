@@ -1,7 +1,7 @@
 package com.invisibleink.note
 
 import android.app.DatePickerDialog
-import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.EditText
@@ -30,6 +30,7 @@ class NoteViewDelegate(viewProvider: ViewProvider) :
     private val uploadButton: Button = viewProvider.findViewById(R.id.uploadButton)
     private val expirationButton: Button = viewProvider.findViewById(R.id.expirationButton)
     private var expirationDate: DateTime? = null
+    private var imagePath: String? = null
 
     init {
         uploadButton.setOnClickListener { pushEvent(NoteViewEvent.Upload(composeNote())) }
@@ -40,8 +41,9 @@ class NoteViewDelegate(viewProvider: ViewProvider) :
     override fun render(viewState: NoteViewState): Unit? = when (viewState) {
         is NoteViewState.Empty -> clearNoteContent()
         is NoteViewState.Draft -> showDraftContent(viewState.draft)
-        is NoteViewState.ImageSelected -> showImageThumbnail(viewState.image)
+        is NoteViewState.ImageSelected -> showImageThumbnail(viewState.imagePath)
         is NoteViewState.Error -> showMessage(viewState.message)
+        is NoteViewState.Message -> showMessage(viewState.message)
     }
 
     private fun clearNoteContent() {
@@ -54,8 +56,8 @@ class NoteViewDelegate(viewProvider: ViewProvider) :
         title.setText(noteSeed.title)
         body.setText(noteSeed.body)
 
-        if (noteSeed.image != null) {
-            addPhotoButton.setImageBitmap(noteSeed.image)
+        if (noteSeed.imagePath != null) {
+            showImageThumbnail(noteSeed.imagePath)
         }
 
         if (noteSeed.expiration != null) {
@@ -64,7 +66,10 @@ class NoteViewDelegate(viewProvider: ViewProvider) :
         }
     }
 
-    private fun showImageThumbnail(image: Bitmap) = addPhotoButton.setImageBitmap(image)
+    private fun showImageThumbnail(imagePath: String) =
+        addPhotoButton.setImageBitmap(BitmapFactory.decodeFile(imagePath)).also {
+            this.imagePath = imagePath
+        }
 
     private fun showMessage(@StringRes message: Int) = title.showSnackbar(message)
 
@@ -87,6 +92,7 @@ class NoteViewDelegate(viewProvider: ViewProvider) :
     private fun composeNote(): NoteSeed = NoteSeed(
         title = title.text.toString(),
         body = body.text.toString(),
+        imagePath = imagePath,
         expiration = expirationDate
     )
 

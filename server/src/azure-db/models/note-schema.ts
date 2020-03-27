@@ -5,8 +5,8 @@ import { Point } from 'geojson';
 export interface NoteSchema {
     title: string;
     body: string;
-    timeStamp: string;
     expiryTime: string;
     score: number;
     location: Point;
+    imageUrl?: string;
 }

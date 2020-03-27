@@ -1,6 +1,5 @@
 package com.invisibleink.note
 
-import android.graphics.Bitmap
 import androidx.annotation.StringRes
 import com.google.android.gms.maps.model.LatLng
 import com.invisibleink.architecture.Destination
@@ -11,16 +10,17 @@ import org.joda.time.DateTime
 data class NoteSeed(
     val title: String,
     val body: String,
-    val image: Bitmap? = null,
+    val imagePath: String? = null,
     val expiration: DateTime? = null,
     var location: LatLng? = null
 )
 
 sealed class NoteViewState : ViewState {
     object Empty : NoteViewState()
-    data class ImageSelected(val image: Bitmap) : NoteViewState()
+    data class ImageSelected(val imagePath: String) : NoteViewState()
     data class Draft(val draft: NoteSeed) : NoteViewState()
     data class Error(@StringRes val message: Int) : NoteViewState()
+    data class Message(@StringRes val message: Int) : NoteViewState()
 }
 
 sealed class NoteViewEvent : ViewEvent {
