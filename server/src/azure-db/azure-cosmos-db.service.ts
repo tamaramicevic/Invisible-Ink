@@ -52,7 +52,7 @@ export class AzureCosmosDbService implements OnApplicationBootstrap {
         return;
       }
 
-    async UploadNote(note: Note): Promise<void> {
+    async UploadNote(note: Note): Promise<string> {
         try {
             const { database } = await this.mCosmosDbClient.databases.createIfNotExists({ id: this.mDBId });
             const { container: noteContainer } = await database.containers.createIfNotExists({ id: this.mNoteContainerId });
@@ -76,11 +76,12 @@ export class AzureCosmosDbService implements OnApplicationBootstrap {
     
             const { item } = await noteContainer.items.create(dbNote);
             
+            return item.id;
+            
         } catch (error) {
             Logger.log(`Error uploading note: ${error}`, 'AzureCosmosDbService');
         }
 
-        return;
     }
 
     async RetrieveNotes(searchParams: NoteSearchParams): Promise<Note[]> {

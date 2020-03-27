@@ -6,5 +6,6 @@ export enum ErrorCondition {
 
 export interface UploadNoteResponse {
     success: boolean;
+    noteId?: string;
     error?: ErrorCondition;
 }

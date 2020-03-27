@@ -4,7 +4,7 @@ import { Note } from '../shared/models/note';
 import { UploadNoteRequest } from './models/upload-note-request';
 import { ErrorCondition, UploadNoteResponse } from './models/upload-note-response';
 
-@Controller('upload-note')
+@Controller('upload')
 export class UploadNoteController {
     // TODO: Add interceptor for ErrorCondition.BAD_SENTIMENT_DETECTED
     // TODO: Add interceptor for ErrorCondition.PII_DETECTED
@@ -27,11 +27,11 @@ export class UploadNoteController {
             Lon: requestBody.location.longitude,
         };
         try {
-            await this.azureCosmosDbService.UploadNote(note);
+            const noteId: string = await this.azureCosmosDbService.UploadNote(note);
+            return {success: true, noteId } as UploadNoteResponse;
         } catch (error) {
             return {success: false, error: ErrorCondition.UPLOAD_FAILED };
         }
 
-        return {success: true} as UploadNoteResponse;
     }
 }
