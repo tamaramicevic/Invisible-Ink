@@ -1,28 +1,37 @@
 package com.invisibleink.explore.ar
 
 import android.R.attr.fragment
+import android.annotation.SuppressLint
 import com.invisibleink.R
 import android.content.Context
+import android.content.Intent
 import android.location.Location
 import android.os.Bundle
 import android.os.Looper
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageButton
+import android.widget.RelativeLayout
 import android.widget.Toast
+import androidx.fragment.app.FragmentManager
+import androidx.fragment.app.FragmentTransaction
 import com.google.android.gms.location.*
 import com.google.android.gms.maps.model.LatLng
 import com.google.ar.core.*
 import com.google.ar.core.Pose
 import com.google.ar.sceneform.AnchorNode
 import com.google.ar.sceneform.FrameTime
+import com.google.ar.sceneform.Node
 import com.google.ar.sceneform.math.Vector3
 import com.google.ar.sceneform.rendering.ViewRenderable
 import com.google.ar.sceneform.ux.ArFragment
 import com.google.ar.sceneform.ux.TransformableNode
+import com.invisibleink.architecture.Router
 import com.invisibleink.architecture.ViewProvider
 import com.invisibleink.extensions.findViewOrThrow
+import com.invisibleink.image.ImageFragment
 import com.invisibleink.injection.InvisibleInkApplication
 import com.invisibleink.location.LocationFragment
 import com.invisibleink.location.LocationProvider
@@ -36,7 +45,7 @@ import kotlin.math.cos
 import kotlin.math.sin
 
 
-class ArExploreFragment : ArFragment(), ViewProvider, LocationProvider {
+class ArExploreFragment : ArFragment(), ViewProvider, Router<ArExploreDestination>, LocationProvider {
 
     companion object {
         private const val REQUEST_LOCATION = 0
@@ -101,29 +110,31 @@ class ArExploreFragment : ArFragment(), ViewProvider, LocationProvider {
     ): View? {
         val view = super.onCreateView(inflater, container, savedInstanceState)
 
+        ViewRenderable.builder()
+            .setView(requireActivity().baseContext, R.layout.ar_note_view).build()
+            .thenAcceptAsync { renderable ->
 
+                renderable.view.findViewById<RelativeLayout>(R.id.noteLayout).setOnClickListener {
+                    viewDelegate.pushEvent(ArExploreViewEvent.ShowImage)
+                }
 
-//        ViewRenderable.builder()
-//            .setView(requireActivity().baseContext, R.layout.ar_note_view).build()
-//            .thenAcceptAsync { renderable: ViewRenderable ->
-//
-//                // checks if buttons work correctly
-//                renderable.view.findViewById<ImageButton>(R.id.noteReport).setOnClickListener {
-//                    Toast.makeText(requireActivity().baseContext, "Report Note!", Toast.LENGTH_LONG).show()
-//                }
-//
-//                renderable.view.findViewById<ImageButton>(R.id.noteUpvote).setOnClickListener {
-//                    Toast.makeText(requireActivity().baseContext, "Upvote Note!", Toast.LENGTH_LONG).show()
-//                }
-//
-//                renderable.view.findViewById<ImageButton>(R.id.noteDownvote).setOnClickListener {
-//                    Toast.makeText(requireActivity().baseContext, "Downvote Note!", Toast.LENGTH_LONG).show()
-//                }
-//
-//                this.renderable = renderable
-//            }
-//
-//        arSceneView.scene.addOnUpdateListener(this)
+                // checks if buttons work correctly
+                renderable.view.findViewById<ImageButton>(R.id.noteReport).setOnClickListener {
+                    Toast.makeText(requireActivity().baseContext, "Report Note!", Toast.LENGTH_LONG).show()
+                }
+
+                renderable.view.findViewById<ImageButton>(R.id.noteUpvote).setOnClickListener {
+                    Toast.makeText(requireActivity().baseContext, "Upvote Note!", Toast.LENGTH_LONG).show()
+                }
+
+                renderable.view.findViewById<ImageButton>(R.id.noteDownvote).setOnClickListener {
+                    Toast.makeText(requireActivity().baseContext, "Downvote Note!", Toast.LENGTH_LONG).show()
+                }
+
+                this.renderable = renderable
+            }
+
+        arSceneView.scene.addOnUpdateListener(this)
 
         return view
     }
@@ -136,52 +147,51 @@ class ArExploreFragment : ArFragment(), ViewProvider, LocationProvider {
      * Renders a note object at the center of the screen without tapping
      */
     override fun onUpdate(frameTime: FrameTime?) {
+        val frame = arSceneView.arFrame
 
-//        val frame = arSceneView.arFrame
-//
-//        if (frame != null) {
-//            // get the trackables to ensure planes are detected
-//            val trackables = frame.getUpdatedTrackables(Plane::class.java).iterator()
-//            while(trackables.hasNext()) {
-//                val plane = trackables.next() as Plane
-//
-//                if (plane.trackingState == TrackingState.TRACKING) {
-//
-//                    // dhde the plane discovery helper animation
-//                    planeDiscoveryController.hide()
-//
-//                    // get all added anchors to the frame
-//                    val iterableAnchor = frame.updatedAnchors.iterator()
-//
-//                    // place the first object only if no previous anchors were added
-//                    if(!iterableAnchor.hasNext()) {
-//                        //Perform a hit test at the center of the screen to place an object without tapping
-//                        val hitTest = frame.hitTest(frame.screenCenter().x, frame.screenCenter().y)
-//
-//                        //iterate through all hits
-//                        val hitTestIterator = hitTest.iterator()
-//                        while(hitTestIterator.hasNext()) {
-//                            val hitResult = hitTestIterator.next()
-//
-//                            val anchor = plane.createAnchor(hitResult.hitPose)
-//
-//                            val anchorNode = AnchorNode(anchor)
-//                            anchorNode.setParent(arSceneView.scene)
-//
-//                            // create a new TranformableNode that will carry our object
-//                            val transformableNode = TransformableNode(transformationSystem)
-//                            transformableNode.setParent(anchorNode)
-//                            transformableNode.renderable = this.renderable
-//
-//                            // alter the real world position to ensure object renders on the table top. Not somewhere inside.
-//                            transformableNode.worldPosition = Vector3(anchor.pose.tx(),
-//                                anchor.pose.compose(Pose.makeTranslation(0f, 0.05f, 0f)).ty(),
-//                                anchor.pose.tz())
-//                        }
-//                    }
-//                }
-//            }
-//        }
+        if (frame != null) {
+            // get the trackables to ensure planes are detected
+            val trackables = frame.getUpdatedTrackables(Plane::class.java).iterator()
+            while(trackables.hasNext()) {
+                val plane = trackables.next() as Plane
+
+                if (plane.trackingState == TrackingState.TRACKING) {
+
+                    // dhde the plane discovery helper animation
+                    planeDiscoveryController.hide()
+
+                    // get all added anchors to the frame
+                    val iterableAnchor = frame.updatedAnchors.iterator()
+
+                    // place the first object only if no previous anchors were added
+                    if(!iterableAnchor.hasNext()) {
+                        //Perform a hit test at the center of the screen to place an object without tapping
+                        val hitTest = frame.hitTest(frame.screenCenter().x, frame.screenCenter().y)
+
+                        //iterate through all hits
+                        val hitTestIterator = hitTest.iterator()
+                        while(hitTestIterator.hasNext()) {
+                            val hitResult = hitTestIterator.next()
+
+                            val anchor = plane.createAnchor(hitResult.hitPose)
+
+                            val anchorNode = AnchorNode(anchor)
+                            anchorNode.setParent(arSceneView.scene)
+
+                            // create a new TranformableNode that will carry our object
+                            val transformableNode = TransformableNode(transformationSystem)
+                            transformableNode.setParent(anchorNode)
+                            transformableNode.renderable = this.renderable
+
+                            // alter the real world position to ensure object renders on the table top. Not somewhere inside.
+                            transformableNode.worldPosition = Vector3(anchor.pose.tx(),
+                                anchor.pose.compose(Pose.makeTranslation(0f, 0.05f, 0f)).ty(),
+                                anchor.pose.tz())
+                        }
+                    }
+                }
+            }
+        }
     }
 
     override fun onAttach(context: Context) {
@@ -195,6 +205,7 @@ class ArExploreFragment : ArFragment(), ViewProvider, LocationProvider {
         viewDelegate.arFragment = this
         viewDelegate.arView = arSceneView
         presenter.locationProvider = this
+        presenter.router = this
         presenter.attach(viewDelegate)
     }
 
@@ -219,5 +230,21 @@ class ArExploreFragment : ArFragment(), ViewProvider, LocationProvider {
         locationChangedListener = onLocationChangeCallback
     }
 
+    @SuppressLint("ResourceType")
+    override fun routeTo(destination: ArExploreDestination): Unit = when (destination) {
+        ArExploreDestination.ShowImage -> {
+
+            val imageURL: String = "https://source.unsplash.com/random" // TODO: remove url placeholder
+
+            val imageFragment : ImageFragment = ImageFragment()
+            val bundle = Bundle()
+            bundle.putString("IMAGE-URL", imageURL)
+            imageFragment.arguments = bundle
+
+            val fragmentTransaction: FragmentTransaction? = fragmentManager?.beginTransaction()
+            fragmentTransaction?.replace(R.id.fragmentContainer, imageFragment)?.addToBackStack(null)
+            val commit = fragmentTransaction?.commit()
+        }
+    }
 
 }

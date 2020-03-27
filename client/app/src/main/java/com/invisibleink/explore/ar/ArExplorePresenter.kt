@@ -3,6 +3,7 @@ package com.invisibleink.explore.ar
 import android.util.Log
 import com.invisibleink.R
 import com.invisibleink.architecture.BasePresenter
+import com.invisibleink.architecture.Router
 import com.invisibleink.location.LocationProvider
 import com.invisibleink.models.Note
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -20,9 +21,11 @@ class ArExplorePresenter @Inject constructor(
     private val disposable = CompositeDisposable()
     var locationProvider: LocationProvider? = null
     private var recentNotes: List<Note> = listOf()
+    var router: Router<ArExploreDestination>? = null
 
     override fun onEvent(viewEvent: ArExploreViewEvent) = when (viewEvent) {
         ArExploreViewEvent.FetchNotes -> fetchNotes()
+        ArExploreViewEvent.ShowImage -> router?.routeTo(ArExploreDestination.ShowImage)
     }
 
     override fun onAttach() {
@@ -47,7 +50,6 @@ class ArExplorePresenter @Inject constructor(
         pushState(ArExploreViewState.Loading)
 
         val deviceLocation = locationProvider?.getCurrentLocation()
-        Log.i("RenderingTest", "Presenter device location: $deviceLocation")
         if (deviceLocation != null) {
             disposable.add(
                 exploreApi.fetchNotes(
@@ -66,18 +68,23 @@ class ArExplorePresenter @Inject constructor(
     }
 
     private fun showNotes(notes: List<Note>) {
-        val deviceLocation = locationProvider?.getCurrentLocation()
-        recentNotes = notes
-
-        val viewState = if (deviceLocation != null) {
-            ArExploreViewState.Success(deviceLocation, recentNotes)
-        } else {
-            ArExploreViewState.Error(R.string.error_invalid_device_location)
-        }
-        pushState(viewState)
+//        Log.i("RenderingTest", "Presenter showNotes")
+//        val deviceLocation = locationProvider?.getCurrentLocation()
+//        recentNotes = notes
+//
+//        val viewState = if (deviceLocation != null) {
+//            ArExploreViewState.Success(deviceLocation, recentNotes)
+//        } else {
+//            ArExploreViewState.Error(R.string.error_invalid_device_location)
+//        }
+//        pushState(viewState)
     }
 
     private fun showError(throwable: Throwable) {
         pushState(ArExploreViewState.Error(R.string.error_fetch_notes_generic))
+    }
+
+    private fun showImage() {
+
     }
 }

@@ -35,6 +35,10 @@ sealed class ArExploreViewState : ViewState {
 
 sealed class ArExploreViewEvent : ViewEvent {
     object FetchNotes : ArExploreViewEvent()
+    object ShowImage : ArExploreViewEvent()
 }
 
-sealed class ArExploreDestination : Destination
+sealed class ArExploreDestination : Destination {
+    object ShowImage : ArExploreDestination()
+}
+

@@ -41,7 +41,9 @@ class ArExploreViewDelegate(viewProvider: ViewProvider) :
         Log.i("RenderingTest", "Loading...")
     }
 
-    private fun showMessage(@StringRes message: Int)  = arView?.showSnackbar(message)
+    private fun showMessage(@StringRes message: Int) /** = arView?.showSnackbar(message) **/ {
+        Log.i("RenderingTest", "Error...")
+    }
 
     private fun Frame.screenCenter(): Vector3 {
         return Vector3(arView.width / 2f, arView.height / 2f, 0f);
@@ -49,13 +51,11 @@ class ArExploreViewDelegate(viewProvider: ViewProvider) :
 
     private fun renderNote() {
         val frame = arView.arFrame
-        Log.i("RenderingTest", "enter Rendering..")
 
         while (frame == null) { Log.i("RenderingTest", "Waiting to render..") /** do nothing **/}
 
         if (frame != null) {
-            Log.i("RenderingTest", "Rendering.. ")
-            // get the trackables to ensure planes are detected
+           // get the trackables to ensure planes are detected
             val trackables = frame.getUpdatedTrackables(Plane::class.java).iterator()
             while (trackables.hasNext()) {
                 val plane = trackables.next() as Plane
@@ -103,11 +103,10 @@ class ArExploreViewDelegate(viewProvider: ViewProvider) :
 
     private fun showNotes(deviceLocation: LatLng, notes: List<Note>) {
 
-        Log.i("RenderingTest", notes.toString())
+        val note = notes[0]
 
-        notes.forEach { note ->
             ViewRenderable.builder()
-                .setView(arView.context, R.layout.ar_note_view).build()
+                .setView(arFragment.requireActivity().baseContext, R.layout.ar_note_view).build()
                 .thenAcceptAsync { renderable ->
 
                     val noteTitle: TextView = viewProvider.findViewById(R.id.noteTitle) as TextView
@@ -121,6 +120,12 @@ class ArExploreViewDelegate(viewProvider: ViewProvider) :
 
                     val noteExpiration: TextView = viewProvider.findViewById(R.id.noteExpiry) as TextView
                     noteExpiration.text = note.expiration.toString()
+
+                    if (note.imageUrl != null) {
+                        renderable.view.findViewById<ImageButton>(R.id.noteLayout).setOnClickListener {
+                            pushEvent(ArExploreViewEvent.ShowImage)
+                        }
+                    }
 
                     // checks if buttons work correctly
                     renderable.view.findViewById<ImageButton>(R.id.noteReport).setOnClickListener {
@@ -136,12 +141,50 @@ class ArExploreViewDelegate(viewProvider: ViewProvider) :
                     }
 
                     this.renderable = renderable
-                    Log.i("RenderingTest", "About to render..")
-                    renderNote();
-
-//                    arView.scene.addOnUpdateListener { renderNote() }
                 }
-        }
+        renderNote()
+//        arView.scene.addOnUpdateListener(arFragment)
+
+
+//        notes.forEach { note ->
+//            Log.i("RenderingTest", "NOTE: $note")
+//            ViewRenderable.builder()
+//                .setView(arFragment.requireActivity().baseContext, R.layout.ar_note_view).build()
+//                .thenAcceptAsync { renderable ->
+//
+//                    Log.i("RenderingTest", "Creating renderable");
+////                    val noteTitle: TextView = viewProvider.findViewById(R.id.noteTitle) as TextView
+////                    noteTitle.text = note.title
+////
+////                    val noteBody: TextView = viewProvider.findViewById(R.id.noteBody) as TextView
+////                    noteBody.text = note.body
+////
+////                    val noteScore: TextView = viewProvider.findViewById(R.id.noteScore) as TextView
+////                    noteScore.text = note.score.toString()
+////
+////                    val noteExpiration: TextView = viewProvider.findViewById(R.id.noteExpiry) as TextView
+////                    noteExpiration.text = note.expiration.toString()
+//
+//                    // checks if buttons work correctly
+//                    renderable.view.findViewById<ImageButton>(R.id.noteReport).setOnClickListener {
+//                        Toast.makeText(arView.context, "Report Note!", Toast.LENGTH_LONG).show()
+//                    }
+//
+//                    renderable.view.findViewById<ImageButton>(R.id.noteUpvote).setOnClickListener {
+//                        Toast.makeText(arView.context, "Upvote Note!", Toast.LENGTH_LONG).show()
+//                    }
+//
+//                    renderable.view.findViewById<ImageButton>(R.id.noteDownvote).setOnClickListener {
+//                        Toast.makeText(arView.context, "Downvote Note!", Toast.LENGTH_LONG).show()
+//                    }
+//
+//                    this.renderable = renderable
+//                    Log.i("RenderingTest", "About to render..")
+//                    renderNote()
+//
+////                    arView.scene.addOnUpdateListener { renderNote() }
+//                }
+//        }
 
 //        arView.scene.addOnUpdateListener(this)
     }
