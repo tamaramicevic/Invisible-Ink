@@ -1,9 +1,7 @@
 package com.invisibleink.explore.ar
 
-import android.util.Log
 import com.invisibleink.R
 import com.invisibleink.architecture.BasePresenter
-import com.invisibleink.architecture.Router
 import com.invisibleink.location.LocationProvider
 import com.invisibleink.models.Note
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -21,11 +19,9 @@ class ArExplorePresenter @Inject constructor(
     private val disposable = CompositeDisposable()
     var locationProvider: LocationProvider? = null
     private var recentNotes: List<Note> = listOf()
-    var router: Router<ArExploreDestination>? = null
 
     override fun onEvent(viewEvent: ArExploreViewEvent) = when (viewEvent) {
         ArExploreViewEvent.FetchNotes -> fetchNotes()
-//        ArExploreViewEvent.ShowImage -> router?.routeTo(ArExploreDestination.ShowImage)
     }
 
     override fun onAttach() {
@@ -68,7 +64,6 @@ class ArExplorePresenter @Inject constructor(
     }
 
     private fun showNotes(notes: List<Note>) {
-        Log.i("RenderingTest", "Presenter showNotes")
         val deviceLocation = locationProvider?.getCurrentLocation()
         recentNotes = notes
 

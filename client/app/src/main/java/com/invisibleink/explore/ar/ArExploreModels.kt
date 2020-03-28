@@ -35,10 +35,6 @@ sealed class ArExploreViewState : ViewState {
 
 sealed class ArExploreViewEvent : ViewEvent {
     object FetchNotes : ArExploreViewEvent()
-//    data class ShowImage(val imageURL: String) : ArExploreViewEvent()
 }
 
-sealed class ArExploreDestination : Destination {
-//    object ShowImage : ArExploreDestination()
-}
-
+sealed class ArExploreDestination : Destination

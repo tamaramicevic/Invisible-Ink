@@ -15,13 +15,15 @@ object NetworkModule {
     @Provides
     fun provideOkHttpClient(): OkHttpClient =
         OkHttpClient.Builder()
+            .addInterceptor(FetchNotesInterceptor())
             .build()
 
     @Provides
     fun provideRetrofit(okHttpClient: OkHttpClient): Retrofit =
         Retrofit.Builder()
             .client(okHttpClient)
-            .baseUrl("http://162.246.157.171:3000/")
+            .baseUrl("https://jsonplaceholder.typicode.com/todos/1/")
+//            .baseUrl("http://162.246.157.171:3000/")
             .addConverterFactory(GsonConverterFactory.create(createGson()))
             .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
             .build()
