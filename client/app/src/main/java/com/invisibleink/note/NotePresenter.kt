@@ -60,7 +60,7 @@ class NotePresenter @Inject constructor(retrofit: Retrofit) :
 
     private fun uploadImageContent(noteId: String, validImagePath: String) {
         val imageFile = File(validImagePath)
-        val fileBody = imageFile.asRequestBody(("multipart/form-data".toMediaTypeOrNull()))
+        val fileBody = imageFile.asRequestBody(("image".toMediaTypeOrNull()))
         val imagePart = MultipartBody.Part.createFormData("file", imageFile.name, fileBody)
 
         disposable.add(

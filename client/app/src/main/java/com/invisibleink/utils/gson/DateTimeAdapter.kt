@@ -5,6 +5,7 @@ import com.google.gson.stream.JsonReader
 import com.google.gson.stream.JsonWriter
 import org.joda.time.DateTime
 import org.joda.time.format.ISODateTimeFormat
+import java.lang.IllegalArgumentException
 
 class DateTimeAdapter : TypeAdapter<DateTime>() {
 
@@ -15,13 +16,13 @@ class DateTimeAdapter : TypeAdapter<DateTime>() {
             dateString?.let { DateTime.parse(it, DATE_FORMATTER) } ?: DateTime.now()
     }
 
-    override fun write(out: JsonWriter?, dateTime: DateTime?) {
+    override fun write(output: JsonWriter?, dateTime: DateTime?) {
         if (dateTime != null) {
-            out?.value(DATE_FORMATTER.print(dateTime))
+            output?.value(DATE_FORMATTER.print(dateTime))
         } else {
-            out?.nullValue()
+            output?.nullValue()
         }
     }
 
-    override fun read(`in`: JsonReader?): DateTime = parseIsoDate(`in`?.nextString())
+    override fun read(input: JsonReader?): DateTime = parseIsoDate(input?.nextString())
 }
