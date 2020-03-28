@@ -87,8 +87,8 @@ class NotePresenter @Inject constructor(retrofit: Retrofit) :
 
     private fun isValidNote(noteSeed: NoteSeed): Pair<Boolean, Int> = when {
         noteSeed.title.isEmpty() -> false to R.string.invalid_note_title
-        noteSeed.body.isEmpty() -> false to R.string.invalid_note_title
-        else -> true to R.string.valid_note
+        noteSeed.body.isEmpty() -> false to R.string.invalid_note_body
+        else -> true to R.string.empty_string
     }
 
     private fun showNetworkError(throwable: Throwable) {
