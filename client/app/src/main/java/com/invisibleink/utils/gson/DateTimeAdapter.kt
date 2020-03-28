@@ -5,15 +5,20 @@ import com.google.gson.stream.JsonReader
 import com.google.gson.stream.JsonWriter
 import org.joda.time.DateTime
 import org.joda.time.format.ISODateTimeFormat
-import java.lang.IllegalArgumentException
 
 class DateTimeAdapter : TypeAdapter<DateTime>() {
 
     companion object {
         private val DATE_FORMATTER = ISODateTimeFormat.dateTime().withZoneUTC()
 
-        fun parseIsoDate(dateString: String?): DateTime =
-            dateString?.let { DateTime.parse(it, DATE_FORMATTER) } ?: DateTime.now()
+        fun parseIsoDate(dateString: String?): DateTime {
+            val defaultDate = DateTime.now()
+            return try {
+                dateString?.let { DateTime.parse(it, DATE_FORMATTER) } ?: defaultDate
+            } catch (ex: IllegalArgumentException) {
+                defaultDate
+            }
+        }
     }
 
     override fun write(output: JsonWriter?, dateTime: DateTime?) {
