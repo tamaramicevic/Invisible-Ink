@@ -7,6 +7,6 @@ import retrofit2.http.POST
 
 interface ArExploreApi {
 
-    @POST("notes")
+    @POST("retrieve-notes")
     fun fetchNotes(@Body fetchNotesRequest: FetchNotesRequest): Observable<List<Note>>
 }

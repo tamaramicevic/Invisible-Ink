@@ -45,8 +45,9 @@ class ArExploreFragment : ArFragment(), ViewProvider, LocationProvider {
     @Inject
     lateinit var presenter: ArExplorePresenter
     private lateinit var viewDelegate: ArExploreViewDelegate
-    private lateinit var renderables: MutableList<ViewRenderable>
-    private lateinit var renderable: ViewRenderable
+    private lateinit var notesToRender: MutableMap<String, ViewRenderable>
+    private lateinit var notesRendered: MutableMap<String, ViewRenderable>
+//    private lateinit var renderable: ViewRenderable
     private lateinit var locationProvider: FusedLocationProviderClient
     private var lastLocation: LatLng? = null
     private var locationChangedListener: ((LatLng) -> Unit?)? = null
@@ -56,7 +57,8 @@ class ArExploreFragment : ArFragment(), ViewProvider, LocationProvider {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         requireLocationPermission(REQUEST_LOCATION, this@ArExploreFragment::setUpLocationListener)
-        this.renderables = mutableListOf()
+        this.notesToRender = mutableMapOf()
+        this.notesRendered = mutableMapOf()
     }
 
     override fun onRequestPermissionsResult(
@@ -108,24 +110,23 @@ class ArExploreFragment : ArFragment(), ViewProvider, LocationProvider {
 
     fun showNotes(deviceLocation: LatLng, notes: List<Note>) {
 
-        var note = notes[0]
-//        notes.forEach { note ->
+        var i = 0
+        notes.forEach { note ->
             ViewRenderable.builder()
                 .setView(requireActivity().baseContext, R.layout.ar_note_view).build()
                 .thenAcceptAsync { renderable ->
 
                     var imageURL = note.imageUrl
                     if (note.imageUrl == null) {
-//                        imageURL =
-//                            "https://invisibleincistorageacc.blob.core.windows.net/note-images/3a2865e6-ad29-485f-b87e-3984abf8f8d6?sv=2019-02-02&ss=bfqt&srt=sco&sp=rwdlacup&se=2020-11-21T05:28:30Z&st=2020-03-25T20:28:30Z&spr=https,http&sig=5aStS3doL7KkrlLqPtqk%2BoeNOpIoKwVOsihjtTMwp5Q%3D"
-                        imageURL = "https://invisibleincistorageacc.blob.core.windows.net/note-images/328a0774-a8d9-4046-a3a0-a0838fe0cbfe?sv=2019-02-02&ss=bfqt&srt=sco&sp=rwdlacup&se=2020-11-21T05:28:30Z&st=2020-03-25T20:28:30Z&spr=https,http&sig=5aStS3doL7KkrlLqPtqk%2BoeNOpIoKwVOsihjtTMwp5Q%3D"
+                        imageURL =
+                            "https://invisibleincistorageacc.blob.core.windows.net/note-images/3a2865e6-ad29-485f-b87e-3984abf8f8d6?sv=2019-02-02&ss=bfqt&srt=sco&sp=rwdlacup&se=2020-11-21T05:28:30Z&st=2020-03-25T20:28:30Z&spr=https,http&sig=5aStS3doL7KkrlLqPtqk%2BoeNOpIoKwVOsihjtTMwp5Q%3D"
                     }
 
 //                    if (note.imageUrl != null) {
-                        renderable.view.findViewById<RelativeLayout>(R.id.noteLayout)
-                            .setOnClickListener {
-                                imageURL?.let { it1 -> showImage(it1) }
-                            }
+                    renderable.view.findViewById<RelativeLayout>(R.id.noteLayout)
+                        .setOnClickListener {
+                            imageURL?.let { it1 -> showImage(it1) }
+                        }
 //                    }
 
                     var noteTitle = renderable.view.findViewById<TextView>(R.id.noteTitle)
@@ -168,14 +169,31 @@ class ArExploreFragment : ArFragment(), ViewProvider, LocationProvider {
                             ).show()
                         }
 
-                    Log.i("RenderingTest", "ADDING : $renderable")
-                    this.renderable = renderable
-//                    this.renderables.add(renderable)
-                    Log.i("RenderingTest", "ADDING RENDERABLES: "+this.renderables)
+                    i += 1
+                    val note_id = "test note id "+i
+                    if (!this.notesRendered.containsKey(note_id!!)) {
+                        note_id?.let { this.notesToRender.put(it, renderable) }
+                    }
+
+                    // TODO: uncomment this & remove above block when notes are no longer dummy data
+//                    if (!this.notesRendered.containsKey(note.id!!)) {
+//                        note.id?.let { this.notesToRender.put(it, renderable) }
+//                    }
+
+                    Log.i("RenderingTest", "NOTES TO RENDER: " + this.notesToRender)
+                    Log.i("RenderingTest", "NOTES RENDERED: " + this.notesRendered)
 
                 }
+                .exceptionally {
+                    Toast.makeText(
+                        requireActivity().baseContext,
+                        "Unable to render note: " + note.id,
+                        Toast.LENGTH_LONG
+                    ).show()
+                    return@exceptionally null;
+                }
         }
-//    }
+    }
 
     private fun Frame.screenCenter(): Vector3 {
         return Vector3(arSceneView.width / 2f, arSceneView.height / 2f, 0f);
@@ -198,8 +216,8 @@ class ArExploreFragment : ArFragment(), ViewProvider, LocationProvider {
                         Log.i("RenderingTest", "Plane tracking")
                         // dhde the plane discovery helper animation
                         planeDiscoveryController.hide()
-                        Log.i("RenderingTest", "RENDERABLES: "+this.renderables)
-//                        this.renderables?.forEach { renderable ->
+                        Log.i("RenderingTest", "RENDERING : "+this.notesToRender)
+                        this.notesToRender?.forEach { renderable ->
                             // get all added anchors to the frame
                         val iterableAnchor = frame.updatedAnchors.iterator()
 
@@ -223,9 +241,10 @@ class ArExploreFragment : ArFragment(), ViewProvider, LocationProvider {
                                 // create a new TranformableNode that will carry our object
                                 val transformableNode = TransformableNode(transformationSystem)
                                 transformableNode.setParent(anchorNode)
-//                                Log.i("RenderingTest", "RENDERABLE: $renderable")
-//                                transformableNode.renderable = renderable
-                                transformableNode.renderable = this.renderable
+                                Log.i("RenderingTest", "RENDERABLE: $renderable")
+                                transformableNode.renderable = renderable.value
+                                this.notesRendered.put(renderable.key, renderable.value)
+//                                transformableNode.renderable = this.renderable
 
 
                                 // alter the real world position to ensure object renders on the table top. Not somewhere inside.
@@ -238,7 +257,7 @@ class ArExploreFragment : ArFragment(), ViewProvider, LocationProvider {
                 }
             }
         }
-//    }
+    }
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
