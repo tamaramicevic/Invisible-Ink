@@ -56,14 +56,23 @@ class ArExplorePresenter @Inject constructor(
                 )
                     .subscribeOn(Schedulers.io())
                     .observeOn(AndroidSchedulers.mainThread())
-                    .subscribe(this::showNotes, this::showError)
+                    .subscribe({ noteContainer: NoteContainer? ->
+                        showNotes(noteContainer?.notes)
+                    }
+                        , this::showError
+                    )
             )
         } else {
             pushState(ArExploreViewState.Error(R.string.error_invalid_device_location))
         }
     }
 
-    private fun showNotes(notes: List<Note>) {
+    private fun showNotes(notes: List<Note>?) {
+        if (notes == null) {
+            ArExploreViewState.Error(R.string.error_fetch_notes_generic)
+            return
+        }
+
         val deviceLocation = locationProvider?.getCurrentLocation()
         recentNotes = notes
 

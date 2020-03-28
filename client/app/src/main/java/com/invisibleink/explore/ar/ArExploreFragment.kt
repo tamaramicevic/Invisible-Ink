@@ -169,16 +169,9 @@ class ArExploreFragment : ArFragment(), ViewProvider, LocationProvider {
                             ).show()
                         }
 
-                    i += 1
-                    val note_id = "test note id "+i
-                    if (!this.notesRendered.containsKey(note_id!!)) {
-                        note_id?.let { this.notesToRender.put(it, renderable) }
+                    if (!this.notesRendered.containsKey(note.id!!)) {
+                        note.id?.let { this.notesToRender.put(it, renderable) }
                     }
-
-                    // TODO: uncomment this & remove above block when notes are no longer dummy data
-//                    if (!this.notesRendered.containsKey(note.id!!)) {
-//                        note.id?.let { this.notesToRender.put(it, renderable) }
-//                    }
 
                     Log.i("RenderingTest", "NOTES TO RENDER: " + this.notesToRender)
                     Log.i("RenderingTest", "NOTES RENDERED: " + this.notesRendered)
