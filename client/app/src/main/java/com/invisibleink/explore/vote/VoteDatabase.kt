@@ -1,4 +1,4 @@
-package com.invisibleink.vote
+package com.invisibleink.explore.vote
 
 import android.app.Application
 import androidx.room.*
@@ -8,7 +8,8 @@ fun createVoteDatabase(application: Application): VoteDatabase =
         application,
         VoteDatabase::class.java,
         "vote-database"
-    ).allowMainThreadQueries().build()
+    ).fallbackToDestructiveMigration()
+        .allowMainThreadQueries().build()
 
 @Database(entities = [Vote::class], version = 1)
 abstract class VoteDatabase : RoomDatabase() {
@@ -23,7 +24,7 @@ interface VoteDao {
     fun getAllVotes(): List<Vote>
 
     @Query("SELECT * FROM vote WHERE noteId = :noteId")
-    fun getVote(noteId: Int): Vote?
+    fun getVote(noteId: String): Vote?
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insert(vote: Vote)
