@@ -171,7 +171,11 @@ class ArExploreFragment : ArFragment(), ViewProvider, LocationProvider {
                         }
 
                     Log.i("RenderingTest", "NOTE NOT RENDERED - ADDING")
+
                     notesToRender[note.id] = renderable
+                    if (!this.notesRendered.containsKey(note.id!!)) {
+                        note.id?.let { this.notesToRender.put(it, renderable) }
+                    }
 
                 }
                 .exceptionally {
@@ -180,7 +184,9 @@ class ArExploreFragment : ArFragment(), ViewProvider, LocationProvider {
                         "Unable to render note: " + note.id,
                         Toast.LENGTH_LONG
                     ).show()
+
                     Log.i("RenderingTest", "COULDNT RENDER NOTE: "+note.id)
+
                     return@exceptionally null;
                 }
         }
@@ -217,15 +223,8 @@ class ArExploreFragment : ArFragment(), ViewProvider, LocationProvider {
                             val hitTestIterator = hitTest.iterator()
                             while(hitTestIterator.hasNext()) {
                                 Log.i("RenderingTest", "Hit test successful")
+
                                 val hitResult = hitTestIterator.next()
-
-                                val anchor = plane.createAnchor(hitResult.hitPose)
-
-                                val anchorNode = AnchorNode(anchor)
-                                anchorNode.setParent(arSceneView.scene)
-
-                                val transformableNode = TransformableNode(transformationSystem)
-                                transformableNode.setParent(anchorNode)
 
                                 Log.i("DistanceTest", "Note Positions: $notePositions")
                                 // checks for distances between all currently rendered notes
@@ -250,6 +249,14 @@ class ArExploreFragment : ArFragment(), ViewProvider, LocationProvider {
                                         continue
                                     }
                                 }
+
+                                val anchor = plane.createAnchor(hitResult.hitPose)
+
+                                val anchorNode = AnchorNode(anchor)
+                                anchorNode.setParent(arSceneView.scene)
+
+                                val transformableNode = TransformableNode(transformationSystem)
+                                transformableNode.setParent(anchorNode)
 
                                 Log.i("RenderingTest", "RENDERABLE: $renderable")
                                 transformableNode.renderable = renderable.value
