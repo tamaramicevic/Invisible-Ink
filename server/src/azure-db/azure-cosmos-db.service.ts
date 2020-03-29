@@ -205,7 +205,7 @@ export class AzureCosmosDbService implements OnApplicationBootstrap {
             const { resource: note } = await item.read();
 
             // vote.Rate ? true => upvote; false => downvote
-            note.Score = vote.Rate ? (note.Score + 1) : (note.Score - 1);
+            note.score = vote.Rate ? (note.score + 1) : (note.score - 1);
 
             const { resource: updatedNote } = await noteContainer.items.upsert(note);
 
