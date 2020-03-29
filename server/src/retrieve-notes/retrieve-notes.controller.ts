@@ -5,11 +5,14 @@ import { Note } from 'src/shared/models/note';
 import { NoteLocation } from 'src/shared/models/note-location';
 import { RetrieveNotesRequest } from './models/retrieve-notes-request';
 import { NoteResponse, RetrieveNotesResponsePayload } from './models/retrieve-notes-response';
+import { RetrieveNotesService } from './retrieve-notes.service';
 
 @Controller('retrieve-notes')
 export class RetrieveNotesController {
 
-    constructor(private readonly azureCosmosDbService: AzureCosmosDbService) {}
+    constructor(
+        private readonly azureCosmosDbService: AzureCosmosDbService,
+        private readonly retrieveNotesService: RetrieveNotesService) {}
 
     @Post()
     async RetrieveNotes(@Req() request): Promise<RetrieveNotesResponsePayload> {

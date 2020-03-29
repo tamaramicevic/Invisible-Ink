@@ -119,10 +119,11 @@ export class AzureCosmosDbService implements OnApplicationBootstrap {
                         Lat: note.location.coordinates[1], // double check this conversion
                         Lon: note.location.coordinates[0],
                         ImageId: note.imageUrl ?? null,
-                        } as Note;
-                    },
+                    } as Note;
+                },
                 ).filter(item => !!item);
-
+                
+            Logger.debug(result);
             return this.FilterNotesBySearchTerms(searchParams.Keywords, result);
         } catch (error) {
             Logger.log(`Error retrieving note: ${error}`, 'AzureCosmosDbService');
