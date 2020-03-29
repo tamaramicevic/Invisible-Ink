@@ -9,7 +9,6 @@ import io.reactivex.schedulers.Schedulers
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
 import okhttp3.RequestBody.Companion.asRequestBody
-import okhttp3.RequestBody.Companion.toRequestBody
 import retrofit2.Retrofit
 import java.io.File
 import javax.inject.Inject
@@ -61,12 +60,11 @@ class NotePresenter @Inject constructor(retrofit: Retrofit) :
 
     private fun uploadImageContent(noteId: String, validImagePath: String) {
         val imageFile = File(validImagePath)
-        val requestFile = imageFile.asRequestBody(("multipart/form-data".toMediaTypeOrNull()))
-        val requestBody = MultipartBody.Part.createFormData("image", imageFile.path, requestFile)
-        val noteIdBody = noteId.toRequestBody("multipart/form-data".toMediaTypeOrNull())
+        val fileBody = imageFile.asRequestBody(("image".toMediaTypeOrNull()))
+        val imagePart = MultipartBody.Part.createFormData("file", imageFile.name, fileBody)
 
         disposable.add(
-            noteApi.uploadImage(noteId, requestBody)
+            noteApi.uploadImage(noteId, imagePart)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(this::parseImageUploadResponse, this::showNetworkError)
@@ -89,8 +87,8 @@ class NotePresenter @Inject constructor(retrofit: Retrofit) :
 
     private fun isValidNote(noteSeed: NoteSeed): Pair<Boolean, Int> = when {
         noteSeed.title.isEmpty() -> false to R.string.invalid_note_title
-        noteSeed.body.isEmpty() -> false to R.string.invalid_note_title
-        else -> true to R.string.valid_note
+        noteSeed.body.isEmpty() -> false to R.string.invalid_note_body
+        else -> true to R.string.empty_string
     }
 
     private fun showNetworkError(throwable: Throwable) {

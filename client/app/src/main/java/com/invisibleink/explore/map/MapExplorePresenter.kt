@@ -57,7 +57,11 @@ class MapExplorePresenter @Inject constructor(
                 )
                     .subscribeOn(Schedulers.io())
                     .observeOn(AndroidSchedulers.mainThread())
-                    .subscribe(this::showNotes, this::showError)
+                    .subscribe({ noteContainer: NoteContainer? ->
+                        showNotes(noteContainer?.notes)
+                    }
+                        , this::showError
+                    )
             )
         } else {
             pushState(MapExploreViewState.Error(R.string.error_invalid_device_location))
@@ -73,7 +77,12 @@ class MapExplorePresenter @Inject constructor(
         )
     )
 
-    private fun showNotes(notes: List<Note>) {
+    private fun showNotes(notes: List<Note>?) {
+        if (notes == null) {
+            MapExploreViewState.Error(R.string.error_fetch_notes_generic)
+            return
+        }
+
         val deviceLocation = locationProvider?.getCurrentLocation()
         recentNotes = notes
 

@@ -1,6 +1,9 @@
 <resources>
     <string name="app_name">InvisibleInk</string>
 
+    <!-- Generic strings -->
+    <string name="empty_string" />
+
     <!-- Navigation content -->
     <string name="explore_content">Explore</string>
     <string name="favorites_content">Favorites</string>
@@ -26,8 +29,8 @@
     <string name="upload_error_generic">Failed to upload.</string>
     <string name="upload_note_error">Failed to upload note.</string>
     <string name="upload_image_error">Failed to upload image.</string>
-    <string name="invalid_note_title">The noteContent must contain a non-empty title.</string>
-    <string name="invalid_note_body">The noteContent must contain a non-empty body.</string>
+    <string name="invalid_note_title">The note must contain a non-empty title.</string>
+    <string name="invalid_note_body">The note must contain a non-empty body.</string>
     <string name="valid_note">Valid noteContent!</string>
     <string name="upload_note_success">Successfully uploaded Note!</string>
     <string name="upload_image_success">Successfully uploaded Image!</string>

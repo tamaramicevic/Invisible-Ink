@@ -2,15 +2,24 @@ package com.invisibleink.settings
 
 import android.os.Bundle
 import android.util.Log
+import android.view.ViewGroup
 import androidx.preference.Preference
 import androidx.preference.PreferenceFragmentCompat
 import com.invisibleink.R
-import com.invisibleink.vote.*
+import com.invisibleink.explore.vote.VoteGateway
+import com.invisibleink.explore.vote.createVoteDatabase
+import com.invisibleink.extensions.showSnackbar
+import com.invisibleink.injection.InvisibleInkApplication
+import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.disposables.CompositeDisposable
+import io.reactivex.schedulers.Schedulers
+import javax.inject.Inject
 
 class SettingsFragment : PreferenceFragmentCompat() {
 
-    private lateinit var voteDatabase: VoteDatabase
-    private lateinit var voteDao: VoteDao
+    @Inject
+    lateinit var voteGateway: VoteGateway
+    private val disposable = CompositeDisposable()
 
     override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
         setPreferencesFromResource(R.xml.settings, rootKey)
@@ -19,8 +28,9 @@ class SettingsFragment : PreferenceFragmentCompat() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        voteDatabase = createVoteDatabase(application = requireActivity().application)
-        voteDao = voteDatabase.voteDao()
+        (requireContext().applicationContext as InvisibleInkApplication).appComponent.inject(this)
+        voteGateway.voteDatabase =
+            createVoteDatabase(application = requireActivity().application)
 
         findPreference<Preference>(requireContext().getString(R.string.pref_category_vote_db_clear_key))?.setOnPreferenceClickListener {
             clearVotes()
@@ -28,12 +38,12 @@ class SettingsFragment : PreferenceFragmentCompat() {
         }
 
         findPreference<Preference>(requireContext().getString(R.string.pref_category_vote_db_upvote_key))?.setOnPreferenceClickListener {
-            addUpvote()
+            upvoteNote()
             true
         }
 
         findPreference<Preference>(requireContext().getString(R.string.pref_category_vote_db_downvote_key))?.setOnPreferenceClickListener {
-            addDownvote()
+            downvoteNote()
             true
         }
 
@@ -43,12 +53,39 @@ class SettingsFragment : PreferenceFragmentCompat() {
         }
     }
 
-    private fun clearVotes() = voteDatabase.clearAllTables()
+    override fun onStop() {
+        super.onStop()
+        disposable.dispose()
+    }
 
-    private fun addUpvote() = voteDao.insert(Vote.upvote((0..100000).random()))
+    private fun upvoteNote() {
+        disposable.add(
+            voteGateway.upVoteNote("b56d6a1b-2b1d-4f72-b50e-36474a2ba02e")
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(
+                    { showMessage(it.toString()) },
+                    { showMessage("Error issuing upvote: $it") }
+                )
+        )
+    }
 
-    private fun addDownvote() = voteDao.insert(Vote.downvote((0..100000).random()))
+    private fun downvoteNote() {
+        disposable.add(
+            voteGateway.downvoteNote("b56d6a1b-2b1d-4f72-b50e-36474a2ba02e")
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(
+                    { showMessage(it.toString()) },
+                    { showMessage("Error issuing downvote: $it") }
+                )
+        )
+    }
 
-    private fun logAllVotes() =
-        Log.d("---- Vote Db -----\n\t", voteDao.getAllVotes().joinToString("\n\t"))
+    private fun clearVotes() = voteGateway.clearDatabase()
+
+    private fun logAllVotes() = showMessage(voteGateway.printNotes())
+
+    private fun showMessage(msg: String) =
+        requireActivity().findViewById<ViewGroup>(android.R.id.content).showSnackbar(msg)
 }

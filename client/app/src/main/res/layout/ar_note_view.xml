@@ -9,6 +9,7 @@
 
     <RelativeLayout
         android:id="@+id/noteLayout"
+        android:clickable="true"
         android:layout_width="match_parent"
         android:layout_height="200dp"
         android:paddingLeft="12dp"
