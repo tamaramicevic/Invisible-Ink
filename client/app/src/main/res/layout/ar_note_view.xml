@@ -48,7 +48,7 @@
             android:layout_height="28dp"
             android:layout_alignParentRight="true"
             android:layout_alignParentBottom="true"
-            app:srcCompat="@drawable/ic_report_foreground" />
+            android:src="@drawable/ic_report_foreground" />
 
     </RelativeLayout>
 
@@ -64,7 +64,7 @@
             android:layout_width="45dp"
             android:layout_height="match_parent"
             android:layout_marginLeft="32dp"
-            app:srcCompat="@drawable/ic_downvote_foreground" />
+            android:src="@drawable/ic_downvote_foreground" />
 
         <TextView
             android:id="@+id/noteScore"
@@ -85,7 +85,7 @@
             android:layout_width="45dp"
             android:layout_height="40dp"
             android:layout_marginRight="32dp"
-            app:srcCompat="@drawable/ic_upvote_foreground" />
+            android:src="@drawable/ic_upvote_foreground" />
 
     </LinearLayout>
 

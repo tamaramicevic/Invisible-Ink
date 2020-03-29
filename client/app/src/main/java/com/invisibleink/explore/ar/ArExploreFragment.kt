@@ -33,6 +33,7 @@ import com.invisibleink.models.Note
 import com.invisibleink.permissions.onLocationPermissionGranted
 import com.invisibleink.permissions.requireLocationPermission
 import javax.inject.Inject
+import kotlin.math.sqrt
 
 class ArExploreFragment : ArFragment(), ViewProvider, LocationProvider {
 
@@ -47,7 +48,7 @@ class ArExploreFragment : ArFragment(), ViewProvider, LocationProvider {
     private lateinit var viewDelegate: ArExploreViewDelegate
     private lateinit var notesToRender: MutableMap<String, ViewRenderable>
     private lateinit var notesRendered: MutableMap<String, ViewRenderable>
-//    private lateinit var renderable: ViewRenderable
+    private lateinit var notePositions: MutableList<Pose>
     private lateinit var locationProvider: FusedLocationProviderClient
     private var lastLocation: LatLng? = null
     private var locationChangedListener: ((LatLng) -> Unit?)? = null
@@ -57,8 +58,9 @@ class ArExploreFragment : ArFragment(), ViewProvider, LocationProvider {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         requireLocationPermission(REQUEST_LOCATION, this@ArExploreFragment::setUpLocationListener)
-        this.notesToRender = mutableMapOf()
-        this.notesRendered = mutableMapOf()
+        notesToRender = mutableMapOf()
+        notesRendered = mutableMapOf()
+        notePositions = mutableListOf()
     }
 
     override fun onRequestPermissionsResult(
@@ -109,25 +111,24 @@ class ArExploreFragment : ArFragment(), ViewProvider, LocationProvider {
     }
 
     fun showNotes(deviceLocation: LatLng, notes: List<Note>) {
+        notes.forEach loop@{ note ->
+            Log.i("RenderingTest", note.id)
 
-        var i = 0
-        notes.forEach { note ->
+            if (notesRendered.containsKey(note.id!!) || notesToRender.containsKey(note.id!!)) {
+                Log.i("RenderingTest", "NOTE ALREADY ACCOUNTED FOR - SKIP")
+                return@loop
+            }
+
             ViewRenderable.builder()
                 .setView(requireActivity().baseContext, R.layout.ar_note_view).build()
                 .thenAcceptAsync { renderable ->
 
-                    var imageURL = note.imageUrl
-                    if (note.imageUrl == null) {
-                        imageURL =
-                            "https://invisibleincistorageacc.blob.core.windows.net/note-images/3a2865e6-ad29-485f-b87e-3984abf8f8d6?sv=2019-02-02&ss=bfqt&srt=sco&sp=rwdlacup&se=2020-11-21T05:28:30Z&st=2020-03-25T20:28:30Z&spr=https,http&sig=5aStS3doL7KkrlLqPtqk%2BoeNOpIoKwVOsihjtTMwp5Q%3D"
+                    if (note.imageUrl != null) {
+                        renderable.view.findViewById<RelativeLayout>(R.id.noteLayout)
+                            .setOnClickListener {
+                                note.imageUrl?.let { it1 -> showImage(it1) }
+                            }
                     }
-
-//                    if (note.imageUrl != null) {
-                    renderable.view.findViewById<RelativeLayout>(R.id.noteLayout)
-                        .setOnClickListener {
-                            imageURL?.let { it1 -> showImage(it1) }
-                        }
-//                    }
 
                     var noteTitle = renderable.view.findViewById<TextView>(R.id.noteTitle)
                     noteTitle.text = note.title
@@ -169,12 +170,8 @@ class ArExploreFragment : ArFragment(), ViewProvider, LocationProvider {
                             ).show()
                         }
 
-                    if (!this.notesRendered.containsKey(note.id!!)) {
-                        note.id?.let { this.notesToRender.put(it, renderable) }
-                    }
-
-                    Log.i("RenderingTest", "NOTES TO RENDER: " + this.notesToRender)
-                    Log.i("RenderingTest", "NOTES RENDERED: " + this.notesRendered)
+                    Log.i("RenderingTest", "NOTE NOT RENDERED - ADDING")
+                    notesToRender[note.id] = renderable
 
                 }
                 .exceptionally {
@@ -183,6 +180,7 @@ class ArExploreFragment : ArFragment(), ViewProvider, LocationProvider {
                         "Unable to render note: " + note.id,
                         Toast.LENGTH_LONG
                     ).show()
+                    Log.i("RenderingTest", "COULDNT RENDER NOTE: "+note.id)
                     return@exceptionally null;
                 }
         }
@@ -198,29 +196,24 @@ class ArExploreFragment : ArFragment(), ViewProvider, LocationProvider {
     override fun onUpdate(frameTime: FrameTime?) {
         val frame = arSceneView.arFrame
 
-            if (frame != null) {
-                // get the trackables to ensure planes are detected
-                val trackables = frame.getUpdatedTrackables(Plane::class.java).iterator()
-                while(trackables.hasNext()) {
-                    Log.i("RenderingTest", "Found trackable")
-                    val plane = trackables.next() as Plane
+        if (frame != null) {
+            val trackables = frame.getUpdatedTrackables(Plane::class.java).iterator()
 
-                    if (plane.trackingState == TrackingState.TRACKING) {
-                        Log.i("RenderingTest", "Plane tracking")
-                        // dhde the plane discovery helper animation
-                        planeDiscoveryController.hide()
-                        Log.i("RenderingTest", "RENDERING : "+this.notesToRender)
-                        this.notesToRender?.forEach { renderable ->
-                            // get all added anchors to the frame
+            while(trackables.hasNext()) {
+                val plane = trackables.next() as Plane
+
+                if (plane.trackingState == TrackingState.TRACKING) {
+                    planeDiscoveryController.hide()
+
+                    val notesToRenderItr = notesToRender.iterator()
+                    while (notesToRenderItr.hasNext()) {
+                        val renderable = notesToRenderItr.next()
                         val iterableAnchor = frame.updatedAnchors.iterator()
 
-                        // place the first object only if no previous anchors were added
                         if(!iterableAnchor.hasNext()) {
                             Log.i("RenderingTest", "Found no previous anchor")
-                            //Perform a hit test at the center of the screen to place an object without tapping
                             val hitTest = frame.hitTest(frame.screenCenter().x, frame.screenCenter().y)
 
-                            //iterate through all hits
                             val hitTestIterator = hitTest.iterator()
                             while(hitTestIterator.hasNext()) {
                                 Log.i("RenderingTest", "Hit test successful")
@@ -231,22 +224,54 @@ class ArExploreFragment : ArFragment(), ViewProvider, LocationProvider {
                                 val anchorNode = AnchorNode(anchor)
                                 anchorNode.setParent(arSceneView.scene)
 
-                                // create a new TranformableNode that will carry our object
                                 val transformableNode = TransformableNode(transformationSystem)
                                 transformableNode.setParent(anchorNode)
+
+                                Log.i("DistanceTest", "Note Positions: $notePositions")
+                                // checks for distances between all currently rendered notes
+                                if (notePositions.isNotEmpty()) {
+                                    val distances : MutableList<Double> = mutableListOf()
+                                    notePositions.forEach { position ->
+
+                                        // Compute the difference vector between the two hit locations.
+                                        val dx = position.tx() - hitResult.hitPose.tx();
+                                        val dy = position.ty() - hitResult.hitPose.ty();
+                                        val dz = position.tz() - hitResult.hitPose.tz();
+
+                                        // Compute the straight-line distance.
+                                        val distanceMeters =  sqrt((dx*dx + dy*dy + dz*dz).toDouble());
+                                        distances.add(distanceMeters)
+                                    }
+
+                                    Log.i("DistanceTest", "Distances: $distances")
+
+                                    if (distances.any { it < 2.0 }) {
+                                        Log.i("DistanceTest", "TOO CLOSE TOGETHER")
+                                        continue
+                                    }
+                                }
+
                                 Log.i("RenderingTest", "RENDERABLE: $renderable")
                                 transformableNode.renderable = renderable.value
-                                this.notesRendered.put(renderable.key, renderable.value)
-//                                transformableNode.renderable = this.renderable
+                                notesRendered[renderable.key] = renderable.value
 
+                                notePositions.add(hitResult.hitPose)
 
                                 // alter the real world position to ensure object renders on the table top. Not somewhere inside.
                                 transformableNode.worldPosition = Vector3(anchor.pose.tx(),
-                                    anchor.pose.compose(Pose.makeTranslation(0f, 0.05f, 0f)).ty(),
+                                    anchor.pose.compose(Pose.makeTranslation(0f, 0.05f, 0.0f)).ty(),
                                     anchor.pose.tz())
+
                             }
                         }
+//                        notesToRenderItr.remove()
                     }
+                     notesToRender = notesToRender.filter{
+                        !notesRendered.contains(it.key)
+                    }.toMutableMap()
+
+                    Log.i("RenderingTest", "NOTES RENDERED: "+ notesRendered.keys)
+                    Log.i("RenderingTest", "NOTES TO RENDER: "+ notesToRender.keys)
                 }
             }
         }
@@ -289,6 +314,7 @@ class ArExploreFragment : ArFragment(), ViewProvider, LocationProvider {
     private fun showImage(imageUrl: String) {
         val bundle = Bundle()
         bundle.putString("IMAGE-URL", imageUrl)
+        Log.i("ImageTest", imageUrl)
 
         val imageFragment = ImageFragment()
         imageFragment.arguments = bundle
