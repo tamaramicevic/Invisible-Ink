@@ -2,12 +2,12 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
-<!--    <item-->
-<!--        android:id="@+id/mapExploreSearchItem"-->
-<!--        android:icon="@android:drawable/ic_menu_search"-->
-<!--        android:title="@string/search"-->
-<!--        app:actionViewClass="androidx.appcompat.widget.SearchView"-->
-<!--        app:showAsAction="always" />-->
+    <item
+        android:id="@+id/refreshItem"
+        android:icon="@drawable/ic_refresh_white_24dp"
+        android:title="@string/ar_explore_mode"
+        android:visible="true"
+        app:showAsAction="ifRoom" />
 
     <item
         android:id="@+id/arExploreItem"

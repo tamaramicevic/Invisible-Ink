@@ -3,7 +3,10 @@ package com.invisibleink.explore.map
 import android.content.Context
 import android.view.View
 import android.view.ViewGroup
-import android.widget.*
+import android.widget.EditText
+import android.widget.ImageButton
+import android.widget.ProgressBar
+import android.widget.Spinner
 import androidx.annotation.StringRes
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
@@ -15,7 +18,7 @@ import com.google.android.gms.maps.model.MarkerOptions
 import com.invisibleink.R
 import com.invisibleink.architecture.BaseViewDelegate
 import com.invisibleink.architecture.ViewProvider
-import com.invisibleink.extensions.showSnackbar
+import com.invisibleink.extensions.showSnackbarWithRetryAction
 import com.invisibleink.models.Note
 
 
@@ -40,7 +43,10 @@ class MapExploreViewDelegate(viewProvider: ViewProvider) :
     private val context: Context = searchButton.context
 
     init {
-        mapView?.getMapAsync { map = it }
+        mapView?.getMapAsync {
+            map = it
+            pushEvent(MapExploreViewEvent.FetchNotes)
+        }
         searchButton.setOnClickListener {
             pushEvent(
                 MapExploreViewEvent.SearchNotes(
@@ -66,8 +72,13 @@ class MapExploreViewDelegate(viewProvider: ViewProvider) :
     }
 
     override fun render(viewState: MapExploreViewState): Unit? = when (viewState) {
-        is MapExploreViewState.Error -> showMessage(viewState.message)
-        is MapExploreViewState.Success -> showNotes(viewState.deviceLocation, viewState.notes)
+        is MapExploreViewState.Error -> showErrorMessageWithRetry(viewState.message)
+        is MapExploreViewState.NoteUpdate -> showNotes(viewState.deviceLocation, viewState.notes)
+        is MapExploreViewState.DeviceLocationUpdate -> showNotes(
+            viewState.deviceLocation,
+            viewState.notes,
+            false
+        )
         is MapExploreViewState.Loading -> showLoading(true)
     }
 
@@ -75,9 +86,18 @@ class MapExploreViewDelegate(viewProvider: ViewProvider) :
         loadingSpinner.visibility = if (isLoading) View.VISIBLE else View.INVISIBLE
     }
 
-    private fun showMessage(@StringRes message: Int) = mapView?.showSnackbar(message)
+    private fun showErrorMessageWithRetry(@StringRes message: Int) {
+        mapView?.showSnackbarWithRetryAction(message) {
+            pushEvent(MapExploreViewEvent.FetchNotes)
+        }
+        showLoading(false)
+    }
 
-    private fun showNotes(deviceLocation: LatLng, notes: List<Note>) {
+    private fun showNotes(
+        deviceLocation: LatLng,
+        notes: List<Note>,
+        moveCameraToBounds: Boolean = true
+    ) {
         map?.apply {
             showLoading(false)
             clear()
@@ -99,12 +119,14 @@ class MapExploreViewDelegate(viewProvider: ViewProvider) :
                 boundsBuilder.include(marker.position)
             }
 
-            moveCamera(
-                CameraUpdateFactory.newLatLngBounds(
-                    boundsBuilder.build(),
-                    MAP_BOUNDS_PADDING
+            if (moveCameraToBounds) {
+                moveCamera(
+                    CameraUpdateFactory.newLatLngBounds(
+                        boundsBuilder.build(),
+                        MAP_BOUNDS_PADDING
+                    )
                 )
-            )
+            }
         }
     }
 

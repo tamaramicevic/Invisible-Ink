@@ -3,6 +3,7 @@ package com.invisibleink.explore.map
 import android.content.Context
 import android.os.Bundle
 import android.view.LayoutInflater
+import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import com.google.android.gms.maps.MapView
@@ -27,6 +28,19 @@ class MapExploreFragment : LocationFragment(), ViewProvider {
         savedInstanceState: Bundle?
     ): View? {
         return inflater.inflate(R.layout.fragment_map_explore, container, false)
+    }
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setHasOptionsMenu(true)
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        if (item.itemId == R.id.refreshItem) {
+            presenter.onEvent(MapExploreViewEvent.RefreshNotes)
+            return true
+        }
+        return super.onOptionsItemSelected(item)
     }
 
     override fun onAttach(context: Context) {
