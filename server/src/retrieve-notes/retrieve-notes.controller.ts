@@ -5,11 +5,14 @@ import { Note } from 'src/shared/models/note';
 import { NoteLocation } from 'src/shared/models/note-location';
 import { RetrieveNotesRequest } from './models/retrieve-notes-request';
 import { NoteResponse, RetrieveNotesResponsePayload } from './models/retrieve-notes-response';
+import { RetrieveNotesService } from './retrieve-notes.service';
 
 @Controller('retrieve-notes')
 export class RetrieveNotesController {
 
-    constructor(private readonly azureCosmosDbService: AzureCosmosDbService) {}
+    constructor(
+        private readonly azureCosmosDbService: AzureCosmosDbService,
+        private readonly retrieveNotesService: RetrieveNotesService) {}
 
     @Post()
     async RetrieveNotes(@Req() request): Promise<RetrieveNotesResponsePayload> {
@@ -24,9 +27,12 @@ export class RetrieveNotesController {
         const geoLocation: Point = { type: 'Point', coordinates: [requestBody.location.longitude, requestBody.location.latitude] };
         const keywords: string[] = requestBody.filter?.keywords?.split(' ');
         try {
-            const resultNotes: Note[] = await this.azureCosmosDbService.RetrieveNotes({
+            let resultNotes: Note[] = await this.azureCosmosDbService.RetrieveNotes({
                 UserLocation: geoLocation, Range: 100000, Keywords: keywords,
             });
+
+            resultNotes = await this.retrieveNotesService.ApplyFilters(resultNotes, requestBody.filter);
+            
             const response: RetrieveNotesResponsePayload = {
                 notes: resultNotes.map(item => {
                     return {

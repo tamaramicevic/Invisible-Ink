@@ -2,7 +2,12 @@ package com.invisibleink.settings
 
 import android.os.Bundle
 import android.util.Log
+import android.view.LayoutInflater
 import android.view.ViewGroup
+import android.widget.EditText
+import android.widget.LinearLayout
+import android.widget.LinearLayout.*
+import androidx.core.view.marginStart
 import androidx.preference.Preference
 import androidx.preference.PreferenceFragmentCompat
 import com.invisibleink.R
@@ -10,6 +15,8 @@ import com.invisibleink.explore.vote.VoteGateway
 import com.invisibleink.explore.vote.createVoteDatabase
 import com.invisibleink.extensions.showSnackbar
 import com.invisibleink.injection.InvisibleInkApplication
+import com.invisibleink.report.ReportDialogBuilder
+import com.invisibleink.report.ReportGateway
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.schedulers.Schedulers
@@ -19,6 +26,9 @@ class SettingsFragment : PreferenceFragmentCompat() {
 
     @Inject
     lateinit var voteGateway: VoteGateway
+    @Inject
+    lateinit var reportGateway: ReportGateway
+
     private val disposable = CompositeDisposable()
 
     override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
@@ -51,11 +61,39 @@ class SettingsFragment : PreferenceFragmentCompat() {
             logAllVotes()
             true
         }
+
+        findPreference<Preference>(requireContext().getString(R.string.pref_category_report_key))?.setOnPreferenceClickListener {
+            reportNote()
+            true
+        }
     }
 
     override fun onStop() {
         super.onStop()
         disposable.dispose()
+    }
+
+    private fun reportNote() {
+        ReportDialogBuilder().buildReportDialog(requireContext(),
+            { reportType, reportComment ->
+                if (reportType != null) {
+                    disposable.add(reportGateway.reportNote(
+                        noteId = "b56d6a1b-2b1d-4f72-b50e-36474a2ba02e",
+                        reportType = reportType,
+                        comment = reportComment
+                    )
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(
+                            { showMessage(it.toString()) },
+                            { showMessage("Error issuing report: $it") }
+                        ))
+                } else {
+                    showMessage("No report selected")
+                }
+            },
+            { showMessage("Report cancelled") }
+        ).show()
     }
 
     private fun upvoteNote() {
@@ -86,6 +124,7 @@ class SettingsFragment : PreferenceFragmentCompat() {
 
     private fun logAllVotes() = showMessage(voteGateway.printNotes())
 
-    private fun showMessage(msg: String) =
-        requireActivity().findViewById<ViewGroup>(android.R.id.content).showSnackbar(msg)
+    private fun showMessage(msg: String) = rootView().showSnackbar(msg)
+
+    private fun rootView() = requireActivity().findViewById<ViewGroup>(android.R.id.content)
 }

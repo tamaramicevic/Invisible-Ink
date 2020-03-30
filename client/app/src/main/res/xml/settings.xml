@@ -54,6 +54,10 @@
             app:summary="@string/pref_category_vote_db_downvote_summary"
             app:title="@string/pref_category_vote_db_downvote_title" />
 
+        <Preference
+            app:key="@string/pref_category_report_key"
+            app:summary="@string/pref_category_report_summary"
+            app:title="@string/pref_category_report_title" />
 
     </PreferenceCategory>
 

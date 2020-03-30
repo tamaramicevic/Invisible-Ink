@@ -25,6 +25,15 @@
     <!-- Generic Errors -->
     <string name="error_invalid_device_location">Failed to retrieve device location.</string>
 
+    <!-- Reporting Notes -->
+    <string name="report_dialog_title">Report a Note</string>
+    <string name="report_dialog_submit">Submit</string>
+    <string name="report_dialog_cancel">Cancel</string>
+    <string name="report_type_harassment">Harassment</string>
+    <string name="report_type_violence">Violence</string>
+    <string name="report_type_sexual">Sexual Content</string>
+    <string name="report_comment_hint">Optional comment</string>
+
     <!-- NoteContent API -->
     <string name="upload_error_generic">Failed to upload.</string>
     <string name="upload_note_error">Failed to upload note.</string>
@@ -86,6 +95,10 @@
     <string name="pref_category_vote_db_load_all_key">pref_category_vote_db_load_all</string>
     <string name="pref_category_vote_db_load_all_title">Log All</string>
     <string name="pref_category_vote_db_load_all_summary">Output all the votes in the logs</string>
+
+    <string name="pref_category_report_key">pref_category_report</string>
+    <string name="pref_category_report_title">Report Note</string>
+    <string name="pref_category_report_summary">Test the report functionality.</string>
 
     <!-- Search filter options -->
     <string name="search_hint">Keywords</string>
