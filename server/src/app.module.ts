@@ -7,12 +7,12 @@ import { AzureDbModule } from './azure-db/azure-db.module';
 import { DebugSentimentAnalysisController } from './debug-sentiment-analysis/debug-sentiment-analysis.controller';
 import { ReportController } from './report/report.controller';
 import { RetrieveNotesController } from './retrieve-notes/retrieve-notes.controller';
+import { RetrieveNotesService } from './retrieve-notes/retrieve-notes.service';
 import { TextAnalyticsModule } from './text-analytics/text-analytics.module';
 import { TextAnalyticsService } from './text-analytics/text-analytics.service';
 import { UploadImageController } from './upload-image/upload-image.controller';
 import { UploadNoteController } from './upload-note/upload-note.controller';
 import { VoteController } from './vote/vote.controller';
-import { RetrieveNotesService } from './retrieve-notes/retrieve-notes.service';
 
 @Module({
   imports: [
