@@ -123,7 +123,6 @@ export class AzureCosmosDbService implements OnApplicationBootstrap {
                 },
                 ).filter(item => !!item);
                 
-            Logger.debug(result);
             return this.FilterNotesBySearchTerms(searchParams.Keywords, result);
         } catch (error) {
             Logger.log(`Error retrieving note: ${error}`, 'AzureCosmosDbService');

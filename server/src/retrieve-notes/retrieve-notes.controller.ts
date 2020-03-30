@@ -27,9 +27,12 @@ export class RetrieveNotesController {
         const geoLocation: Point = { type: 'Point', coordinates: [requestBody.location.longitude, requestBody.location.latitude] };
         const keywords: string[] = requestBody.filter?.keywords?.split(' ');
         try {
-            const resultNotes: Note[] = await this.azureCosmosDbService.RetrieveNotes({
+            let resultNotes: Note[] = await this.azureCosmosDbService.RetrieveNotes({
                 UserLocation: geoLocation, Range: 100000, Keywords: keywords,
             });
+
+            resultNotes = await this.retrieveNotesService.ApplyFilters(resultNotes, requestBody.filter);
+            
             const response: RetrieveNotesResponsePayload = {
                 notes: resultNotes.map(item => {
                     return {
