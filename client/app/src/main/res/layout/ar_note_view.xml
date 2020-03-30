@@ -60,13 +60,13 @@
         android:gravity="center_horizontal" >
 
         <ImageButton
-            android:id="@+id/noteUpvote"
+            android:id="@+id/noteDownvote"
             android:layout_width="45dp"
             android:layout_height="match_parent"
             android:layout_marginLeft="32dp"
             android:src="@drawable/ic_downvote_foreground" />
 
-        <TextView
+        <EditText
             android:id="@+id/noteScore"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -78,10 +78,10 @@
             android:paddingRight="5dp"
             android:textSize="20sp"
             android:textStyle="bold"
-            android:text="3" />
+            android:inputType="number"/>
 
         <ImageButton
-            android:id="@+id/noteDownvote"
+            android:id="@+id/noteUpvote"
             android:layout_width="45dp"
             android:layout_height="40dp"
             android:layout_marginRight="32dp"

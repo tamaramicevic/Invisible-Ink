@@ -40,6 +40,10 @@
     <string name="error_empty_search">Search query must be non-empty</string>
     <string name="error_invalid_search">Your search was invalid</string>
 
+    <!-- Note interaction messages -->
+    <string name="error_upvote_failed">Failed to upvote note</string>
+    <string name="error_downvote_failed">Failed to downvote note</string>
+
     <!-- Permission messages -->
     <string name="image_picker_title">Add a photo</string>
     <string name="error_adding_image">Failed to add photo</string>

@@ -1,7 +1,10 @@
 package com.invisibleink.explore.ar
 
+import android.util.Log
 import com.invisibleink.R
 import com.invisibleink.architecture.BasePresenter
+import com.invisibleink.explore.vote.VoteGateway
+import com.invisibleink.explore.vote.createVoteDatabase
 import com.invisibleink.location.LocationProvider
 import com.invisibleink.models.Note
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -17,11 +20,14 @@ class ArExplorePresenter @Inject constructor(
 
     private val exploreApi = retrofit.create(ArExploreApi::class.java)
     private val disposable = CompositeDisposable()
+    lateinit var voteGateway: VoteGateway
     var locationProvider: LocationProvider? = null
     private var recentNotes: List<Note> = listOf()
 
     override fun onEvent(viewEvent: ArExploreViewEvent) = when (viewEvent) {
-        ArExploreViewEvent.FetchNotes -> fetchNotes()
+        is ArExploreViewEvent.FetchNotes -> fetchNotes()
+        is ArExploreViewEvent.UpvoteNote -> upvoteNote(viewEvent.noteId)
+        is ArExploreViewEvent.DownvoteNote -> downvoteNote(viewEvent.noteId)
     }
 
     override fun onAttach() {
@@ -82,6 +88,30 @@ class ArExplorePresenter @Inject constructor(
             ArExploreViewState.Error(R.string.error_invalid_device_location)
         }
         pushState(viewState)
+    }
+
+    private fun upvoteNote(noteId: String) {
+        disposable.add(
+            voteGateway.upVoteNote(noteId)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(
+                    { ArExploreViewState.Error(R.string.pref_category_vote_db_upvote_summary) },
+                    { ArExploreViewState.Error(R.string.error_upvote_failed) }
+                )
+        )
+    }
+
+    private fun downvoteNote(noteId: String) {
+        disposable.add(
+            voteGateway.downvoteNote(noteId)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(
+                    { ArExploreViewState.Error(R.string.pref_category_vote_db_downvote_summary) },
+                    { ArExploreViewState.Error(R.string.error_downvote_failed) }
+                )
+        )
     }
 
     private fun showError(throwable: Throwable) {

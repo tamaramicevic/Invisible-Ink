@@ -35,6 +35,8 @@ sealed class ArExploreViewState : ViewState {
 
 sealed class ArExploreViewEvent : ViewEvent {
     object FetchNotes : ArExploreViewEvent()
+    data class UpvoteNote(val noteId: String) : ArExploreViewEvent()
+    data class DownvoteNote(val noteId: String) : ArExploreViewEvent()
 }
 
 sealed class ArExploreDestination : Destination
