@@ -6,6 +6,7 @@ import com.invisibleink.architecture.Destination
 import com.invisibleink.architecture.ViewEvent
 import com.invisibleink.architecture.ViewState
 import com.invisibleink.models.Note
+import com.invisibleink.report.ReportType
 
 enum class PrebuiltOptions {
     BEST, WORST, NEWEST;
@@ -30,13 +31,14 @@ data class FetchNotesRequest(
 sealed class ArExploreViewState : ViewState {
     object Loading : ArExploreViewState()
     data class Success(val deviceLocation: LatLng, val notes: List<Note>) : ArExploreViewState()
-    data class Error(@StringRes val message: Int) : ArExploreViewState()
+    data class Message(@StringRes val message: Int) : ArExploreViewState()
 }
 
 sealed class ArExploreViewEvent : ViewEvent {
     object FetchNotes : ArExploreViewEvent()
     data class UpvoteNote(val noteId: String) : ArExploreViewEvent()
     data class DownvoteNote(val noteId: String) : ArExploreViewEvent()
+    data class ReportNote(val noteId: String, val reportType: ReportType, val reportComment: String) : ArExploreViewEvent()
 }
 
 sealed class ArExploreDestination : Destination

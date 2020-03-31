@@ -1,6 +1,7 @@
 package com.invisibleink.explore.ar
 
 import android.util.Log
+import android.widget.Toast
 import androidx.annotation.StringRes
 import com.google.android.gms.maps.model.LatLng
 import com.invisibleink.architecture.BaseViewDelegate
@@ -13,7 +14,7 @@ class ArExploreViewDelegate(viewProvider: ViewProvider) :
     lateinit var arFragment : ArExploreFragment
 
     override fun render(viewState: ArExploreViewState): Unit? = when (viewState) {
-        is ArExploreViewState.Error -> showMessage(viewState.message)
+        is ArExploreViewState.Message -> showMessage(viewState.message)
         is ArExploreViewState.Success -> showNotes(viewState.deviceLocation, viewState.notes)
         is ArExploreViewState.Loading -> showLoading(true)
     }
@@ -22,8 +23,13 @@ class ArExploreViewDelegate(viewProvider: ViewProvider) :
         Log.i("RenderingTest", "Loading...")
     }
 
-    private fun showMessage(@StringRes message: Int) /** = arView?.showSnackbar(message) **/ {
-        Log.i("RenderingTest", "Error...")
+    private fun showMessage(@StringRes message: Int)  {
+        Log.i("ReportingTest", "Error...")
+        Toast.makeText(
+            arFragment.context,
+            message,
+            Toast.LENGTH_LONG
+        ).show()
     }
 
     private fun showNotes(deviceLocation: LatLng, notes: List<Note>) {

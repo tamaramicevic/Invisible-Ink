@@ -31,6 +31,10 @@ import com.invisibleink.location.LocationProvider
 import com.invisibleink.models.Note
 import com.invisibleink.permissions.onLocationPermissionGranted
 import com.invisibleink.permissions.requireLocationPermission
+import com.invisibleink.report.ReportDialogBuilder
+import com.invisibleink.report.ReportGateway
+import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.schedulers.Schedulers
 import javax.inject.Inject
 import kotlin.math.sqrt
 
@@ -40,12 +44,14 @@ class ArExploreFragment : ArFragment(), ViewProvider, LocationProvider {
         private const val REQUEST_LOCATION = 0
     }
 
-    open fun onLocationPermissionGranted() {}
-
     @Inject
     lateinit var presenter: ArExplorePresenter
     @Inject
     lateinit var voteGateway: VoteGateway
+    @Inject
+    lateinit var reportGateway: ReportGateway
+
+
     private lateinit var viewDelegate: ArExploreViewDelegate
     private lateinit var notesToRender: MutableMap<String, ViewRenderable>
     private lateinit var notesRendered: MutableMap<String, ViewRenderable>
@@ -53,6 +59,7 @@ class ArExploreFragment : ArFragment(), ViewProvider, LocationProvider {
     private lateinit var locationProvider: FusedLocationProviderClient
     private var lastLocation: LatLng? = null
     private var locationChangedListener: ((LatLng) -> Unit?)? = null
+    private var DISTANCE_BETWEEN_NOTES = 1.0
 
     override fun <T : View> findViewById(id: Int): T = findViewOrThrow(id)
 
@@ -113,10 +120,8 @@ class ArExploreFragment : ArFragment(), ViewProvider, LocationProvider {
 
     fun showNotes(deviceLocation: LatLng, notes: List<Note>) {
         notes.forEach loop@{ note ->
-            Log.i("VotingTest", note.toString())
 
             if (notesRendered.containsKey(note.id!!) || notesToRender.containsKey(note.id!!)) {
-                Log.i("RenderingTest", "NOTE ALREADY ACCOUNTED FOR - SKIP")
 
                 if (notesRendered.containsKey(note.id!!)) {
                     // check if score needs updating
@@ -125,9 +130,7 @@ class ArExploreFragment : ArFragment(), ViewProvider, LocationProvider {
                     val noteScore = rendered?.view?.findViewById<EditText>(R.id.noteScore)
                     val currentScore = Integer.parseInt(noteScore?.text.toString())
 
-                    Log.i("VotingTest", "Current Score: $currentScore, New score: "+note.score)
                     if (currentScore != note.score) {
-                        Log.i("VotingTest", "Updating Score")
                         noteScore?.setText(note.score.toString())
                     }
                 }
@@ -162,36 +165,16 @@ class ArExploreFragment : ArFragment(), ViewProvider, LocationProvider {
 
 
                     renderable.view.findViewById<ImageButton>(R.id.noteReport).setOnClickListener {
-                        Toast.makeText(
-                            requireActivity().baseContext,
-                            "Report Note!",
-                            Toast.LENGTH_LONG
-                        ).show()
+                        reportNote(note.id)
                     }
 
                     renderable.view.findViewById<ImageButton>(R.id.noteUpvote).setOnClickListener {
-                        Toast.makeText(
-                            requireActivity().baseContext,
-                            "Upvote Note!",
-                            Toast.LENGTH_LONG
-                        ).show()
-
                         viewDelegate.pushEvent(ArExploreViewEvent.UpvoteNote(note.id))
-//                        viewDelegate.pushEvent(ArExploreViewEvent.FetchNotes)
                     }
 
                     renderable.view.findViewById<ImageButton>(R.id.noteDownvote).setOnClickListener {
-                            Toast.makeText(
-                                requireActivity().baseContext,
-                                "Downvote Note!",
-                                Toast.LENGTH_LONG
-                            ).show()
-
                         viewDelegate.pushEvent(ArExploreViewEvent.DownvoteNote(note.id))
-//                        viewDelegate.pushEvent(ArExploreViewEvent.FetchNotes)
                     }
-
-                    Log.i("RenderingTest", "NOTE NOT RENDERED - ADDING")
 
                     notesToRender[note.id] = renderable
                     if (!this.notesRendered.containsKey(note.id!!)) {
@@ -205,8 +188,6 @@ class ArExploreFragment : ArFragment(), ViewProvider, LocationProvider {
                         "Unable to render note: " + note.id,
                         Toast.LENGTH_LONG
                     ).show()
-
-                    Log.i("RenderingTest", "COULDNT RENDER NOTE: "+note.id)
 
                     return@exceptionally null;
                 }
@@ -238,16 +219,13 @@ class ArExploreFragment : ArFragment(), ViewProvider, LocationProvider {
                         val iterableAnchor = frame.updatedAnchors.iterator()
 
                         if(!iterableAnchor.hasNext()) {
-                            Log.i("RenderingTest", "Found no previous anchor")
                             val hitTest = frame.hitTest(frame.screenCenter().x, frame.screenCenter().y)
 
                             val hitTestIterator = hitTest.iterator()
                             while(hitTestIterator.hasNext()) {
-//                                Log.i("RenderingTest", "Hit test successful")
 
                                 val hitResult = hitTestIterator.next()
 
-//                                Log.i("DistanceTest", "Note Positions: $notePositions")
                                 // checks for distances between all currently rendered notes
                                 if (notePositions.isNotEmpty()) {
                                     val distances : MutableList<Double> = mutableListOf()
@@ -263,10 +241,7 @@ class ArExploreFragment : ArFragment(), ViewProvider, LocationProvider {
                                         distances.add(distanceMeters)
                                     }
 
-//                                    Log.i("DistanceTest", "Distances: $distances")
-
-                                    if (distances.any { it < 2.0 }) {
-//                                        Log.i("DistanceTest", "TOO CLOSE TOGETHER")
+                                    if (distances.any { it < DISTANCE_BETWEEN_NOTES }) {
                                         continue
                                     }
                                 }
@@ -279,7 +254,6 @@ class ArExploreFragment : ArFragment(), ViewProvider, LocationProvider {
                                 val transformableNode = TransformableNode(transformationSystem)
                                 transformableNode.setParent(anchorNode)
 
-                                Log.i("RenderingTest", "RENDERABLE: $renderable")
                                 transformableNode.renderable = renderable.value
                                 notesRendered[renderable.key] = renderable.value
 
@@ -292,14 +266,11 @@ class ArExploreFragment : ArFragment(), ViewProvider, LocationProvider {
 
                             }
                         }
-//                        notesToRenderItr.remove()
                     }
+
                      notesToRender = notesToRender.filter{
                         !notesRendered.contains(it.key)
                     }.toMutableMap()
-
-                    Log.i("RenderingTest", "NOTES RENDERED: "+ notesRendered.keys)
-                    Log.i("RenderingTest", "NOTES TO RENDER: "+ notesToRender.keys)
                 }
             }
         }
@@ -318,6 +289,8 @@ class ArExploreFragment : ArFragment(), ViewProvider, LocationProvider {
         presenter.voteGateway = voteGateway
         presenter.voteGateway.voteDatabase =
             createVoteDatabase(application = requireActivity().application)
+
+        presenter.reportGateway = reportGateway
         presenter.attach(viewDelegate)
     }
 
@@ -345,7 +318,6 @@ class ArExploreFragment : ArFragment(), ViewProvider, LocationProvider {
     private fun showImage(imageUrl: String) {
         val bundle = Bundle()
         bundle.putString("IMAGE-URL", imageUrl)
-        Log.i("ImageTest", imageUrl)
 
         val imageFragment = ImageFragment()
         imageFragment.arguments = bundle
@@ -354,4 +326,23 @@ class ArExploreFragment : ArFragment(), ViewProvider, LocationProvider {
         fragmentTransaction?.replace(R.id.fragmentContainer, imageFragment)?.addToBackStack(null)
         val commit = fragmentTransaction?.commit()
     }
+
+    private fun reportNote(noteID: String) {
+        ReportDialogBuilder().buildReportDialog(requireContext(),
+            { reportType, reportComment ->
+                if (reportType != null) {
+                    reportComment?.let { it1 ->
+                        ArExploreViewEvent.ReportNote(noteID, reportType,
+                            it1
+                        )
+                    }?.let { it2 -> viewDelegate.pushEvent(it2) }
+                } else {
+                    presenter.pushState(ArExploreViewState.Message(R.string.error_type_report_failed))
+                }
+            },
+            { presenter.pushState(ArExploreViewState.Message(R.string.upload_report_cancelled)) }
+        ).show()
+    }
+
+    open fun onLocationPermissionGranted() {}
 }

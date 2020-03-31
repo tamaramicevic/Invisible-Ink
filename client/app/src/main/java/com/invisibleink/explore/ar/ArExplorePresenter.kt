@@ -7,6 +7,8 @@ import com.invisibleink.explore.vote.VoteGateway
 import com.invisibleink.explore.vote.createVoteDatabase
 import com.invisibleink.location.LocationProvider
 import com.invisibleink.models.Note
+import com.invisibleink.report.ReportGateway
+import com.invisibleink.report.ReportType
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.schedulers.Schedulers
@@ -21,6 +23,7 @@ class ArExplorePresenter @Inject constructor(
     private val exploreApi = retrofit.create(ArExploreApi::class.java)
     private val disposable = CompositeDisposable()
     lateinit var voteGateway: VoteGateway
+    lateinit var reportGateway: ReportGateway
     var locationProvider: LocationProvider? = null
     private var recentNotes: List<Note> = listOf()
 
@@ -28,6 +31,7 @@ class ArExplorePresenter @Inject constructor(
         is ArExploreViewEvent.FetchNotes -> fetchNotes()
         is ArExploreViewEvent.UpvoteNote -> upvoteNote(viewEvent.noteId)
         is ArExploreViewEvent.DownvoteNote -> downvoteNote(viewEvent.noteId)
+        is ArExploreViewEvent.ReportNote -> reportNote(viewEvent.noteId, viewEvent.reportType, viewEvent.reportComment)
     }
 
     override fun onAttach() {
@@ -69,13 +73,13 @@ class ArExplorePresenter @Inject constructor(
                     )
             )
         } else {
-            pushState(ArExploreViewState.Error(R.string.error_invalid_device_location))
+            pushState(ArExploreViewState.Message(R.string.error_invalid_device_location))
         }
     }
 
     private fun showNotes(notes: List<Note>?) {
         if (notes == null) {
-            ArExploreViewState.Error(R.string.error_fetch_notes_generic)
+            ArExploreViewState.Message(R.string.error_fetch_notes_generic)
             return
         }
 
@@ -85,7 +89,7 @@ class ArExplorePresenter @Inject constructor(
         val viewState = if (deviceLocation != null) {
             ArExploreViewState.Success(deviceLocation, recentNotes)
         } else {
-            ArExploreViewState.Error(R.string.error_invalid_device_location)
+            ArExploreViewState.Message(R.string.error_invalid_device_location)
         }
         pushState(viewState)
     }
@@ -96,8 +100,11 @@ class ArExplorePresenter @Inject constructor(
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(
-                    { ArExploreViewState.Error(R.string.pref_category_vote_db_upvote_summary) },
-                    { ArExploreViewState.Error(R.string.error_upvote_failed) }
+                    {
+                        pushState(ArExploreViewState.Message(R.string.upvote_success))
+                        fetchNotes()
+                    },
+                    { pushState(ArExploreViewState.Message(R.string.error_upvote_failed)) }
                 )
         )
     }
@@ -108,13 +115,30 @@ class ArExplorePresenter @Inject constructor(
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(
-                    { ArExploreViewState.Error(R.string.pref_category_vote_db_downvote_summary) },
-                    { ArExploreViewState.Error(R.string.error_downvote_failed) }
+                    {
+                        pushState(ArExploreViewState.Message(R.string.downvote_success))
+                        fetchNotes()
+                    },
+                    { pushState(ArExploreViewState.Message(R.string.error_downvote_failed)) }
                 )
         )
     }
 
+    private fun reportNote(noteId: String, reportType: ReportType, reportComment: String) {
+        disposable.add(reportGateway.reportNote(
+            noteId = noteId,
+            reportType = reportType,
+            comment = reportComment
+        )
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe(
+                { pushState(ArExploreViewState.Message(R.string.upload_report_success)) },
+                { pushState(ArExploreViewState.Message(R.string.error_report_failed)) }
+            ))
+    }
+
     private fun showError(throwable: Throwable) {
-        pushState(ArExploreViewState.Error(R.string.error_fetch_notes_generic))
+        pushState(ArExploreViewState.Message(R.string.error_fetch_notes_generic))
     }
 }
