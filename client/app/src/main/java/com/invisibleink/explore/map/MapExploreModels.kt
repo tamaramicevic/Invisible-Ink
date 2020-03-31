@@ -29,12 +29,18 @@ data class FetchNotesRequest(
 
 sealed class MapExploreViewState : ViewState {
     object Loading : MapExploreViewState()
-    data class Success(val deviceLocation: LatLng, val notes: List<Note>) : MapExploreViewState()
+    data class NoteUpdate(val deviceLocation: LatLng, val notes: List<Note>) : MapExploreViewState()
+    data class DeviceLocationUpdate(
+        val deviceLocation: LatLng,
+        val notes: List<Note>
+    ) : MapExploreViewState()
+
     data class Error(@StringRes val message: Int) : MapExploreViewState()
 }
 
 sealed class MapExploreViewEvent : ViewEvent {
     object FetchNotes : MapExploreViewEvent()
+    object RefreshNotes : MapExploreViewEvent()
     data class SearchNotes(
         val query: String?,
         val limit: Int? = null,

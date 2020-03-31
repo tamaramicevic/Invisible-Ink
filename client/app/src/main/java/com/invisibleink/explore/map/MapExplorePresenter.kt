@@ -1,5 +1,6 @@
 package com.invisibleink.explore.map
 
+import com.google.android.gms.maps.model.LatLng
 import com.invisibleink.R
 import com.invisibleink.architecture.BasePresenter
 import com.invisibleink.location.LocationProvider
@@ -18,10 +19,16 @@ class MapExplorePresenter @Inject constructor(
     private val exploreApi = retrofit.create(MapExploreApi::class.java)
     private val disposable = CompositeDisposable()
     var locationProvider: LocationProvider? = null
-    private var recentNotes: List<Note> = listOf()
+    private var recentNoteStatus: NoteStatus = NoteStatus.Uninitialized
+
+    sealed class NoteStatus {
+        object Uninitialized : NoteStatus()
+        data class Initialized(val notes: List<Note>) : NoteStatus()
+    }
 
     override fun onEvent(viewEvent: MapExploreViewEvent) = when (viewEvent) {
         is MapExploreViewEvent.FetchNotes -> fetchNotes()
+        is MapExploreViewEvent.RefreshNotes -> fetchNotes()
         is MapExploreViewEvent.SearchNotes -> searchNotes(viewEvent)
     }
 
@@ -29,18 +36,19 @@ class MapExplorePresenter @Inject constructor(
         super.onAttach()
         pushState(MapExploreViewState.Loading)
         locationProvider?.addLocationChangeListener {
-            // Only re-fetch notes if we have none. Otherwise just update the device
-            // location on the map.
-            if (recentNotes.isEmpty()) {
-                fetchNotes()
-            } else {
-                showNotes(recentNotes)
-            }
+            showLocationUpdate(it)
         }
     }
 
     override fun onDetach() {
         disposable.dispose()
+    }
+
+    private fun showLocationUpdate(updatedLocation: LatLng) {
+        val notes = (recentNoteStatus as? NoteStatus.Initialized)?.notes
+        if (notes != null) {
+            pushState(MapExploreViewState.DeviceLocationUpdate(updatedLocation, notes))
+        }
     }
 
     private fun fetchNotes(searchFilter: SearchFilter? = null) {
@@ -58,7 +66,7 @@ class MapExplorePresenter @Inject constructor(
                     .subscribeOn(Schedulers.io())
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe({ noteContainer: NoteContainer? ->
-                        showNotes(noteContainer?.notes)
+                        showNotes(noteContainer?.notes, deviceLocation)
                     }
                         , this::showError
                     )
@@ -77,20 +85,14 @@ class MapExplorePresenter @Inject constructor(
         )
     )
 
-    private fun showNotes(notes: List<Note>?) {
-        if (notes == null) {
-            MapExploreViewState.Error(R.string.error_fetch_notes_generic)
-            return
-        }
-
-        val deviceLocation = locationProvider?.getCurrentLocation()
-        recentNotes = notes
-
-        val viewState = if (deviceLocation != null) {
-            MapExploreViewState.Success(deviceLocation, recentNotes)
+    private fun showNotes(notes: List<Note>?, deviceLocation: LatLng) {
+        val (viewState, noteStatus) = if (notes == null) {
+            MapExploreViewState.Error(R.string.error_fetch_notes_generic) to NoteStatus.Uninitialized
         } else {
-            MapExploreViewState.Error(R.string.error_invalid_device_location)
+            MapExploreViewState.NoteUpdate(deviceLocation, notes) to NoteStatus.Initialized(notes)
         }
+
+        recentNoteStatus = noteStatus
         pushState(viewState)
     }
 

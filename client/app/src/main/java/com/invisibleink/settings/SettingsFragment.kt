@@ -1,13 +1,7 @@
 package com.invisibleink.settings
 
 import android.os.Bundle
-import android.util.Log
-import android.view.LayoutInflater
 import android.view.ViewGroup
-import android.widget.EditText
-import android.widget.LinearLayout
-import android.widget.LinearLayout.*
-import androidx.core.view.marginStart
 import androidx.preference.Preference
 import androidx.preference.PreferenceFragmentCompat
 import com.invisibleink.R
@@ -126,5 +120,5 @@ class SettingsFragment : PreferenceFragmentCompat() {
 
     private fun showMessage(msg: String) = rootView().showSnackbar(msg)
 
-    private fun rootView() = requireActivity().findViewById<ViewGroup>(android.R.id.content)
+    private fun rootView() = requireActivity().findViewById<ViewGroup>(R.id.fragmentContainer)
 }
