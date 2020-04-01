@@ -1,5 +1,6 @@
 package com.invisibleink.note
 
+import androidx.annotation.VisibleForTesting
 import com.invisibleink.R
 import com.invisibleink.architecture.BasePresenter
 import com.invisibleink.location.LocationProvider
@@ -25,7 +26,8 @@ class NotePresenter @Inject constructor(retrofit: Retrofit) :
     }
 
     private val noteApi = retrofit.create(NoteApi::class.java)
-    private val disposable = CompositeDisposable()
+    @VisibleForTesting
+    internal var disposable = CompositeDisposable()
     var imageHandler: ImageHandler? = null
     var locationProvider: LocationProvider? = null
 
@@ -85,7 +87,8 @@ class NotePresenter @Inject constructor(retrofit: Retrofit) :
         )
     }
 
-    private fun isValidNote(noteSeed: NoteSeed): Pair<Boolean, Int> = when {
+    @VisibleForTesting
+    internal fun isValidNote(noteSeed: NoteSeed): Pair<Boolean, Int> = when {
         noteSeed.title.isEmpty() -> false to R.string.invalid_note_title
         noteSeed.body.isEmpty() -> false to R.string.invalid_note_body
         else -> true to R.string.empty_string
