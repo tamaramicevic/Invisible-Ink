@@ -27,6 +27,8 @@ class ArExplorePresenter @Inject constructor(
     var locationProvider: LocationProvider? = null
     private var recentNotes: List<Note> = listOf()
 
+    private var DUPLICATE_VOTE: String = "DUPLICATE"
+
     override fun onEvent(viewEvent: ArExploreViewEvent) = when (viewEvent) {
         is ArExploreViewEvent.FetchNotes -> fetchNotes()
         is ArExploreViewEvent.UpvoteNote -> upvoteNote(viewEvent.noteId)
@@ -101,8 +103,12 @@ class ArExplorePresenter @Inject constructor(
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(
                     {
-                        pushState(ArExploreViewState.Message(R.string.upvote_success))
-                        fetchNotes()
+                        if (it.toString() == DUPLICATE_VOTE) {
+                            pushState(ArExploreViewState.Message(R.string.error_duplicate_vote))
+                        } else {
+                            pushState(ArExploreViewState.Message(R.string.upvote_success))
+                            fetchNotes()
+                        }
                     },
                     { pushState(ArExploreViewState.Message(R.string.error_upvote_failed)) }
                 )
@@ -116,8 +122,12 @@ class ArExplorePresenter @Inject constructor(
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(
                     {
-                        pushState(ArExploreViewState.Message(R.string.downvote_success))
-                        fetchNotes()
+                        if (it.toString() == DUPLICATE_VOTE) {
+                            pushState(ArExploreViewState.Message(R.string.error_duplicate_vote))
+                        } else {
+                            pushState(ArExploreViewState.Message(R.string.downvote_success))
+                            fetchNotes()
+                        }
                     },
                     { pushState(ArExploreViewState.Message(R.string.error_downvote_failed)) }
                 )

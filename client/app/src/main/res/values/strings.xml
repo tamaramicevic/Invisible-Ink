@@ -54,6 +54,7 @@
     <!-- Note interaction messages -->
     <string name="error_upvote_failed">Failed to upvote note</string>
     <string name="error_downvote_failed">Failed to downvote note</string>
+    <string name="error_duplicate_vote">Already voted!</string>
     <string name="upvote_success">Upvoted!</string>
     <string name="downvote_success">Downvoted!</string>
     <string name="error_report_failed">Failed to submit report</string>
