@@ -28,4 +28,7 @@ sealed class NoteViewEvent : ViewEvent {
     data class Upload(val noteSeed: NoteSeed) : NoteViewEvent()
 }
 
-sealed class NoteDestination : Destination
+sealed class NoteDestination : Destination {
+    object EmptyNote: NoteDestination()
+    object MapExplore: NoteDestination()
+}

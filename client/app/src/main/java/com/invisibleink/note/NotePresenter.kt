@@ -4,6 +4,8 @@ import androidx.annotation.StringRes
 import androidx.annotation.VisibleForTesting
 import com.invisibleink.R
 import com.invisibleink.architecture.BasePresenter
+import com.invisibleink.architecture.Router
+import com.invisibleink.dashboard.NavigationDestination
 import com.invisibleink.location.LocationProvider
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
@@ -16,7 +18,8 @@ import java.io.File
 import javax.inject.Inject
 
 class NotePresenter @Inject constructor(retrofit: Retrofit) :
-    BasePresenter<NoteViewState, NoteViewEvent, NoteDestination>() {
+    BasePresenter<NoteViewState, NoteViewEvent, NoteDestination>(),
+    Router<NoteDestination> {
 
     interface ImageHandler {
         fun onAddImageSelected()
@@ -31,6 +34,7 @@ class NotePresenter @Inject constructor(retrofit: Retrofit) :
     internal var disposable = CompositeDisposable()
     var imageHandler: ImageHandler? = null
     var locationProvider: LocationProvider? = null
+    var navigationRouter: Router<NavigationDestination>? = null
 
     override fun onEvent(viewEvent: NoteViewEvent): Unit? = when (viewEvent) {
         is NoteViewEvent.Upload -> uploadNote(viewEvent.noteSeed)
@@ -107,6 +111,7 @@ class NotePresenter @Inject constructor(retrofit: Retrofit) :
                     uploadImageContent(uploadResponse.noteId, imagePath)
                 } else {
                     pushState(NoteViewState.Message(R.string.upload_note_success))
+                    routeTo(NoteDestination.MapExplore)
                 }
             }
             else -> {
@@ -119,6 +124,7 @@ class NotePresenter @Inject constructor(retrofit: Retrofit) :
     private fun parseImageUploadResponse(uploadResponse: ImageUploadResponse?) {
         if (uploadResponse != null && uploadResponse.success) {
             pushState(NoteViewState.Message(R.string.upload_image_success))
+            routeTo(NoteDestination.MapExplore)
         } else {
             pushState(NoteViewState.Error(R.string.upload_image_error_generic))
         }
@@ -132,4 +138,11 @@ class NotePresenter @Inject constructor(retrofit: Retrofit) :
             NoteUploadErrorType.BAD_SENTIMENT_DETECTED -> R.string.upload_error_bad_sentiment
             else -> R.string.upload_error_generic
         }
+
+    override fun routeTo(destination: NoteDestination) {
+        when (destination) {
+            is NoteDestination.EmptyNote -> pushState(NoteViewState.Empty)
+            is NoteDestination.MapExplore -> navigationRouter?.routeTo(NavigationDestination.MapExploreTab)
+        }
+    }
 }

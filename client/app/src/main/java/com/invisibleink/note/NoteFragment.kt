@@ -11,7 +11,9 @@ import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.maps.model.LatLng
 import com.invisibleink.R
+import com.invisibleink.architecture.Router
 import com.invisibleink.architecture.ViewProvider
+import com.invisibleink.dashboard.NavigationDestination
 import com.invisibleink.extensions.findViewOrThrow
 import com.invisibleink.extensions.hasCameraPermission
 import com.invisibleink.extensions.hasExternalWritePermission
@@ -86,8 +88,11 @@ class NoteFragment : LocationFragment(), ViewProvider, NotePresenter.ImageHandle
         super.onViewCreated(view, savedInstanceState)
         viewDelegate = NoteViewDelegate(this)
         presenter.run {
+            val dashboardRouter = requireActivity() as? Router<NavigationDestination>
+            navigationRouter = dashboardRouter
             imageHandler = this@NoteFragment
             locationProvider = this@NoteFragment
+
             attach(viewDelegate)
         }
     }

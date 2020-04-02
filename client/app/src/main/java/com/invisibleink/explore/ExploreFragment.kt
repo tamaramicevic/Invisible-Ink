@@ -2,6 +2,7 @@ package com.invisibleink.explore
 
 import android.os.Bundle
 import android.view.*
+import androidx.annotation.IntRange
 import androidx.fragment.app.Fragment
 import com.invisibleink.R
 import com.invisibleink.explore.ar.ArExploreFragment
@@ -14,7 +15,7 @@ class ExploreFragment(explorationModeId: Int) : Fragment() {
         AR(::ArExploreFragment, 2);
 
         companion object {
-            fun fromModeId(exploreModeId: Int): ExploreViewMode {
+            fun fromModeId(@IntRange(from = 0, to = 1) exploreModeId: Int): ExploreViewMode {
                 return if (exploreModeId == MAP.CHILD_FRAGMENT_ID) MAP else AR
             }
         }
