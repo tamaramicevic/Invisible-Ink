@@ -1,5 +1,6 @@
 package com.invisibleink.note
 
+import androidx.annotation.StringRes
 import androidx.annotation.VisibleForTesting
 import com.invisibleink.R
 import com.invisibleink.architecture.BasePresenter
@@ -108,7 +109,10 @@ class NotePresenter @Inject constructor(retrofit: Retrofit) :
                     pushState(NoteViewState.Message(R.string.upload_note_success))
                 }
             }
-            else -> pushState(NoteViewState.Error(R.string.upload_note_error))
+            else -> {
+                val errorMessage = parseNoteUploadErrorMessage(uploadResponse.error)
+                pushState(NoteViewState.Error(errorMessage))
+            }
         }
     }
 
@@ -116,7 +120,16 @@ class NotePresenter @Inject constructor(retrofit: Retrofit) :
         if (uploadResponse != null && uploadResponse.success) {
             pushState(NoteViewState.Message(R.string.upload_image_success))
         } else {
-            pushState(NoteViewState.Error(R.string.upload_image_error))
+            pushState(NoteViewState.Error(R.string.upload_image_error_generic))
         }
     }
+
+    @StringRes
+    private fun parseNoteUploadErrorMessage(error: NoteUploadErrorType?) =
+        when (error) {
+            null -> R.string.upload_error_generic
+            NoteUploadErrorType.PII_DETECTED -> R.string.upload_error_pii
+            NoteUploadErrorType.BAD_SENTIMENT_DETECTED -> R.string.upload_error_bad_sentiment
+            else -> R.string.upload_error_generic
+        }
 }

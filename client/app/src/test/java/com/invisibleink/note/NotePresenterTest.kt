@@ -34,12 +34,15 @@ class NotePresenterTest {
 
     // State-less, helper objects re-used among tests
     companion object {
-        private val validNoteSeed = NoteSeed(title = "some title", body = "some body")
-        private val validNoteSeedWithImage = NoteSeed(title = "some title", body = "some body", imagePath = "some/path")
-        private val emptyTitleNote = NoteSeed(title = "", body = "some body")
-        private val emptyBodyNote = NoteSeed(title = "some title", body = "")
         private val validLocation: LatLng? = LatLng(0.0, 0.0)
         private val invalidLocation: LatLng? = null
+        private val validNoteSeed = NoteSeed(title = "some title", body = "some body")
+        private val validNoteSeedWithImage =
+            NoteSeed(title = "some title", body = "some body", imagePath = "some/path")
+        private val validNoteSeedWithLocation =
+            validNoteSeedWithImage.apply { location = validLocation }
+        private val emptyTitleNote = NoteSeed(title = "", body = "some body")
+        private val emptyBodyNote = NoteSeed(title = "some title", body = "")
     }
 
 
@@ -89,7 +92,7 @@ class NotePresenterTest {
 
     @Test
     fun `verify error state is pushed when location is not available`() {
-        whenever(locationProvider.getCurrentLocation()).thenReturn(invalidLocation)
+        setUpLocationProvider(invalidLocation)
 
         notePresenter.onEvent(NoteViewEvent.Upload(validNoteSeed))
         verify(noteViewDelegate).render(NoteViewState.Error(R.string.error_invalid_device_location))
@@ -97,17 +100,16 @@ class NotePresenterTest {
 
     @Test
     fun `verify noteApi uploadNote is invoked for valid note without image url`() {
-        whenever(locationProvider.getCurrentLocation()).thenReturn(validLocation)
-        val validNoteSeedWithLocation = validNoteSeed.apply { location = validLocation }
+        setUpLocationProvider(validLocation)
 
-        notePresenter.onEvent(NoteViewEvent.Upload(validNoteSeed))
+        notePresenter.onEvent(NoteViewEvent.Upload(validNoteSeedWithLocation))
         verify(noteApi).uploadNote(validNoteSeedWithLocation)
         verify(noteApi, times(0)).uploadImage(any(), any())
     }
 
     @Test
     fun `verify noteApi uploadImage is invoked for valid note with image url`() {
-        whenever(locationProvider.getCurrentLocation()).thenReturn(validLocation)
+        setUpLocationProvider(validLocation)
         val validNoteSeedWithLocation = validNoteSeedWithImage.apply { location = validLocation }
         setUpNoteApiReturns(NoteUploadResponse(success = true, noteId = "1", error = null), null)
 
@@ -140,7 +142,55 @@ class NotePresenterTest {
         assertTrue(isValid)
     }
 
-    private fun setUpNoteApiReturns(noteResponse: NoteUploadResponse?, imageResponse: ImageUploadResponse?) {
+    @Test
+    fun `verify note with PII detected shows error message`() {
+        val piiErrorResponse = NoteUploadResponse(
+            success = false,
+            noteId = "1",
+            error = NoteUploadErrorType.PII_DETECTED
+        )
+        setUpLocationProvider(validLocation)
+        setUpNoteApiReturns(piiErrorResponse, null)
+
+        notePresenter.onEvent(NoteViewEvent.Upload(validNoteSeedWithLocation))
+        verify(noteViewDelegate).render(NoteViewState.Error(R.string.upload_error_pii))
+    }
+
+    @Test
+    fun `verify note with bad sentiment detected shows error message`() {
+        val badSentimentResponse = NoteUploadResponse(
+            success = false,
+            noteId = "1",
+            error = NoteUploadErrorType.BAD_SENTIMENT_DETECTED
+        )
+        setUpLocationProvider(validLocation)
+        setUpNoteApiReturns(badSentimentResponse, null)
+
+        notePresenter.onEvent(NoteViewEvent.Upload(validNoteSeedWithLocation))
+        verify(noteViewDelegate).render(NoteViewState.Error(R.string.upload_error_bad_sentiment))
+    }
+
+    @Test
+    fun `verify note with generic error detected shows error message`() {
+        val genericErrorResponse = NoteUploadResponse(
+            success = false,
+            noteId = "1",
+            error = NoteUploadErrorType.UPLOAD_FAILED
+        )
+        setUpLocationProvider(validLocation)
+        setUpNoteApiReturns(genericErrorResponse, null)
+
+        notePresenter.onEvent(NoteViewEvent.Upload(validNoteSeedWithLocation))
+        verify(noteViewDelegate).render(NoteViewState.Error(R.string.upload_error_generic))
+    }
+
+    private fun setUpLocationProvider(location: LatLng?) =
+        whenever(locationProvider.getCurrentLocation()) doReturn location
+
+    private fun setUpNoteApiReturns(
+        noteResponse: NoteUploadResponse?,
+        imageResponse: ImageUploadResponse?
+    ) {
         val noteResponseObsv = if (noteResponse != null) {
             Single.just(noteResponse).toObservable()
         } else {
