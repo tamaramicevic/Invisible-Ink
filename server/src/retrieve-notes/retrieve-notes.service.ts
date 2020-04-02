@@ -41,7 +41,9 @@ export class RetrieveNotesService {
                 notes = notes.filter(item => item.ImageId == null);
             }
         }
-        
+
+        filter.limit = filter.limit || 50;
+
         if (filter.limit && notes.length > filter.limit) { 
             // Return only upto limit notes
             notes = notes.slice(0, filter.limit); 

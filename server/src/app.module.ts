@@ -4,7 +4,6 @@ import { ConfigModule } from '@nestjs/config';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { AzureDbModule } from './azure-db/azure-db.module';
-import { DebugSentimentAnalysisController } from './debug-sentiment-analysis/debug-sentiment-analysis.controller';
 import { ReportController } from './report/report.controller';
 import { RetrieveNotesController } from './retrieve-notes/retrieve-notes.controller';
 import { RetrieveNotesService } from './retrieve-notes/retrieve-notes.service';
@@ -29,7 +28,6 @@ import { VoteController } from './vote/vote.controller';
   ],
   controllers: [
     AppController, 
-    DebugSentimentAnalysisController, 
     UploadNoteController, 
     UploadImageController, 
     RetrieveNotesController, 
