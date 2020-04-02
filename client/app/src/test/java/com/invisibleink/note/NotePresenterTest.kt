@@ -108,6 +108,14 @@ class NotePresenterTest {
     }
 
     @Test
+    fun `verify loading state is pushed on note upload`() {
+        setUpLocationProvider(invalidLocation)
+
+        notePresenter.onEvent(NoteViewEvent.Upload(validNoteSeedWithLocation))
+        verify(noteViewDelegate).render(NoteViewState.Loading)
+    }
+
+    @Test
     fun `verify noteApi uploadNote is invoked for valid note without image url`() {
         setUpLocationProvider(validLocation)
 

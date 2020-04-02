@@ -17,6 +17,7 @@ data class NoteSeed(
 
 sealed class NoteViewState : ViewState {
     object Empty : NoteViewState()
+    object Loading : NoteViewState()
     data class ImageSelected(val imagePath: String) : NoteViewState()
     data class Draft(val draft: NoteSeed) : NoteViewState()
     data class Error(@StringRes val message: Int) : NoteViewState()

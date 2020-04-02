@@ -50,6 +50,8 @@ class NotePresenter @Inject constructor(retrofit: Retrofit) :
     }
 
     private fun uploadNote(noteSeed: NoteSeed) {
+        pushState(NoteViewState.Loading)
+
         val (isValid, error) = isValidNote(noteSeed)
         if (!isValid) {
             pushState(NoteViewState.Error(error))

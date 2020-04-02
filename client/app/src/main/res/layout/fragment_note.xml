@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/root"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/root"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:layout_margin="@dimen/spacing_l"
@@ -12,26 +12,35 @@
         android:layout_height="match_parent"
         android:layout_margin="@dimen/spacing_s">
 
+        <ProgressBar
+            android:id="@+id/noteUploadProgressBar"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
         <ImageButton
             android:id="@+id/addPhoto"
             android:layout_width="0dp"
             android:layout_height="0dp"
             android:padding="@dimen/spacing_s"
             android:scaleType="centerInside"
-            app:srcCompat="@drawable/ic_add_a_photo_black_24dp"
             app:layout_constraintBottom_toBottomOf="@id/titleLayout"
             app:layout_constraintEnd_toStartOf="@id/titleLayout"
             app:layout_constraintHorizontal_weight="0.2"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="@id/titleLayout" />
+            app:layout_constraintTop_toTopOf="@id/titleLayout"
+            app:srcCompat="@drawable/ic_add_a_photo_black_24dp" />
 
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/titleLayout"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            app:layout_constrainedHeight="true"
             android:layout_marginStart="@dimen/spacing_s"
             android:hint="@string/title_hint"
+            app:layout_constrainedHeight="true"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_weight="0.8"
             app:layout_constraintStart_toEndOf="@id/addPhoto"
@@ -77,9 +86,9 @@
             android:id="@+id/buttonRow"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            app:layout_constrainedHeight="true"
             android:layout_marginTop="@dimen/spacing_l"
             android:orientation="horizontal"
+            app:layout_constrainedHeight="true"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
