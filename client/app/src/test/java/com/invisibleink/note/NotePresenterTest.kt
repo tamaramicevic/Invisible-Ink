@@ -2,6 +2,8 @@ package com.invisibleink.note
 
 import com.google.android.gms.maps.model.LatLng
 import com.invisibleink.R
+import com.invisibleink.architecture.Router
+import com.invisibleink.dashboard.NavigationDestination
 import com.invisibleink.location.LocationProvider
 import com.nhaarman.mockitokotlin2.*
 import com.testutils.SchedulerRule
@@ -31,6 +33,7 @@ class NotePresenterTest {
     private lateinit var locationProvider: LocationProvider
     private lateinit var imageHandler: NotePresenter.ImageHandler
     private lateinit var noteViewDelegate: NoteViewDelegate
+    private lateinit var navigationRouter: Router<NavigationDestination>
 
     // State-less, helper objects re-used among tests
     companion object {
@@ -40,9 +43,13 @@ class NotePresenterTest {
         private val validNoteSeedWithImage =
             NoteSeed(title = "some title", body = "some body", imagePath = "some/path")
         private val validNoteSeedWithLocation =
-            validNoteSeedWithImage.apply { location = validLocation }
+            validNoteSeed.apply { location = validLocation }
         private val emptyTitleNote = NoteSeed(title = "", body = "some body")
         private val emptyBodyNote = NoteSeed(title = "some title", body = "")
+        private val successfulNoteUploadResponse =
+            NoteUploadResponse(success = true, noteId = "1", error = null)
+        private val successfulImageUploadResponse =
+            ImageUploadResponse(success = true, error = null)
     }
 
 
@@ -54,6 +61,7 @@ class NotePresenterTest {
         noteViewDelegate = mock()
         disposable = mock()
         noteApi = mock()
+        navigationRouter = mock()
         setUpNoteApiReturns(null, null)
 
         retrofit = mock {
@@ -65,8 +73,9 @@ class NotePresenterTest {
         notePresenter.disposable = disposable
         notePresenter.locationProvider = locationProvider
         notePresenter.imageHandler = imageHandler
+        notePresenter.navigationRouter = navigationRouter
 
-        notePresenter.attach(noteViewDelegate)
+        notePresenter.attach(noteViewDelegate, notePresenter)
         clearInvocations(noteViewDelegate)
     }
 
@@ -182,6 +191,24 @@ class NotePresenterTest {
 
         notePresenter.onEvent(NoteViewEvent.Upload(validNoteSeedWithLocation))
         verify(noteViewDelegate).render(NoteViewState.Error(R.string.upload_error_generic))
+    }
+
+    @Test
+    fun `verify successful note upload without image routes to Map explore`() {
+        setUpLocationProvider(validLocation)
+        setUpNoteApiReturns(successfulNoteUploadResponse, null)
+
+        notePresenter.onEvent(NoteViewEvent.Upload(validNoteSeedWithLocation))
+        verify(navigationRouter).routeTo(NavigationDestination.MapExploreTab)
+    }
+
+    @Test
+    fun `verify successful note upload with image routes to Map explore`() {
+        setUpLocationProvider(validLocation)
+        setUpNoteApiReturns(successfulNoteUploadResponse, successfulImageUploadResponse)
+
+        notePresenter.onEvent(NoteViewEvent.Upload(validNoteSeedWithLocation))
+        verify(navigationRouter).routeTo(NavigationDestination.MapExploreTab)
     }
 
     private fun setUpLocationProvider(location: LatLng?) =
