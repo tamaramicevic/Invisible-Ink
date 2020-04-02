@@ -10,7 +10,7 @@ export class DebugSentimentAnalysisController {
         // This will need to be typed in real code
         // tslint:disable-next-line
         const tokens: string[] = request.body['tokens']; 
-        return await this.textAnalyticsService.AnalyzeSentimentScores(tokens);
+        return await this.textAnalyticsService.ScanForBadSentiment(tokens);
   }
 
 }
