@@ -6,7 +6,9 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.invisibleink.R
+import com.invisibleink.architecture.Router
 import com.invisibleink.explore.ExploreFragment
+import com.invisibleink.explore.ExploreFragment.ExploreViewMode
 import com.invisibleink.favorites.FavoritesFragment
 import com.invisibleink.note.NoteFragment
 import com.invisibleink.settings.SettingsFragment
@@ -16,14 +18,25 @@ import com.invisibleink.settings.SettingsFragment
  * among the content fragments upon selection.
  */
 class NavigationActivity : AppCompatActivity(),
-    BottomNavigationView.OnNavigationItemSelectedListener {
+    BottomNavigationView.OnNavigationItemSelectedListener,
+    Router<NavigationDestination> {
 
     private lateinit var bottomNavigation: BottomNavigationView
 
     private enum class NavigationContent(val fragmentFactory: () -> Fragment) {
-        EXPLORE(::ExploreFragment),
+        MAP_EXPLORE({ ExploreFragment(ExploreViewMode.MAP.CHILD_FRAGMENT_ID) }),
+        AR_EXPLORE({ ExploreFragment(ExploreViewMode.AR.CHILD_FRAGMENT_ID) }),
         NOTE(::NoteFragment),
         SETTINGS(::SettingsFragment)
+    }
+
+    override fun routeTo(destination: NavigationDestination) {
+        when (destination) {
+            is NavigationDestination.MapExploreTab -> showContent(NavigationContent.MAP_EXPLORE)
+            is NavigationDestination.ArExploreTab -> showContent(NavigationContent.AR_EXPLORE)
+            is NavigationDestination.NoteUploadTab -> showContent(NavigationContent.NOTE)
+            is NavigationDestination.SettingsTab -> showContent(NavigationContent.SETTINGS)
+        }
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -34,12 +47,12 @@ class NavigationActivity : AppCompatActivity(),
             selectedItemId = R.id.exploreTab
         }
 
-        showContent(NavigationContent.EXPLORE)
+        showContent(NavigationContent.MAP_EXPLORE)
     }
 
     override fun onNavigationItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
-            R.id.exploreTab -> showContent(NavigationContent.EXPLORE)
+            R.id.exploreTab -> showContent(NavigationContent.MAP_EXPLORE)
             R.id.noteTab -> showContent(NavigationContent.NOTE)
             R.id.settingsTab -> showContent(NavigationContent.SETTINGS)
         }

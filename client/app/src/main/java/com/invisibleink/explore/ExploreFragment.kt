@@ -7,14 +7,20 @@ import com.invisibleink.R
 import com.invisibleink.explore.ar.ArExploreFragment
 import com.invisibleink.explore.map.MapExploreFragment
 
-class ExploreFragment : Fragment() {
+class ExploreFragment(explorationModeId: Int) : Fragment() {
 
-    enum class ExploreViewMode(val fragmentFactory: () -> Fragment) {
-        MAP(::MapExploreFragment),
-        AR(::ArExploreFragment)
+    enum class ExploreViewMode(val fragmentFactory: () -> Fragment, val CHILD_FRAGMENT_ID: Int) {
+        MAP(::MapExploreFragment, 1),
+        AR(::ArExploreFragment, 2);
+
+        companion object {
+            fun fromModeId(exploreModeId: Int): ExploreViewMode {
+                return if (exploreModeId == MAP.CHILD_FRAGMENT_ID) MAP else AR
+            }
+        }
     }
 
-    private var exploreViewMode = ExploreViewMode.MAP
+    private var exploreViewMode = ExploreViewMode.fromModeId(explorationModeId)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
