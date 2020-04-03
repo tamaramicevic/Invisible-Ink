@@ -39,6 +39,7 @@ import com.invisibleink.report.ReportGateway
 import javax.inject.Inject
 import kotlin.math.sqrt
 
+
 class ArExploreFragment : ArFragment(), ViewProvider, LocationProvider,
     NavigationActivity.BackPressHandler {
 
@@ -56,12 +57,16 @@ class ArExploreFragment : ArFragment(), ViewProvider, LocationProvider,
 
     private lateinit var viewDelegate: ArExploreViewDelegate
     private var navigationRouter: Router<NavigationDestination>? = null
-    private lateinit var notesToRender: MutableMap<String, ViewRenderable>
-    private lateinit var notesRendered: MutableMap<String, ViewRenderable>
-    private lateinit var notePositions: MutableList<Pose>
+    private lateinit var searchFilter: SearchFilter
+
     private lateinit var locationProvider: FusedLocationProviderClient
     private var lastLocation: LatLng? = null
     private var locationChangedListener: ((LatLng) -> Unit?)? = null
+
+    private lateinit var notesToRender: MutableMap<String, ViewRenderable>
+    private lateinit var notesRendered: MutableMap<String, ViewRenderable>
+    private lateinit var notePositions: MutableList<Pose>
+
     private var DISTANCE_BETWEEN_NOTES = 1.0
     private var NOTE_RADIUS: Float = 100F
 
@@ -127,8 +132,6 @@ class ArExploreFragment : ArFragment(), ViewProvider, LocationProvider,
 
         val filteredNotes = filterNotes(deviceLocation, notes)
 
-        Log.i("Testing", filteredNotes.toString())
-
         filteredNotes.forEach loop@{ note ->
 
             if (notesRendered.containsKey(note.id!!) || notesToRender.containsKey(note.id!!)) {
@@ -151,8 +154,9 @@ class ArExploreFragment : ArFragment(), ViewProvider, LocationProvider,
             ViewRenderable.builder()
                 .setView(requireActivity().baseContext, R.layout.ar_note_view).build()
                 .thenAcceptAsync { renderable ->
-
+                    
                     if (note.imageUrl != null) {
+
                         renderable.view.findViewById<RelativeLayout>(R.id.noteLayout)
                             .setOnClickListener {
                                 note.imageUrl?.let { it1 -> showImage(it1) }
@@ -306,6 +310,7 @@ class ArExploreFragment : ArFragment(), ViewProvider, LocationProvider,
         viewDelegate = ArExploreViewDelegate(this)
         viewDelegate.arFragment = this
         presenter.locationProvider = this
+        presenter.searchFilter = SearchFilter.EMPTY_FILTER
         navigationRouter = requireActivity() as? Router<NavigationDestination>
         presenter.voteGateway = voteGateway
         presenter.voteGateway.voteDatabase =

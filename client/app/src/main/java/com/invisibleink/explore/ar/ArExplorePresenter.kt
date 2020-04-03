@@ -1,10 +1,8 @@
 package com.invisibleink.explore.ar
 
-import android.util.Log
 import com.invisibleink.R
 import com.invisibleink.architecture.BasePresenter
 import com.invisibleink.explore.vote.VoteGateway
-import com.invisibleink.explore.vote.createVoteDatabase
 import com.invisibleink.location.LocationProvider
 import com.invisibleink.models.Note
 import com.invisibleink.report.ReportGateway
@@ -25,6 +23,7 @@ class ArExplorePresenter @Inject constructor(
     lateinit var voteGateway: VoteGateway
     lateinit var reportGateway: ReportGateway
     var locationProvider: LocationProvider? = null
+    var searchFilter: SearchFilter? = SearchFilter.EMPTY_FILTER
     private var recentNotes: List<Note> = listOf()
 
     private var DUPLICATE_VOTE: String = "DUPLICATE"
@@ -54,7 +53,7 @@ class ArExplorePresenter @Inject constructor(
         disposable.dispose()
     }
 
-    private fun fetchNotes(searchFilter: SearchFilter? = null) {
+    private fun fetchNotes() {
         pushState(ArExploreViewState.Loading)
 
         val deviceLocation = locationProvider?.getCurrentLocation()
@@ -63,7 +62,7 @@ class ArExplorePresenter @Inject constructor(
                 exploreApi.fetchNotes(
                     FetchNotesRequest(
                         deviceLocation,
-                        searchFilter ?: SearchFilter.EMPTY_FILTER
+                        searchFilter
                     )
                 )
                     .subscribeOn(Schedulers.io())

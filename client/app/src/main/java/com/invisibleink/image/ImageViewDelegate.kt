@@ -1,9 +1,7 @@
 package com.invisibleink.image
 
 import android.content.Context
-import android.util.Log
 import android.widget.ImageView
-import androidx.annotation.StringRes
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.load.resource.bitmap.FitCenter

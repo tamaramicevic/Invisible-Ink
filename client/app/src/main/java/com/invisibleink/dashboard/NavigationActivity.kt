@@ -2,8 +2,6 @@ package com.invisibleink.dashboard
 
 
 import android.os.Bundle
-import android.util.Log
-import android.view.MenuItem
 import androidx.annotation.IdRes
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment

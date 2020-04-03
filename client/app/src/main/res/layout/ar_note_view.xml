@@ -19,37 +19,61 @@
         android:background="@color/cardview_light_background"
         android:layout_alignParentTop="true" >
 
-        <TextView
-            android:id="@+id/noteTitle"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            style="@style/TextAppearance.Widget.AppCompat.Toolbar.Title"
-            android:textSize="23sp"
-            android:text="Note Title" />
+        <ScrollView
+            android:id="@+id/noteScroller"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:scrollbars="vertical"
+            android:fillViewport="true">
 
-        <TextView
-            android:id="@+id/noteBody"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_below="@+id/noteTitle"
-            android:text="This is an example of what a note should look like!" />
+            <LinearLayout
+                android:id="@+id/noteContents"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical">
 
-        <TextView
-            android:id="@+id/noteExpiry"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentBottom="true"
-            android:textSize="8sp"
-            android:text="Expires: " />
+                <TextView
+                    android:id="@+id/noteTitle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:ellipsize="end"
+                    style="@style/TextAppearance.Widget.AppCompat.Toolbar.Title"
+                    android:textSize="23sp"
+                    android:text="Note Title" />
 
-        <ImageButton
-            android:id="@+id/noteReport"
-            android:layout_width="26dp"
-            android:layout_height="28dp"
-            android:layout_alignParentRight="true"
-            android:layout_alignParentBottom="true"
-            android:src="@drawable/ic_report_foreground" />
+                <TextView
+                    android:id="@+id/noteBody"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:ellipsize="end"
+                    android:text="This is an example of what a note should look like!" />
 
+                <LinearLayout
+                    android:id="@+id/noteFooter"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:orientation="horizontal"
+                    android:gravity="bottom"
+                    android:padding="10dp">
+
+                    <TextView
+                        android:id="@+id/noteExpiry"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textSize="8sp"
+                        android:layout_weight="1"
+                        android:text="Expires: " />
+
+                    <ImageButton
+                        android:id="@+id/noteReport"
+                        android:layout_width="26dp"
+                        android:layout_height="28dp"
+                        android:src="@drawable/ic_report_foreground"
+                        android:background="?android:selectableItemBackground"/>
+
+                </LinearLayout>
+            </LinearLayout>
+        </ScrollView>
     </RelativeLayout>
 
     <LinearLayout
@@ -64,7 +88,8 @@
             android:layout_width="45dp"
             android:layout_height="40dp"
             android:layout_marginLeft="32dp"
-            android:src="@drawable/ic_downvote_foreground" />
+            android:src="@drawable/ic_downvote_foreground"
+            android:background="?android:selectableItemBackground"/>
 
         <EditText
             android:id="@+id/noteScore"
@@ -85,7 +110,8 @@
             android:layout_width="45dp"
             android:layout_height="40dp"
             android:layout_marginRight="32dp"
-            android:src="@drawable/ic_upvote_foreground" />
+            android:src="@drawable/ic_upvote_foreground"
+            android:background="?android:selectableItemBackground"/>
 
     </LinearLayout>
 

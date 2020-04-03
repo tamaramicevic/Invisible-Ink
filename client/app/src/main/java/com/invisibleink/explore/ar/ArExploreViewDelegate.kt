@@ -1,6 +1,5 @@
 package com.invisibleink.explore.ar
 
-import android.util.Log
 import android.widget.Toast
 import androidx.annotation.StringRes
 import com.google.android.gms.maps.model.LatLng
@@ -20,11 +19,14 @@ class ArExploreViewDelegate(viewProvider: ViewProvider) :
     }
 
     private fun showLoading(isLoading: Boolean) {
-        Log.i("RenderingTest", "Loading...")
+        Toast.makeText(
+            arFragment.context,
+            "Loading..",
+            Toast.LENGTH_LONG
+        ).show()
     }
 
     private fun showMessage(@StringRes message: Int)  {
-        Log.i("ReportingTest", "Error...")
         Toast.makeText(
             arFragment.context,
             message,
