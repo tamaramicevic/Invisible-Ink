@@ -1,11 +1,14 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { Note } from 'src/shared/models/note';
 import { Filter, PreBuiltFilter } from './models/retrieve-notes-request';
+import { Point } from 'geojson';
+import {Coordinate} from "tsgeo/Coordinate";
+import {Vincenty}   from "tsgeo/Distance/Vincenty";
 
 @Injectable()
 export class RetrieveNotesService {
 
-    async ApplyFilters(notes: Note[], filter: Filter): Promise<Note[]> {
+    async ApplyFilters(userLocation: Point, notes: Note[], filter: Filter): Promise<Note[]> {
         
         // Note: keywords are handled in the AzureCosmosDbService
         
@@ -27,6 +30,18 @@ export class RetrieveNotesService {
             case PreBuiltFilter.WORST_RATED:
                 notes = notes.sort( (noteA, noteB) => noteA.Score - noteB.Score );
                 Logger.log('Sorting notes by WORST_RATED', 'RetrieveNotesService');
+                break;
+            default:
+                Logger.log(`Sorting by proximity as default`, 'RetrieveNotesService');
+                notes = notes.sort((noteA, noteB) => {
+                    const noteACoord = new Coordinate(noteA.Lat, noteA.Lon); // Mauna Kea Summit
+                    const noteBCoord = new Coordinate(noteB.Lat, noteB.Lon); // Haleakala Summit
+                    const userCoord = new Coordinate(userLocation.coordinates[1], userLocation.coordinates[0]);
+                    
+                    const noteADist = userCoord.getDistance(noteACoord, new Vincenty());
+                    const noteBDist = userCoord.getDistance(noteBCoord, new Vincenty());
+                    return noteADist - noteBDist;
+                });
                 break;
         }
         
