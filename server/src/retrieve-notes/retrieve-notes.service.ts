@@ -1,9 +1,9 @@
 import { Injectable, Logger } from '@nestjs/common';
-import { Note } from 'src/shared/models/note';
-import { Filter, PreBuiltFilter } from './models/retrieve-notes-request';
 import { Point } from 'geojson';
-import {Coordinate} from "tsgeo/Coordinate";
-import {Vincenty}   from "tsgeo/Distance/Vincenty";
+import { Note } from 'src/shared/models/note';
+import {Coordinate} from 'tsgeo/Coordinate';
+import {Vincenty} from 'tsgeo/Distance/Vincenty';
+import { Filter, PreBuiltFilter } from './models/retrieve-notes-request';
 
 @Injectable()
 export class RetrieveNotesService {
