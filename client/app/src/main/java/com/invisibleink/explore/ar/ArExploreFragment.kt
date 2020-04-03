@@ -25,6 +25,7 @@ import com.invisibleink.architecture.Router
 import com.invisibleink.architecture.ViewProvider
 import com.invisibleink.dashboard.NavigationActivity
 import com.invisibleink.dashboard.NavigationDestination
+import com.invisibleink.explore.SearchFilter
 import com.invisibleink.explore.vote.VoteGateway
 import com.invisibleink.explore.vote.createVoteDatabase
 import com.invisibleink.extensions.doNothingOnBackPress
@@ -44,6 +45,13 @@ class ArExploreFragment : ArFragment(), ViewProvider, LocationProvider,
 
     companion object {
         private const val REQUEST_LOCATION = 0
+        private const val EXTRA_AR_SEARCH_FILTER =
+            "com.invisibleink.explore.ar.extra_search_filter"
+
+        fun constructBundle(searchFilter: SearchFilter = SearchFilter.EMPTY_FILTER) =
+            Bundle().apply {
+                putSerializable(EXTRA_AR_SEARCH_FILTER, searchFilter)
+            }
     }
 
     @Inject
@@ -53,8 +61,8 @@ class ArExploreFragment : ArFragment(), ViewProvider, LocationProvider,
     @Inject
     lateinit var reportGateway: ReportGateway
 
-
     private lateinit var viewDelegate: ArExploreViewDelegate
+    private lateinit var searchFilter: SearchFilter
     private var navigationRouter: Router<NavigationDestination>? = null
     private lateinit var notesToRender: MutableMap<String, ViewRenderable>
     private lateinit var notesRendered: MutableMap<String, ViewRenderable>
@@ -116,6 +124,8 @@ class ArExploreFragment : ArFragment(), ViewProvider, LocationProvider,
         savedInstanceState: Bundle?
     ): View? {
         val view = super.onCreateView(inflater, container, savedInstanceState)
+        searchFilter = (arguments?.getSerializable(EXTRA_AR_SEARCH_FILTER) as? SearchFilter)
+            ?: SearchFilter.EMPTY_FILTER
 
         arSceneView.scene.addOnUpdateListener(this)
 

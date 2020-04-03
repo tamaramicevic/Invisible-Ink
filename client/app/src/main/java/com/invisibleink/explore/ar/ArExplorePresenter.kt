@@ -1,10 +1,9 @@
 package com.invisibleink.explore.ar
 
-import android.util.Log
 import com.invisibleink.R
 import com.invisibleink.architecture.BasePresenter
+import com.invisibleink.explore.SearchFilter
 import com.invisibleink.explore.vote.VoteGateway
-import com.invisibleink.explore.vote.createVoteDatabase
 import com.invisibleink.location.LocationProvider
 import com.invisibleink.models.Note
 import com.invisibleink.report.ReportGateway

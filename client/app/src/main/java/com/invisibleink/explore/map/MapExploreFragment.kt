@@ -8,8 +8,11 @@ import android.view.View
 import android.view.ViewGroup
 import com.google.android.gms.maps.MapView
 import com.invisibleink.R
+import com.invisibleink.architecture.Router
 import com.invisibleink.architecture.ViewProvider
 import com.invisibleink.dashboard.NavigationActivity
+import com.invisibleink.dashboard.NavigationDestination
+import com.invisibleink.explore.SearchFilter
 import com.invisibleink.extensions.doNothingOnBackPress
 import com.invisibleink.extensions.findViewOrThrow
 import com.invisibleink.injection.InvisibleInkApplication
@@ -21,16 +24,32 @@ class MapExploreFragment : LocationFragment(), ViewProvider, NavigationActivity.
     @Inject
     lateinit var presenter: MapExplorePresenter
     private lateinit var viewDelegate: MapExploreViewDelegate
+    private var navigationRouter: Router<NavigationDestination>? = null
+    private lateinit var searchFilter: SearchFilter
 
     override fun <T : View> findViewById(id: Int): T = findViewOrThrow(id)
     override fun onBackPress() = doNothingOnBackPress()
+
+    companion object {
+        private const val EXTRA_MAP_SEARCH_FILTER =
+            "com.invisibleink.explore.map.extra_search_filter"
+
+        fun constructBundle(searchFilter: SearchFilter = SearchFilter.EMPTY_FILTER) =
+            Bundle().apply {
+                putSerializable(EXTRA_MAP_SEARCH_FILTER, searchFilter)
+            }
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        return inflater.inflate(R.layout.fragment_map_explore, container, false)
+        val view = inflater.inflate(R.layout.fragment_map_explore, container, false)
+        searchFilter = (arguments?.getSerializable(EXTRA_MAP_SEARCH_FILTER) as? SearchFilter)
+            ?: SearchFilter.EMPTY_FILTER
+
+        return view
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -38,12 +57,16 @@ class MapExploreFragment : LocationFragment(), ViewProvider, NavigationActivity.
         setHasOptionsMenu(true)
     }
 
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        if (item.itemId == R.id.refreshItem) {
+    override fun onOptionsItemSelected(item: MenuItem): Boolean = when (item.itemId) {
+        R.id.refreshItem -> {
             presenter.onEvent(MapExploreViewEvent.RefreshNotes)
-            return true
+            true
         }
-        return super.onOptionsItemSelected(item)
+        R.id.arExploreItem -> {
+            presenter.onEvent(MapExploreViewEvent.InitiateAr)
+            true
+        }
+        else -> super.onOptionsItemSelected(item)
     }
 
     override fun onAttach(context: Context) {
@@ -55,7 +78,9 @@ class MapExploreFragment : LocationFragment(), ViewProvider, NavigationActivity.
         super.onViewCreated(view, savedInstanceState)
         viewDelegate = MapExploreViewDelegate(this)
         viewDelegate.mapView?.onCreate(savedInstanceState)
+        navigationRouter = requireActivity() as? Router<NavigationDestination>
         presenter.locationProvider = this
+        presenter.router = navigationRouter
         presenter.attach(viewDelegate)
     }
 

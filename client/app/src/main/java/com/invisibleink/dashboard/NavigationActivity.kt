@@ -9,6 +9,7 @@ import com.invisibleink.R
 import com.invisibleink.architecture.Router
 import com.invisibleink.explore.ExploreFragment
 import com.invisibleink.explore.ExploreFragment.ExploreViewMode
+import com.invisibleink.explore.SearchFilter
 import com.invisibleink.image.ImageFragment
 import com.invisibleink.note.NoteFragment
 import com.invisibleink.settings.SettingsFragment
@@ -21,10 +22,6 @@ import kotlinx.android.synthetic.main.activity_dashboard.*
 class NavigationActivity : AppCompatActivity(),
     Router<NavigationDestination> {
 
-    companion object {
-        private const val FRAGMENT_TAG = "com.invisibleink.dashboard.fragment_tag"
-    }
-
     interface BackPressHandler {
         fun onBackPress(): Boolean
     }
@@ -32,58 +29,60 @@ class NavigationActivity : AppCompatActivity(),
     private lateinit var bottomNavigation: BottomNavigationView
     private var currentFragment: Pair<Fragment, BackPressHandler>? = null
 
-    private enum class NavigationContent(
-        @IdRes val navItemId: Int, val fragmentFactory: () -> Fragment,
-        var arguments: Bundle
+    sealed class NavigationContent(
+        @IdRes val navItemId: Int,
+        val fragmentFactory: () -> Fragment
     ) {
-        MAP_EXPLORE(
+        object SettingsTab : NavigationContent(R.id.settingsTab, ::SettingsFragment)
+        object NoteTab : NavigationContent(R.id.noteTab, ::NoteFragment)
+
+        data class ImageTab(
+            val imageUrl: String?
+        ) : NavigationContent(
             R.id.exploreTab,
-            ::ExploreFragment,
-            ExploreFragment.constructBundle(ExploreViewMode.MAP)
-        ),
-        AR_EXPLORE(
+            {
+                ImageFragment().apply { arguments = ImageFragment.constructBundle(imageUrl) }
+            })
+
+        data class ExploreTab(
+            val exploreViewMode: ExploreViewMode,
+            val searchFilter: SearchFilter = SearchFilter.EMPTY_FILTER
+        ) : NavigationContent(
             R.id.exploreTab,
-            ::ExploreFragment,
-            ExploreFragment.constructBundle(ExploreViewMode.AR)
-        ),
-        IMAGE_VIEW(
-            R.id.exploreTab,
-            ::ImageFragment,
-            Bundle()
-        ),
-        NOTE(
-            R.id.noteTab,
-            ::NoteFragment,
-            Bundle()
-        ),
-        SETTINGS(
-            R.id.settingsTab,
-            ::SettingsFragment,
-            Bundle()
-        ),
+            {
+                ExploreFragment().apply {
+                    arguments = ExploreFragment.constructBundle(exploreViewMode, searchFilter)
+                }
+            })
     }
 
     private val navigationSelectionListener =
         BottomNavigationView.OnNavigationItemSelectedListener { item ->
             when (item.itemId) {
-                R.id.exploreTab -> showContent(NavigationContent.MAP_EXPLORE)
-                R.id.noteTab -> showContent(NavigationContent.NOTE)
-                R.id.settingsTab -> showContent(NavigationContent.SETTINGS)
+                R.id.exploreTab -> showContent(NavigationContent.ExploreTab(ExploreViewMode.DEFAULT_VIEW_MODE))
+                R.id.noteTab -> showContent(NavigationContent.NoteTab)
+                R.id.settingsTab -> showContent(NavigationContent.SettingsTab)
             }
             true
         }
 
     override fun routeTo(destination: NavigationDestination) {
         when (destination) {
-            is NavigationDestination.MapExploreTab -> showContent(NavigationContent.MAP_EXPLORE)
-            is NavigationDestination.ArExploreTab -> showContent(NavigationContent.AR_EXPLORE)
-            is NavigationDestination.NoteUploadTab -> showContent(NavigationContent.NOTE)
-            is NavigationDestination.SettingsTab -> showContent(NavigationContent.SETTINGS)
-            is NavigationDestination.ImageTab -> {
-                showContent(NavigationContent.IMAGE_VIEW.apply {
-                    arguments = ImageFragment.constructBundle(destination.imageUrl)
-                })
-            }
+            is NavigationDestination.MapExploreTab -> showContent(
+                NavigationContent.ExploreTab(
+                    ExploreViewMode.MAP,
+                    destination.searchFilter
+                )
+            )
+            is NavigationDestination.ArExploreTab -> showContent(
+                NavigationContent.ExploreTab(
+                    ExploreViewMode.AR,
+                    destination.searchFilter
+                )
+            )
+            is NavigationDestination.ImageTab -> showContent(NavigationContent.ImageTab(destination.imageUrl))
+            is NavigationDestination.NoteUploadTab -> showContent(NavigationContent.NoteTab)
+            is NavigationDestination.SettingsTab -> showContent(NavigationContent.SettingsTab)
         }
     }
 
@@ -102,19 +101,18 @@ class NavigationActivity : AppCompatActivity(),
             selectedItemId = R.id.exploreTab
         }
 
-        showContent(NavigationContent.MAP_EXPLORE)
+        showContent(NavigationContent.ExploreTab(ExploreViewMode.DEFAULT_VIEW_MODE))
     }
 
     private fun showContent(content: NavigationContent) {
         navigationBar.setOnNavigationItemSelectedListener(null)
 
-        val fragment = content.fragmentFactory.invoke().apply { arguments = content.arguments }
-        // Every fragment is required to be able to handle back presses
+        val fragment = content.fragmentFactory.invoke()
         currentFragment = fragment to (fragment as BackPressHandler)
 
         navigationBar.selectedItemId = content.navItemId
         supportFragmentManager.beginTransaction()
-            .replace(R.id.fragmentContainer, fragment, FRAGMENT_TAG)
+            .replace(R.id.fragmentContainer, fragment)
             .commit()
 
         navigationBar.setOnNavigationItemSelectedListener(navigationSelectionListener)

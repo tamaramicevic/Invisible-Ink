@@ -14,24 +14,40 @@ class ExploreFragment : Fragment(), NavigationActivity.BackPressHandler {
 
     companion object {
         private const val EXTRA_EXPLORE_MODE = "com.invisibleink.explore.extra_explore_mode"
+        private const val EXTRA_EXPLORE_SEARCH_FILTER =
+            "com.invisibleink.explore.extra_search_filter"
 
-        fun constructBundle(exploreViewMode: ExploreViewMode) = Bundle().apply {
-            putInt(EXTRA_EXPLORE_MODE, exploreViewMode.EXPLORE_MODE_ID)
-        }
+        fun constructBundle(
+            exploreViewMode: ExploreViewMode,
+            searchFilter: SearchFilter = SearchFilter.EMPTY_FILTER
+        ) =
+            Bundle().apply {
+                putInt(EXTRA_EXPLORE_MODE, exploreViewMode.EXPLORE_MODE_ID)
+                putSerializable(EXTRA_EXPLORE_SEARCH_FILTER, searchFilter)
+            }
     }
 
-    enum class ExploreViewMode(val fragmentFactory: () -> Fragment, val EXPLORE_MODE_ID: Int) {
-        MAP(::MapExploreFragment, 0),
-        AR(::ArExploreFragment, 1);
+    enum class ExploreViewMode(
+        val fragmentFactory: (SearchFilter) -> Fragment,
+        val EXPLORE_MODE_ID: Int
+    ) {
+        MAP({ filter ->
+            MapExploreFragment().apply { arguments = MapExploreFragment.constructBundle(filter) }
+        }, 0),
+        AR({ filter ->
+            ArExploreFragment().apply { arguments = ArExploreFragment.constructBundle(filter) }
+        }, 1);
 
         companion object {
+            val DEFAULT_VIEW_MODE = MAP
+
             fun fromModeId(@IntRange(from = 0, to = 1) exploreModeId: Int): ExploreViewMode {
                 return if (exploreModeId == MAP.EXPLORE_MODE_ID) MAP else AR
             }
         }
     }
 
-    private lateinit var exploreViewMode: ExploreViewMode
+    private lateinit var exploreViewMode: Pair<ExploreViewMode, SearchFilter>
 
     override fun onBackPress() = doNothingOnBackPress()
 
@@ -48,10 +64,14 @@ class ExploreFragment : Fragment(), NavigationActivity.BackPressHandler {
         val view = inflater.inflate(R.layout.fragment_explore, container, false)
 
         val exploreModeId = arguments?.getInt(EXTRA_EXPLORE_MODE)
+        val exploreFilter =
+            (arguments?.getSerializable(EXTRA_EXPLORE_SEARCH_FILTER) as? SearchFilter)
+                ?: SearchFilter.EMPTY_FILTER
+
         exploreViewMode = if (exploreModeId != null) {
-            ExploreViewMode.fromModeId(exploreModeId)
+            ExploreViewMode.fromModeId(exploreModeId) to exploreFilter
         } else {
-            ExploreViewMode.MAP
+            ExploreViewMode.MAP to exploreFilter
         }
 
         return view
@@ -71,7 +91,7 @@ class ExploreFragment : Fragment(), NavigationActivity.BackPressHandler {
         val mapExploreItem = menu.findItem(R.id.mapExploreItem)
         val arExploreItem = menu.findItem(R.id.arExploreItem)
 
-        if (exploreViewMode == ExploreViewMode.MAP) {
+        if (exploreViewMode.first == ExploreViewMode.MAP) {
             mapExploreItem.isVisible = false
             arExploreItem.isVisible = true
         } else {
@@ -82,25 +102,15 @@ class ExploreFragment : Fragment(), NavigationActivity.BackPressHandler {
         super.onPrepareOptionsMenu(menu)
     }
 
-    override fun onOptionsItemSelected(item: MenuItem): Boolean = when (item.itemId) {
-        R.id.mapExploreItem -> {
-            showExploreViewMode(ExploreViewMode.MAP)
-            true
-        }
-        R.id.arExploreItem -> {
-            showExploreViewMode(ExploreViewMode.AR)
-            true
-        }
-        else ->
-            super.onOptionsItemSelected(item)
-    }
-
-    private fun showExploreViewMode(exploreViewMode: ExploreViewMode) {
+    private fun showExploreViewMode(exploreViewMode: Pair<ExploreViewMode, SearchFilter>) {
         this.exploreViewMode = exploreViewMode
         requireActivity().invalidateOptionsMenu()
 
+        val (exploreMode, exploreFilter) = exploreViewMode
+
+        val exploreFragment = exploreMode.fragmentFactory.invoke(exploreFilter)
         childFragmentManager.beginTransaction()
-            .replace(R.id.fragmentContainer, exploreViewMode.fragmentFactory.invoke())
+            .replace(R.id.fragmentContainer, exploreFragment)
             .commit()
     }
 }

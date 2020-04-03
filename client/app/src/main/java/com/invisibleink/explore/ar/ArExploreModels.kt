@@ -5,23 +5,10 @@ import com.google.android.gms.maps.model.LatLng
 import com.invisibleink.architecture.Destination
 import com.invisibleink.architecture.ViewEvent
 import com.invisibleink.architecture.ViewState
+import com.invisibleink.explore.SearchFilter
 import com.invisibleink.models.Note
 import com.invisibleink.report.ReportType
-
-enum class PrebuiltOptions {
-    BEST, WORST, NEWEST;
-}
-
-data class SearchFilter(
-    val keywords: String? = null,
-    val limit: Int? = null,
-    val withImage: Boolean? = null,
-    val options: PrebuiltOptions? = null
-) {
-    companion object {
-        val EMPTY_FILTER = SearchFilter()
-    }
-}
+import java.io.Serializable
 
 data class FetchNotesRequest(
     val location: LatLng,
@@ -38,7 +25,11 @@ sealed class ArExploreViewEvent : ViewEvent {
     object FetchNotes : ArExploreViewEvent()
     data class UpvoteNote(val noteId: String) : ArExploreViewEvent()
     data class DownvoteNote(val noteId: String) : ArExploreViewEvent()
-    data class ReportNote(val noteId: String, val reportType: ReportType, val reportComment: String) : ArExploreViewEvent()
+    data class ReportNote(
+        val noteId: String,
+        val reportType: ReportType,
+        val reportComment: String
+    ) : ArExploreViewEvent()
 }
 
 sealed class ArExploreDestination : Destination
