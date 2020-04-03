@@ -37,14 +37,15 @@
     <string name="report_comment_hint">Optional comment</string>
 
     <!-- NoteContent API -->
-    <string name="upload_error_generic">Failed to upload.</string>
-    <string name="upload_note_error">Failed to upload note.</string>
-    <string name="upload_image_error">Failed to upload image.</string>
-    <string name="invalid_note_title">The note must contain a non-empty title.</string>
-    <string name="invalid_note_body">The note must contain a non-empty body.</string>
-    <string name="valid_note">Valid noteContent!</string>
-    <string name="upload_note_success">Successfully uploaded Note!</string>
-    <string name="upload_image_success">Successfully uploaded Image!</string>
+    <string name="upload_error_generic">Failed to upload note</string>
+    <string name="upload_error_bad_sentiment">The content of your note was deemed explicit</string>
+    <string name="upload_error_pii">Notes cannot contain identifying information</string>
+    <string name="upload_image_error_generic">Failed to upload image</string>
+    <string name="invalid_note_title">The note must contain a non-empty title</string>
+    <string name="invalid_note_body">The note must contain a non-empty body</string>
+    <string name="valid_note">Valid note</string>
+    <string name="upload_note_success">Successfully uploaded note</string>
+    <string name="upload_image_success">Successfully uploaded note and image</string>
 
     <!-- Fetch notes API -->
     <string name="error_fetch_notes_generic">Failed to fetch notes</string>

@@ -1,5 +1,6 @@
 package com.invisibleink.explore.map
 
+import androidx.annotation.VisibleForTesting
 import com.google.android.gms.maps.model.LatLng
 import com.invisibleink.R
 import com.invisibleink.architecture.BasePresenter
@@ -17,9 +18,12 @@ class MapExplorePresenter @Inject constructor(
     BasePresenter<MapExploreViewState, MapExploreViewEvent, MapExploreDestination>() {
 
     private val exploreApi = retrofit.create(MapExploreApi::class.java)
-    private val disposable = CompositeDisposable()
+    @VisibleForTesting
+    internal var disposable = CompositeDisposable()
+    @VisibleForTesting
     var locationProvider: LocationProvider? = null
-    private var recentNoteStatus: NoteStatus = NoteStatus.Uninitialized
+    @VisibleForTesting
+    internal var recentNoteStatus: NoteStatus = NoteStatus.Uninitialized
 
     sealed class NoteStatus {
         object Uninitialized : NoteStatus()

@@ -4,6 +4,10 @@ import io.reactivex.Observable
 import okhttp3.MultipartBody
 import retrofit2.http.*
 
+enum class NoteUploadErrorType {
+    BAD_SENTIMENT_DETECTED, PII_DETECTED, UPLOAD_FAILED
+}
+
 interface NoteApi {
 
     @POST("upload")
@@ -14,6 +18,6 @@ interface NoteApi {
     fun uploadImage(@Path(value = "noteId") noteId: String, @Part image: MultipartBody.Part): Observable<ImageUploadResponse>
 }
 
-data class NoteUploadResponse(val success: Boolean, val error: String?, val noteId: String?)
+data class NoteUploadResponse(val success: Boolean, val error: NoteUploadErrorType?, val noteId: String?)
 
 data class ImageUploadResponse(val success: Boolean, val error: String?)
