@@ -5,8 +5,10 @@ import android.view.ViewGroup
 import androidx.preference.Preference
 import androidx.preference.PreferenceFragmentCompat
 import com.invisibleink.R
+import com.invisibleink.dashboard.NavigationActivity
 import com.invisibleink.explore.vote.VoteGateway
 import com.invisibleink.explore.vote.createVoteDatabase
+import com.invisibleink.extensions.doNothingOnBackPress
 import com.invisibleink.extensions.showSnackbar
 import com.invisibleink.injection.InvisibleInkApplication
 import com.invisibleink.report.ReportDialogBuilder
@@ -16,7 +18,7 @@ import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.schedulers.Schedulers
 import javax.inject.Inject
 
-class SettingsFragment : PreferenceFragmentCompat() {
+class SettingsFragment : PreferenceFragmentCompat(), NavigationActivity.BackPressHandler {
 
     @Inject
     lateinit var voteGateway: VoteGateway
@@ -24,6 +26,8 @@ class SettingsFragment : PreferenceFragmentCompat() {
     lateinit var reportGateway: ReportGateway
 
     private val disposable = CompositeDisposable()
+
+    override fun onBackPress() = doNothingOnBackPress()
 
     override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
         setPreferencesFromResource(R.xml.settings, rootKey)

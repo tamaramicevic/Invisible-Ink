@@ -9,18 +9,21 @@ import android.view.ViewGroup
 import com.google.android.gms.maps.MapView
 import com.invisibleink.R
 import com.invisibleink.architecture.ViewProvider
+import com.invisibleink.dashboard.NavigationActivity
+import com.invisibleink.extensions.doNothingOnBackPress
 import com.invisibleink.extensions.findViewOrThrow
 import com.invisibleink.injection.InvisibleInkApplication
 import com.invisibleink.location.LocationFragment
 import javax.inject.Inject
 
-class MapExploreFragment : LocationFragment(), ViewProvider {
+class MapExploreFragment : LocationFragment(), ViewProvider, NavigationActivity.BackPressHandler {
 
     @Inject
     lateinit var presenter: MapExplorePresenter
     private lateinit var viewDelegate: MapExploreViewDelegate
 
     override fun <T : View> findViewById(id: Int): T = findViewOrThrow(id)
+    override fun onBackPress() = doNothingOnBackPress()
 
     override fun onCreateView(
         inflater: LayoutInflater,

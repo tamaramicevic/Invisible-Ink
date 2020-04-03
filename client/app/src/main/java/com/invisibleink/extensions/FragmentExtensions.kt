@@ -3,8 +3,8 @@ package com.invisibleink.extensions
 import android.view.View
 import androidx.annotation.IdRes
 import androidx.fragment.app.Fragment
-import com.google.android.gms.maps.MapFragment
 import com.invisibleink.architecture.ViewProvider
+import com.invisibleink.dashboard.NavigationActivity
 
 /**
  * Extension function for implementing the [ViewProvider] interface in fragments.
@@ -15,3 +15,5 @@ fun <T : View> Fragment.findViewOrThrow(@IdRes id: Int): T {
     )
     return validView.findViewById(id) ?: throw IllegalStateException()
 }
+
+fun Fragment.doNothingOnBackPress() = false

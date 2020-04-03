@@ -13,7 +13,9 @@ import com.google.android.gms.maps.model.LatLng
 import com.invisibleink.R
 import com.invisibleink.architecture.Router
 import com.invisibleink.architecture.ViewProvider
+import com.invisibleink.dashboard.NavigationActivity
 import com.invisibleink.dashboard.NavigationDestination
+import com.invisibleink.extensions.doNothingOnBackPress
 import com.invisibleink.extensions.findViewOrThrow
 import com.invisibleink.extensions.hasCameraPermission
 import com.invisibleink.extensions.hasExternalWritePermission
@@ -30,7 +32,7 @@ import pl.aprilapps.easyphotopicker.MediaSource
 import javax.inject.Inject
 
 class NoteFragment : LocationFragment(), ViewProvider, NotePresenter.ImageHandler,
-    LocationProvider {
+    LocationProvider, NavigationActivity.BackPressHandler {
 
     companion object {
         private const val REQUEST_LOCATION = 0
@@ -44,6 +46,7 @@ class NoteFragment : LocationFragment(), ViewProvider, NotePresenter.ImageHandle
     private var lastLocation: LatLng? = null
 
     override fun <T : View> findViewById(id: Int): T = findViewOrThrow(id)
+    override fun onBackPress() = doNothingOnBackPress()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

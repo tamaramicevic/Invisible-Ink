@@ -9,6 +9,7 @@ import com.invisibleink.R
 import com.invisibleink.architecture.Router
 import com.invisibleink.explore.ExploreFragment
 import com.invisibleink.explore.ExploreFragment.ExploreViewMode
+import com.invisibleink.image.ImageFragment
 import com.invisibleink.note.NoteFragment
 import com.invisibleink.settings.SettingsFragment
 import kotlinx.android.synthetic.main.activity_dashboard.*
@@ -20,13 +21,46 @@ import kotlinx.android.synthetic.main.activity_dashboard.*
 class NavigationActivity : AppCompatActivity(),
     Router<NavigationDestination> {
 
-    private lateinit var bottomNavigation: BottomNavigationView
+    companion object {
+        private const val FRAGMENT_TAG = "com.invisibleink.dashboard.fragment_tag"
+    }
 
-    private enum class NavigationContent(@IdRes val navItemId: Int, val fragmentFactory: () -> Fragment) {
-        MAP_EXPLORE(R.id.exploreTab, { ExploreFragment(ExploreViewMode.MAP.CHILD_FRAGMENT_ID) }),
-        AR_EXPLORE(R.id.exploreTab, { ExploreFragment(ExploreViewMode.AR.CHILD_FRAGMENT_ID) }),
-        NOTE(R.id.noteTab, ::NoteFragment),
-        SETTINGS(R.id.settingsTab, ::SettingsFragment)
+    interface BackPressHandler {
+        fun onBackPress(): Boolean
+    }
+
+    private lateinit var bottomNavigation: BottomNavigationView
+    private var currentFragment: Pair<Fragment, BackPressHandler>? = null
+
+    private enum class NavigationContent(
+        @IdRes val navItemId: Int, val fragmentFactory: () -> Fragment,
+        var arguments: Bundle
+    ) {
+        MAP_EXPLORE(
+            R.id.exploreTab,
+            ::ExploreFragment,
+            ExploreFragment.constructBundle(ExploreViewMode.MAP)
+        ),
+        AR_EXPLORE(
+            R.id.exploreTab,
+            ::ExploreFragment,
+            ExploreFragment.constructBundle(ExploreViewMode.AR)
+        ),
+        IMAGE_VIEW(
+            R.id.exploreTab,
+            ::ImageFragment,
+            Bundle()
+        ),
+        NOTE(
+            R.id.noteTab,
+            ::NoteFragment,
+            Bundle()
+        ),
+        SETTINGS(
+            R.id.settingsTab,
+            ::SettingsFragment,
+            Bundle()
+        ),
     }
 
     private val navigationSelectionListener =
@@ -45,6 +79,17 @@ class NavigationActivity : AppCompatActivity(),
             is NavigationDestination.ArExploreTab -> showContent(NavigationContent.AR_EXPLORE)
             is NavigationDestination.NoteUploadTab -> showContent(NavigationContent.NOTE)
             is NavigationDestination.SettingsTab -> showContent(NavigationContent.SETTINGS)
+            is NavigationDestination.ImageTab -> {
+                showContent(NavigationContent.IMAGE_VIEW.apply {
+                    arguments = ImageFragment.constructBundle(destination.imageUrl)
+                })
+            }
+        }
+    }
+
+    override fun onBackPressed() {
+        if (currentFragment?.second?.onBackPress() != true) {
+            super.onBackPressed()
         }
     }
 
@@ -61,10 +106,16 @@ class NavigationActivity : AppCompatActivity(),
 
     private fun showContent(content: NavigationContent) {
         navigationBar.setOnNavigationItemSelectedListener(null)
+
+        val fragment = content.fragmentFactory.invoke().apply { arguments = content.arguments }
+        // Every fragment is required to be able to handle back presses
+        currentFragment = fragment to (fragment as BackPressHandler)
+
         navigationBar.selectedItemId = content.navItemId
         supportFragmentManager.beginTransaction()
-            .replace(R.id.fragmentContainer, content.fragmentFactory.invoke())
+            .replace(R.id.fragmentContainer, fragment, FRAGMENT_TAG)
             .commit()
+
         navigationBar.setOnNavigationItemSelectedListener(navigationSelectionListener)
     }
 }

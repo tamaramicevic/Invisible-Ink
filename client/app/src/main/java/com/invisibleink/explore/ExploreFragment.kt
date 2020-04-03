@@ -5,23 +5,35 @@ import android.view.*
 import androidx.annotation.IntRange
 import androidx.fragment.app.Fragment
 import com.invisibleink.R
+import com.invisibleink.dashboard.NavigationActivity
 import com.invisibleink.explore.ar.ArExploreFragment
 import com.invisibleink.explore.map.MapExploreFragment
+import com.invisibleink.extensions.doNothingOnBackPress
 
-class ExploreFragment(explorationModeId: Int) : Fragment() {
+class ExploreFragment : Fragment(), NavigationActivity.BackPressHandler {
 
-    enum class ExploreViewMode(val fragmentFactory: () -> Fragment, val CHILD_FRAGMENT_ID: Int) {
-        MAP(::MapExploreFragment, 1),
-        AR(::ArExploreFragment, 2);
+    companion object {
+        private const val EXTRA_EXPLORE_MODE = "com.invisibleink.explore.extra_explore_mode"
+
+        fun constructBundle(exploreViewMode: ExploreViewMode) = Bundle().apply {
+            putInt(EXTRA_EXPLORE_MODE, exploreViewMode.EXPLORE_MODE_ID)
+        }
+    }
+
+    enum class ExploreViewMode(val fragmentFactory: () -> Fragment, val EXPLORE_MODE_ID: Int) {
+        MAP(::MapExploreFragment, 0),
+        AR(::ArExploreFragment, 1);
 
         companion object {
             fun fromModeId(@IntRange(from = 0, to = 1) exploreModeId: Int): ExploreViewMode {
-                return if (exploreModeId == MAP.CHILD_FRAGMENT_ID) MAP else AR
+                return if (exploreModeId == MAP.EXPLORE_MODE_ID) MAP else AR
             }
         }
     }
 
-    private var exploreViewMode = ExploreViewMode.fromModeId(explorationModeId)
+    private lateinit var exploreViewMode: ExploreViewMode
+
+    override fun onBackPress() = doNothingOnBackPress()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -33,7 +45,16 @@ class ExploreFragment(explorationModeId: Int) : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        return inflater.inflate(R.layout.fragment_explore, container, false)
+        val view = inflater.inflate(R.layout.fragment_explore, container, false)
+
+        val exploreModeId = arguments?.getInt(EXTRA_EXPLORE_MODE)
+        exploreViewMode = if (exploreModeId != null) {
+            ExploreViewMode.fromModeId(exploreModeId)
+        } else {
+            ExploreViewMode.MAP
+        }
+
+        return view
     }
 
     override fun onStart() {

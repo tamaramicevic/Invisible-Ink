@@ -1,31 +1,34 @@
 package com.invisibleink.explore.ar
 
-import com.invisibleink.R
 import android.content.Context
 import android.location.Location
 import android.os.Bundle
 import android.os.Looper
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.*
-import androidx.fragment.app.FragmentTransaction
 import com.google.android.gms.location.*
 import com.google.android.gms.maps.model.LatLng
-import com.google.ar.core.*
+import com.google.ar.core.Frame
+import com.google.ar.core.Plane
 import com.google.ar.core.Pose
+import com.google.ar.core.TrackingState
 import com.google.ar.sceneform.AnchorNode
 import com.google.ar.sceneform.FrameTime
 import com.google.ar.sceneform.math.Vector3
 import com.google.ar.sceneform.rendering.ViewRenderable
 import com.google.ar.sceneform.ux.ArFragment
 import com.google.ar.sceneform.ux.TransformableNode
+import com.invisibleink.R
+import com.invisibleink.architecture.Router
 import com.invisibleink.architecture.ViewProvider
+import com.invisibleink.dashboard.NavigationActivity
+import com.invisibleink.dashboard.NavigationDestination
 import com.invisibleink.explore.vote.VoteGateway
 import com.invisibleink.explore.vote.createVoteDatabase
+import com.invisibleink.extensions.doNothingOnBackPress
 import com.invisibleink.extensions.findViewOrThrow
-import com.invisibleink.image.ImageFragment
 import com.invisibleink.injection.InvisibleInkApplication
 import com.invisibleink.location.LocationProvider
 import com.invisibleink.models.Note
@@ -33,12 +36,11 @@ import com.invisibleink.permissions.onLocationPermissionGranted
 import com.invisibleink.permissions.requireLocationPermission
 import com.invisibleink.report.ReportDialogBuilder
 import com.invisibleink.report.ReportGateway
-import io.reactivex.android.schedulers.AndroidSchedulers
-import io.reactivex.schedulers.Schedulers
 import javax.inject.Inject
 import kotlin.math.sqrt
 
-class ArExploreFragment : ArFragment(), ViewProvider, LocationProvider {
+class ArExploreFragment : ArFragment(), ViewProvider, LocationProvider,
+    NavigationActivity.BackPressHandler {
 
     companion object {
         private const val REQUEST_LOCATION = 0
@@ -53,6 +55,7 @@ class ArExploreFragment : ArFragment(), ViewProvider, LocationProvider {
 
 
     private lateinit var viewDelegate: ArExploreViewDelegate
+    private var navigationRouter: Router<NavigationDestination>? = null
     private lateinit var notesToRender: MutableMap<String, ViewRenderable>
     private lateinit var notesRendered: MutableMap<String, ViewRenderable>
     private lateinit var notePositions: MutableList<Pose>
@@ -62,6 +65,7 @@ class ArExploreFragment : ArFragment(), ViewProvider, LocationProvider {
     private var DISTANCE_BETWEEN_NOTES = 1.0
 
     override fun <T : View> findViewById(id: Int): T = findViewOrThrow(id)
+    override fun onBackPress() = doNothingOnBackPress()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -172,9 +176,10 @@ class ArExploreFragment : ArFragment(), ViewProvider, LocationProvider {
                         viewDelegate.pushEvent(ArExploreViewEvent.UpvoteNote(note.id))
                     }
 
-                    renderable.view.findViewById<ImageButton>(R.id.noteDownvote).setOnClickListener {
-                        viewDelegate.pushEvent(ArExploreViewEvent.DownvoteNote(note.id))
-                    }
+                    renderable.view.findViewById<ImageButton>(R.id.noteDownvote)
+                        .setOnClickListener {
+                            viewDelegate.pushEvent(ArExploreViewEvent.DownvoteNote(note.id))
+                        }
 
                     notesToRender[note.id] = renderable
                     if (!this.notesRendered.containsKey(note.id!!)) {
@@ -207,7 +212,7 @@ class ArExploreFragment : ArFragment(), ViewProvider, LocationProvider {
         if (frame != null) {
             val trackables = frame.getUpdatedTrackables(Plane::class.java).iterator()
 
-            while(trackables.hasNext()) {
+            while (trackables.hasNext()) {
                 val plane = trackables.next() as Plane
 
                 if (plane.trackingState == TrackingState.TRACKING) {
@@ -218,17 +223,18 @@ class ArExploreFragment : ArFragment(), ViewProvider, LocationProvider {
                         val renderable = notesToRenderItr.next()
                         val iterableAnchor = frame.updatedAnchors.iterator()
 
-                        if(!iterableAnchor.hasNext()) {
-                            val hitTest = frame.hitTest(frame.screenCenter().x, frame.screenCenter().y)
+                        if (!iterableAnchor.hasNext()) {
+                            val hitTest =
+                                frame.hitTest(frame.screenCenter().x, frame.screenCenter().y)
 
                             val hitTestIterator = hitTest.iterator()
-                            while(hitTestIterator.hasNext()) {
+                            while (hitTestIterator.hasNext()) {
 
                                 val hitResult = hitTestIterator.next()
 
                                 // checks for distances between all currently rendered notes
                                 if (notePositions.isNotEmpty()) {
-                                    val distances : MutableList<Double> = mutableListOf()
+                                    val distances: MutableList<Double> = mutableListOf()
                                     notePositions.forEach { position ->
 
                                         // Compute the difference vector between the two hit locations.
@@ -237,7 +243,8 @@ class ArExploreFragment : ArFragment(), ViewProvider, LocationProvider {
                                         val dz = position.tz() - hitResult.hitPose.tz();
 
                                         // Compute the straight-line distance.
-                                        val distanceMeters =  sqrt((dx*dx + dy*dy + dz*dz).toDouble());
+                                        val distanceMeters =
+                                            sqrt((dx * dx + dy * dy + dz * dz).toDouble());
                                         distances.add(distanceMeters)
                                     }
 
@@ -260,15 +267,17 @@ class ArExploreFragment : ArFragment(), ViewProvider, LocationProvider {
                                 notePositions.add(hitResult.hitPose)
 
                                 // alter the real world position to ensure object renders on the table top. Not somewhere inside.
-                                transformableNode.worldPosition = Vector3(anchor.pose.tx(),
+                                transformableNode.worldPosition = Vector3(
+                                    anchor.pose.tx(),
                                     anchor.pose.compose(Pose.makeTranslation(0f, 0.05f, 0.0f)).ty(),
-                                    anchor.pose.tz())
+                                    anchor.pose.tz()
+                                )
 
                             }
                         }
                     }
 
-                     notesToRender = notesToRender.filter{
+                    notesToRender = notesToRender.filter {
                         !notesRendered.contains(it.key)
                     }.toMutableMap()
                 }
@@ -286,6 +295,7 @@ class ArExploreFragment : ArFragment(), ViewProvider, LocationProvider {
         viewDelegate = ArExploreViewDelegate(this)
         viewDelegate.arFragment = this
         presenter.locationProvider = this
+        navigationRouter = requireActivity() as? Router<NavigationDestination>
         presenter.voteGateway = voteGateway
         presenter.voteGateway.voteDatabase =
             createVoteDatabase(application = requireActivity().application)
@@ -316,15 +326,7 @@ class ArExploreFragment : ArFragment(), ViewProvider, LocationProvider {
     }
 
     private fun showImage(imageUrl: String) {
-        val bundle = Bundle()
-        bundle.putString("IMAGE-URL", imageUrl)
-
-        val imageFragment = ImageFragment()
-        imageFragment.arguments = bundle
-
-        val fragmentTransaction: FragmentTransaction? = fragmentManager?.beginTransaction()
-        fragmentTransaction?.replace(R.id.fragmentContainer, imageFragment)?.addToBackStack(null)
-        val commit = fragmentTransaction?.commit()
+        navigationRouter?.routeTo(NavigationDestination.ImageTab(imageUrl))
     }
 
     private fun reportNote(noteID: String) {
@@ -332,7 +334,8 @@ class ArExploreFragment : ArFragment(), ViewProvider, LocationProvider {
             { reportType, reportComment ->
                 if (reportType != null) {
                     reportComment?.let { it1 ->
-                        ArExploreViewEvent.ReportNote(noteID, reportType,
+                        ArExploreViewEvent.ReportNote(
+                            noteID, reportType,
                             it1
                         )
                     }?.let { it2 -> viewDelegate.pushEvent(it2) }

@@ -7,4 +7,5 @@ sealed class NavigationDestination : Destination {
     object ArExploreTab: NavigationDestination()
     object NoteUploadTab: NavigationDestination()
     object SettingsTab: NavigationDestination()
+    data class ImageTab(val imageUrl: String?): NavigationDestination()
 }
