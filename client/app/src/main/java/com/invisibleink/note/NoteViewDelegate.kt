@@ -106,7 +106,7 @@ class NoteViewDelegate(viewProvider: ViewProvider) :
         title = title.text.toString(),
         body = body.text.toString(),
         imagePath = imagePath,
-        expiration = expirationDate
+        expiration = expirationDate ?: DateTime.now()
     )
 
     private fun showExpirationDate() {
