@@ -4,9 +4,7 @@ import android.content.Context
 import android.location.Location
 import android.os.Bundle
 import android.os.Looper
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
 import android.widget.*
 import com.google.android.gms.location.*
 import com.google.android.gms.maps.model.LatLng
@@ -77,11 +75,33 @@ class ArExploreFragment : ArFragment(), ViewProvider, LocationProvider,
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        setHasOptionsMenu(true)
+
         requireLocationPermission(REQUEST_LOCATION, this@ArExploreFragment::setUpLocationListener)
         notesToRender = mutableMapOf()
         notesRendered = mutableMapOf()
         notePositions = mutableListOf()
     }
+
+    override fun onPrepareOptionsMenu(menu: Menu) {
+        super.onPrepareOptionsMenu(menu)
+
+        menu.findItem(R.id.refreshItem).isVisible = true
+        menu.findItem(R.id.mapExploreItem).isVisible = true
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean = when (item.itemId) {
+        R.id.refreshItem -> {
+            // TODO (Tamara): Refresh to notes!
+            true
+        }
+        R.id.mapExploreItem -> {
+            navigationRouter?.routeTo(NavigationDestination.MapExploreTab(searchFilter))
+            true
+        }
+        else -> super.onOptionsItemSelected(item)
+    }
+
 
     override fun onRequestPermissionsResult(
         requestCode: Int,

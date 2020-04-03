@@ -2,10 +2,7 @@ package com.invisibleink.explore.map
 
 import android.content.Context
 import android.os.Bundle
-import android.view.LayoutInflater
-import android.view.MenuItem
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
 import com.google.android.gms.maps.MapView
 import com.invisibleink.R
 import com.invisibleink.architecture.Router
@@ -55,6 +52,13 @@ class MapExploreFragment : LocationFragment(), ViewProvider, NavigationActivity.
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setHasOptionsMenu(true)
+    }
+
+    override fun onPrepareOptionsMenu(menu: Menu) {
+        super.onPrepareOptionsMenu(menu)
+
+        menu.findItem(R.id.refreshItem).isVisible = true
+        menu.findItem(R.id.arExploreItem).isVisible = true
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean = when (item.itemId) {

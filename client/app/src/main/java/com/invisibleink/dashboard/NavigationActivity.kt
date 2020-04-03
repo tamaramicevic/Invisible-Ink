@@ -1,15 +1,16 @@
 package com.invisibleink.dashboard
 
 import android.os.Bundle
+import android.view.Menu
 import androidx.annotation.IdRes
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.invisibleink.R
 import com.invisibleink.architecture.Router
-import com.invisibleink.explore.ExploreFragment
-import com.invisibleink.explore.ExploreFragment.ExploreViewMode
 import com.invisibleink.explore.SearchFilter
+import com.invisibleink.explore.ar.ArExploreFragment
+import com.invisibleink.explore.map.MapExploreFragment
 import com.invisibleink.image.ImageFragment
 import com.invisibleink.note.NoteFragment
 import com.invisibleink.settings.SettingsFragment
@@ -22,10 +23,15 @@ import kotlinx.android.synthetic.main.activity_dashboard.*
 class NavigationActivity : AppCompatActivity(),
     Router<NavigationDestination> {
 
+    companion object {
+        private val DEFAULT_EXPLORE_TAB = NavigationContent.MapExploreTab()
+    }
+
     interface BackPressHandler {
         fun onBackPress(): Boolean
     }
 
+    private val navigationRouter = NavigationRouter()
     private lateinit var bottomNavigation: BottomNavigationView
     private var currentFragment: Pair<Fragment, BackPressHandler>? = null
 
@@ -44,14 +50,23 @@ class NavigationActivity : AppCompatActivity(),
                 ImageFragment().apply { arguments = ImageFragment.constructBundle(imageUrl) }
             })
 
-        data class ExploreTab(
-            val exploreViewMode: ExploreViewMode,
+        data class MapExploreTab(
             val searchFilter: SearchFilter = SearchFilter.EMPTY_FILTER
         ) : NavigationContent(
             R.id.exploreTab,
             {
-                ExploreFragment().apply {
-                    arguments = ExploreFragment.constructBundle(exploreViewMode, searchFilter)
+                MapExploreFragment().apply {
+                    arguments = MapExploreFragment.constructBundle(searchFilter)
+                }
+            })
+
+        data class ArExploreTab(
+            val searchFilter: SearchFilter = SearchFilter.EMPTY_FILTER
+        ) : NavigationContent(
+            R.id.exploreTab,
+            {
+                ArExploreFragment().apply {
+                    arguments = ArExploreFragment.constructBundle(searchFilter)
                 }
             })
     }
@@ -59,32 +74,15 @@ class NavigationActivity : AppCompatActivity(),
     private val navigationSelectionListener =
         BottomNavigationView.OnNavigationItemSelectedListener { item ->
             when (item.itemId) {
-                R.id.exploreTab -> showContent(NavigationContent.ExploreTab(ExploreViewMode.DEFAULT_VIEW_MODE))
+                R.id.exploreTab -> showContent(DEFAULT_EXPLORE_TAB)
                 R.id.noteTab -> showContent(NavigationContent.NoteTab)
                 R.id.settingsTab -> showContent(NavigationContent.SettingsTab)
             }
             true
         }
 
-    override fun routeTo(destination: NavigationDestination) {
-        when (destination) {
-            is NavigationDestination.MapExploreTab -> showContent(
-                NavigationContent.ExploreTab(
-                    ExploreViewMode.MAP,
-                    destination.searchFilter
-                )
-            )
-            is NavigationDestination.ArExploreTab -> showContent(
-                NavigationContent.ExploreTab(
-                    ExploreViewMode.AR,
-                    destination.searchFilter
-                )
-            )
-            is NavigationDestination.ImageTab -> showContent(NavigationContent.ImageTab(destination.imageUrl))
-            is NavigationDestination.NoteUploadTab -> showContent(NavigationContent.NoteTab)
-            is NavigationDestination.SettingsTab -> showContent(NavigationContent.SettingsTab)
-        }
-    }
+    override fun routeTo(destination: NavigationDestination) =
+        showContent(navigationRouter.getContent(destination))
 
     override fun onBackPressed() {
         if (currentFragment?.second?.onBackPress() != true) {
@@ -95,13 +93,27 @@ class NavigationActivity : AppCompatActivity(),
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_dashboard)
-        setSupportActionBar(findViewById(R.id.toolbar))
         bottomNavigation = findViewById<BottomNavigationView>(R.id.navigationBar).apply {
             setOnNavigationItemSelectedListener(navigationSelectionListener)
             selectedItemId = R.id.exploreTab
         }
 
-        showContent(NavigationContent.ExploreTab(ExploreViewMode.DEFAULT_VIEW_MODE))
+        showContent(DEFAULT_EXPLORE_TAB)
+    }
+
+    override fun onPrepareOptionsMenu(menu: Menu?): Boolean {
+        // Fragments are responsible for making their menu items visible
+        menu?.findItem(R.id.refreshItem)?.isVisible = false
+        menu?.findItem(R.id.mapExploreItem)?.isVisible = false
+        menu?.findItem(R.id.arExploreItem)?.isVisible = false
+
+        return true
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        super.onCreateOptionsMenu(menu)
+        menuInflater.inflate(R.menu.explore_menu, menu)
+        return true
     }
 
     private fun showContent(content: NavigationContent) {
