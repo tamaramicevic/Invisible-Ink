@@ -30,13 +30,8 @@ export class ReportController {
         }
         
         try {
-            const report = await this.azureCosmosService.GetNoteReportByNoteId(reportNoteRequest.NoteId);
-            
-            if (report === null) {
-                await this.azureCosmosService.ReportNote(reportNoteRequest as ReportedNoteSchema);
-                return { success: true };
-            }
-            return { success: false, error: ReportNoteErrorCondition.REPORT_ALREADY_EXISTS }; // report already exists
+            await this.azureCosmosService.ReportNote(reportNoteRequest as ReportedNoteSchema);
+            return { success: true };
             
         } catch (error) {
             return { success: false, error: ReportNoteErrorCondition.UPLOAD_FAILED };
