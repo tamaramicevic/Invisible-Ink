@@ -2,6 +2,10 @@ package com.invisibleink.explore.map
 
 import com.google.android.gms.maps.model.LatLng
 import com.invisibleink.R
+import com.invisibleink.architecture.Router
+import com.invisibleink.dashboard.NavigationDestination
+import com.invisibleink.explore.PrebuiltOptions
+import com.invisibleink.explore.SearchFilter
 import com.invisibleink.location.LocationProvider
 import com.invisibleink.models.Note
 import com.nhaarman.mockitokotlin2.*
@@ -30,14 +34,15 @@ class MapExplorePresenterTest {
     private lateinit var locationProvider: LocationProvider
     private lateinit var mapViewDelegate: MapExploreViewDelegate
     private lateinit var locationUpdateListener: (LatLng) -> Unit?
+    private lateinit var navigationRouter: Router<NavigationDestination>
 
     // State-less, helper objects re-used among tests
     companion object {
         private val validLocation: LatLng? = LatLng(0.0, 0.0)
         private val invalidLocation: LatLng? = null
-        private val locationOnlyFetchRequest = FetchNotesRequest(validLocation!!, SearchFilter.EMPTY_FILTER)
-        private val defaultSearchNotesEvent = MapExploreViewEvent.SearchNotes("Some query", 12, false, PrebuiltOptions.WORST)
         private val defaultSearchNotesFilter = SearchFilter("Some query", 12, false, PrebuiltOptions.WORST)
+        private val locationOnlyFetchRequest = FetchNotesRequest(validLocation!!, SearchFilter.EMPTY_FILTER)
+        private val defaultSearchNotesEvent = MapExploreViewEvent.SearchNotes(defaultSearchNotesFilter)
         private val defaultSearchNotesRequest = FetchNotesRequest(validLocation!!, defaultSearchNotesFilter)
         private val emptyNoteList = listOf<Note>()
         private val defaultNoteList = listOf(Note(
@@ -56,6 +61,7 @@ class MapExplorePresenterTest {
         mapViewDelegate = mock()
         disposable = mock()
         exploreApi = mock()
+        navigationRouter = mock()
         retrofit = mock {
             on { create(MapExploreApi::class.java) } doReturn exploreApi
         }
@@ -65,6 +71,7 @@ class MapExplorePresenterTest {
         mapPresenter = MapExplorePresenter(retrofit)
         mapPresenter.disposable = disposable
         mapPresenter.locationProvider = locationProvider
+        mapPresenter.router = navigationRouter
         mapPresenter.attach(mapViewDelegate)
         clearInvocations(mapViewDelegate)
 
@@ -194,6 +201,19 @@ class MapExplorePresenterTest {
         locationUpdateListener.invoke(newLocation)
         verify(mapViewDelegate).render(MapExploreViewState.DeviceLocationUpdate(newLocation, emptyNoteList))
     }
+
+    @Test
+    fun `presenter extracts filter when receiving initiate AR event`() {
+        mapPresenter.onEvent(MapExploreViewEvent.InitiateAr)
+        verify(mapViewDelegate).render(MapExploreViewState.ExtractFilter)
+    }
+
+    @Test
+    fun `presenter routes to ArExplore tab when receiving FilterExtracted event`() {
+        mapPresenter.onEvent(MapExploreViewEvent.FilterExtracted(defaultSearchNotesFilter))
+        verify(navigationRouter).routeTo(NavigationDestination.ArExploreTab(defaultSearchNotesFilter))
+    }
+
 
     private fun setUpLocationProvider(location: LatLng?) =
         whenever(locationProvider.getCurrentLocation()) doReturn location
