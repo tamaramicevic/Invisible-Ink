@@ -285,6 +285,11 @@ class ArExploreFragment : ArFragment(), ViewProvider, LocationProvider,
         }
     }
 
+    override fun onWindowFocusChanged(hasFocus: Boolean) {
+        super.onWindowFocusChanged(hasFocus)
+        requireActivity().window.decorView.systemUiVisibility = 0
+    }
+
     override fun onAttach(context: Context) {
         super.onAttach(context)
         (context.applicationContext as InvisibleInkApplication).appComponent.inject(this)
