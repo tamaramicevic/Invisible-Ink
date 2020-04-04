@@ -16,7 +16,7 @@
         android:paddingRight="12dp"
         android:paddingTop="12dp"
         android:paddingBottom="12dp"
-        android:background="@color/cardview_light_background"
+        android:background="@drawable/rounded_note_background"
         android:layout_alignParentTop="true" >
 
         <ScrollView

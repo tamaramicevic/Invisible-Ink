@@ -61,7 +61,6 @@ class ArExploreFragment : ArFragment(), ViewProvider, LocationProvider,
     lateinit var reportGateway: ReportGateway
 
     private lateinit var viewDelegate: ArExploreViewDelegate
-    private lateinit var searchFilter: SearchFilter
     private var navigationRouter: Router<NavigationDestination>? = null
     private lateinit var searchFilter: SearchFilter
 
@@ -98,7 +97,7 @@ class ArExploreFragment : ArFragment(), ViewProvider, LocationProvider,
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean = when (item.itemId) {
         R.id.refreshItem -> {
-            // TODO (Tamara): Refresh to notes!
+            viewDelegate.pushEvent(ArExploreViewEvent.FetchNotes)
             true
         }
         R.id.mapExploreItem -> {
@@ -159,7 +158,6 @@ class ArExploreFragment : ArFragment(), ViewProvider, LocationProvider,
     }
 
     fun showNotes(deviceLocation: LatLng, notes: List<Note>) {
-
         val filteredNotes = filterNotes(deviceLocation, notes)
 
         filteredNotes.forEach loop@{ note ->
@@ -341,7 +339,7 @@ class ArExploreFragment : ArFragment(), ViewProvider, LocationProvider,
         viewDelegate = ArExploreViewDelegate(this)
         viewDelegate.arFragment = this
         presenter.locationProvider = this
-        presenter.searchFilter = SearchFilter.EMPTY_FILTER
+        presenter.searchFilter = searchFilter
         navigationRouter = requireActivity() as? Router<NavigationDestination>
         presenter.voteGateway = voteGateway
         presenter.voteGateway.voteDatabase =
