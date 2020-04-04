@@ -4,6 +4,9 @@ import androidx.annotation.VisibleForTesting
 import com.google.android.gms.maps.model.LatLng
 import com.invisibleink.R
 import com.invisibleink.architecture.BasePresenter
+import com.invisibleink.architecture.Router
+import com.invisibleink.dashboard.NavigationDestination
+import com.invisibleink.explore.SearchFilter
 import com.invisibleink.location.LocationProvider
 import com.invisibleink.models.Note
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -24,6 +27,7 @@ class MapExplorePresenter @Inject constructor(
     var locationProvider: LocationProvider? = null
     @VisibleForTesting
     internal var recentNoteStatus: NoteStatus = NoteStatus.Uninitialized
+    internal var router: Router<NavigationDestination>? = null
 
     sealed class NoteStatus {
         object Uninitialized : NoteStatus()
@@ -33,7 +37,9 @@ class MapExplorePresenter @Inject constructor(
     override fun onEvent(viewEvent: MapExploreViewEvent) = when (viewEvent) {
         is MapExploreViewEvent.FetchNotes -> fetchNotes()
         is MapExploreViewEvent.RefreshNotes -> fetchNotes()
-        is MapExploreViewEvent.SearchNotes -> searchNotes(viewEvent)
+        is MapExploreViewEvent.SearchNotes -> fetchNotes(viewEvent.searchFilter)
+        is MapExploreViewEvent.InitiateAr -> pushState(MapExploreViewState.ExtractFilter)
+        is MapExploreViewEvent.FilterExtracted -> router?.routeTo(NavigationDestination.ArExploreTab(viewEvent.searchFilter))
     }
 
     override fun onAttach() {
@@ -79,15 +85,6 @@ class MapExplorePresenter @Inject constructor(
             pushState(MapExploreViewState.Error(R.string.error_invalid_device_location))
         }
     }
-
-    private fun searchNotes(searchEvent: MapExploreViewEvent.SearchNotes) = fetchNotes(
-        SearchFilter(
-            keywords = searchEvent.query,
-            limit = searchEvent.limit,
-            withImage = searchEvent.withImage,
-            options = searchEvent.options
-        )
-    )
 
     private fun showNotes(notes: List<Note>?, deviceLocation: LatLng) {
         val (viewState, noteStatus) = if (notes == null) {

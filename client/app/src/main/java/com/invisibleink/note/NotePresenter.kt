@@ -144,7 +144,7 @@ class NotePresenter @Inject constructor(retrofit: Retrofit) :
     override fun routeTo(destination: NoteDestination) {
         when (destination) {
             is NoteDestination.EmptyNote -> pushState(NoteViewState.Empty)
-            is NoteDestination.MapExplore -> navigationRouter?.routeTo(NavigationDestination.MapExploreTab)
+            is NoteDestination.MapExplore -> navigationRouter?.routeTo(NavigationDestination.MapExploreTab())
         }
     }
 }

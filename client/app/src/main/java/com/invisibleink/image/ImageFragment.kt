@@ -33,7 +33,7 @@ class ImageFragment : Fragment(), ViewProvider, NavigationActivity.BackPressHand
     override fun <T : View> findViewById(id: Int): T = findViewOrThrow(id)
 
     override fun onBackPress(): Boolean {
-        navigationRouter?.routeTo(NavigationDestination.ArExploreTab)
+        navigationRouter?.routeTo(NavigationDestination.ArExploreTab())
         return true
     }
 

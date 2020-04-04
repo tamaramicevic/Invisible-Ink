@@ -31,7 +31,7 @@ export class RetrieveNotesController {
                 UserLocation: geoLocation, Range: 100000, Keywords: keywords,
             });
 
-            resultNotes = await this.retrieveNotesService.ApplyFilters(resultNotes, requestBody.filter);
+            resultNotes = await this.retrieveNotesService.ApplyFilters(geoLocation, resultNotes, requestBody.filter);
             
             const response: RetrieveNotesResponsePayload = {
                 notes: resultNotes.map(item => {

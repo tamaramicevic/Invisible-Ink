@@ -18,6 +18,8 @@ import com.google.android.gms.maps.model.MarkerOptions
 import com.invisibleink.R
 import com.invisibleink.architecture.BaseViewDelegate
 import com.invisibleink.architecture.ViewProvider
+import com.invisibleink.explore.PrebuiltOptions
+import com.invisibleink.explore.SearchFilter
 import com.invisibleink.extensions.showSnackbarWithRetryAction
 import com.invisibleink.models.Note
 
@@ -49,12 +51,7 @@ class MapExploreViewDelegate(viewProvider: ViewProvider) :
         }
         searchButton.setOnClickListener {
             pushEvent(
-                MapExploreViewEvent.SearchNotes(
-                    query = parseQuery(searchKeywords.text.toString()),
-                    withImage = parseImageOptions(searchImageOptions.selectedItem.toString()),
-                    limit = parseLimitOptions(searchLimitOptions.selectedItem.toString()),
-                    options = parseRankOptions(searchRankingOptions.selectedItem.toString())
-                )
+                MapExploreViewEvent.SearchNotes(extractFilter())
             )
         }
 
@@ -74,6 +71,7 @@ class MapExploreViewDelegate(viewProvider: ViewProvider) :
     override fun render(viewState: MapExploreViewState): Unit? = when (viewState) {
         is MapExploreViewState.Error -> showErrorMessageWithRetry(viewState.message)
         is MapExploreViewState.NoteUpdate -> showNotes(viewState.deviceLocation, viewState.notes)
+        is MapExploreViewState.ExtractFilter -> pushEvent(MapExploreViewEvent.FilterExtracted(extractFilter()))
         is MapExploreViewState.DeviceLocationUpdate -> showNotes(
             viewState.deviceLocation,
             viewState.notes,
@@ -129,6 +127,13 @@ class MapExploreViewDelegate(viewProvider: ViewProvider) :
             }
         }
     }
+
+    private fun extractFilter() = SearchFilter(
+        keywords = parseQuery(searchKeywords.text.toString()),
+        withImage = parseImageOptions(searchImageOptions.selectedItem.toString()),
+        limit = parseLimitOptions(searchLimitOptions.selectedItem.toString()),
+        options = parseRankOptions(searchRankingOptions.selectedItem.toString())
+    )
 
     private fun parseQuery(keywords: String?): String? = when (keywords) {
         "" -> null

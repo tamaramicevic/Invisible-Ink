@@ -207,7 +207,7 @@ class NotePresenterTest {
         setUpNoteApiReturns(successfulNoteUploadResponse, null)
 
         notePresenter.onEvent(NoteViewEvent.Upload(validNoteSeedWithLocation))
-        verify(navigationRouter).routeTo(NavigationDestination.MapExploreTab)
+        verify(navigationRouter).routeTo(NavigationDestination.MapExploreTab())
     }
 
     @Test
@@ -216,7 +216,7 @@ class NotePresenterTest {
         setUpNoteApiReturns(successfulNoteUploadResponse, successfulImageUploadResponse)
 
         notePresenter.onEvent(NoteViewEvent.Upload(validNoteSeedWithLocation))
-        verify(navigationRouter).routeTo(NavigationDestination.MapExploreTab)
+        verify(navigationRouter).routeTo(NavigationDestination.MapExploreTab())
     }
 
     private fun setUpLocationProvider(location: LatLng?) =

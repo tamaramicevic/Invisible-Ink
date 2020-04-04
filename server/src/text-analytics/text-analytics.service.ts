@@ -34,4 +34,12 @@ export class TextAnalyticsService {
             console.debug('Error analyzing sentiment: ', error);
         }
     }
+
+    async ScanForBadSentiment(documents: string[]): Promise<boolean> {
+        const sentimentAnalysisResults: SentimentAnalysisResult[] = await this.AnalyzeSentimentScores(documents);
+
+        return sentimentAnalysisResults.some(item => {
+            return item.negative > 0.95;
+        });
+    }
 }
