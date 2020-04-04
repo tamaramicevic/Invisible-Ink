@@ -22,8 +22,10 @@
   },
   "dependencies": {
     "@azure/ai-text-analytics": "^1.0.0-preview.1",
+    "@azure/cognitiveservices-contentmoderator": "^5.0.0",
     "@azure/cosmos": "^3.6.2",
     "@azure/identity": "^1.0.2",
+    "@azure/ms-rest-azure-js": "^2.0.1",
     "@azure/storage-blob": "^12.1.0",
     "@nestjs/azure-storage": "^2.1.1",
     "@nestjs/common": "^6.7.2",
@@ -31,6 +33,7 @@
     "@nestjs/core": "^6.7.2",
     "@nestjs/platform-express": "^6.7.2",
     "@types/geojson": "^7946.0.7",
+    "azure-cognitiveservices-contentmoderator": "^4.1.1",
     "documentdb-typescript": "^1.0.7",
     "dotenv": "^8.2.0",
     "reflect-metadata": "^0.1.13",
