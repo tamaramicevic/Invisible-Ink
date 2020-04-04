@@ -1,6 +1,7 @@
 import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import { AzureCosmosDbService } from 'src/azure-db/azure-cosmos-db.service';
+import { ContentModerationService } from 'src/content-moderation/content-moderation.service';
 import { TextAnalyticsService } from 'src/text-analytics/text-analytics.service';
 import { UploadNoteController } from './upload-note.controller';
 
@@ -10,7 +11,7 @@ describe('UploadNote Controller', () => {
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       controllers: [UploadNoteController],
-      providers: [AzureCosmosDbService, ConfigService, TextAnalyticsService],
+      providers: [AzureCosmosDbService, ConfigService, TextAnalyticsService, ContentModerationService],
     }).compile();
 
     controller = module.get<UploadNoteController>(UploadNoteController);
