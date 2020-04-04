@@ -48,6 +48,14 @@
                     android:ellipsize="end"
                     android:text="This is an example of what a note should look like!" />
 
+                <ImageView
+                    android:id="@+id/noteImage"
+                    android:layout_width="46dp"
+                    android:layout_height="48dp"
+                    android:layout_gravity="center"
+                    android:src="@drawable/ic_image_view_foreground"
+                    android:visibility="gone"/>
+
                 <LinearLayout
                     android:id="@+id/noteFooter"
                     android:layout_width="match_parent"

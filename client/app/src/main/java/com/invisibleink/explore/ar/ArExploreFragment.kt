@@ -154,13 +154,14 @@ class ArExploreFragment : ArFragment(), ViewProvider, LocationProvider,
             ViewRenderable.builder()
                 .setView(requireActivity().baseContext, R.layout.ar_note_view).build()
                 .thenAcceptAsync { renderable ->
-                    
-                    if (note.imageUrl != null) {
 
-                        renderable.view.findViewById<RelativeLayout>(R.id.noteLayout)
-                            .setOnClickListener {
-                                note.imageUrl?.let { it1 -> showImage(it1) }
-                            }
+                   if (note.imageUrl != null) {
+                       renderable.view.findViewById<LinearLayout>(R.id.noteContents).setOnClickListener {
+                            note.imageUrl?.let { it1 -> showImage(it1) }
+                        }
+
+                        val imageView = renderable.view.findViewById<ImageView>(R.id.noteImage)
+                        imageView.visibility = View.VISIBLE
                     }
 
                     var noteTitle = renderable.view.findViewById<TextView>(R.id.noteTitle)
