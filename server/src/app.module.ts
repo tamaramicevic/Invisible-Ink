@@ -12,6 +12,7 @@ import { TextAnalyticsService } from './text-analytics/text-analytics.service';
 import { UploadImageController } from './upload-image/upload-image.controller';
 import { UploadNoteController } from './upload-note/upload-note.controller';
 import { VoteController } from './vote/vote.controller';
+import { ContentModerationService } from './content-moderation/content-moderation.service';
 
 @Module({
   imports: [
@@ -33,6 +34,6 @@ import { VoteController } from './vote/vote.controller';
     RetrieveNotesController, 
     ReportController, VoteController,
   ],
-  providers: [AppService, TextAnalyticsService, RetrieveNotesService],
+  providers: [AppService, TextAnalyticsService, RetrieveNotesService, ContentModerationService],
 })
 export class AppModule {}
