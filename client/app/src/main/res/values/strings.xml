@@ -3,6 +3,7 @@
 
     <!-- Generic strings -->
     <string name="empty_string" />
+    <string name="loading">Loading..</string>
 
     <!-- Navigation content -->
     <string name="explore_content">Explore</string>

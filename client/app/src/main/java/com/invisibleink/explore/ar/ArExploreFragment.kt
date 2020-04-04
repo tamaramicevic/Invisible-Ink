@@ -97,7 +97,7 @@ class ArExploreFragment : ArFragment(), ViewProvider, LocationProvider,
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean = when (item.itemId) {
         R.id.refreshItem -> {
-            viewDelegate.pushEvent(ArExploreViewEvent.FetchNotes)
+            presenter.onEvent(ArExploreViewEvent.FetchNotes)
             true
         }
         R.id.mapExploreItem -> {
@@ -212,12 +212,11 @@ class ArExploreFragment : ArFragment(), ViewProvider, LocationProvider,
                     }
 
                     renderable.view.findViewById<ImageButton>(R.id.noteUpvote).setOnClickListener {
-                        viewDelegate.pushEvent(ArExploreViewEvent.UpvoteNote(note.id))
+                        presenter.onEvent(ArExploreViewEvent.UpvoteNote(note.id))
                     }
 
-                    renderable.view.findViewById<ImageButton>(R.id.noteDownvote)
-                        .setOnClickListener {
-                            viewDelegate.pushEvent(ArExploreViewEvent.DownvoteNote(note.id))
+                    renderable.view.findViewById<ImageButton>(R.id.noteDownvote).setOnClickListener {
+                            presenter.onEvent(ArExploreViewEvent.DownvoteNote(note.id))
                         }
 
                     notesToRender[note.id] = renderable

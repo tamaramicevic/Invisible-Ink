@@ -16,7 +16,6 @@ data class FetchNotesRequest(
 )
 
 sealed class ArExploreViewState : ViewState {
-    object Loading : ArExploreViewState()
     data class Success(val deviceLocation: LatLng, val notes: List<Note>) : ArExploreViewState()
     data class Message(@StringRes val message: Int) : ArExploreViewState()
 }

@@ -1,5 +1,6 @@
 package com.invisibleink.explore.ar
 
+import androidx.annotation.StringRes
 import com.invisibleink.R
 import com.invisibleink.architecture.BasePresenter
 import com.invisibleink.explore.SearchFilter
@@ -38,7 +39,7 @@ class ArExplorePresenter @Inject constructor(
 
     override fun onAttach() {
         super.onAttach()
-        pushState(ArExploreViewState.Loading)
+        pushState(ArExploreViewState.Message(R.string.loading))
         locationProvider?.addLocationChangeListener {
             // Only re-fetch notes if we have none. Otherwise just update the device
             // location on the map.
@@ -54,8 +55,8 @@ class ArExplorePresenter @Inject constructor(
         disposable.dispose()
     }
 
-    private fun fetchNotes() {
-        pushState(ArExploreViewState.Loading)
+    private fun fetchNotes(@StringRes message: Int = R.string.loading) {
+        pushState(ArExploreViewState.Message(message))
 
         val deviceLocation = locationProvider?.getCurrentLocation()
         if (deviceLocation != null) {
@@ -106,8 +107,7 @@ class ArExplorePresenter @Inject constructor(
                         if (it.toString() == DUPLICATE_VOTE) {
                             pushState(ArExploreViewState.Message(R.string.error_duplicate_vote))
                         } else {
-                            pushState(ArExploreViewState.Message(R.string.upvote_success))
-                            fetchNotes()
+                            fetchNotes(R.string.upvote_success)
                         }
                     },
                     { pushState(ArExploreViewState.Message(R.string.error_upvote_failed)) }
@@ -125,8 +125,7 @@ class ArExplorePresenter @Inject constructor(
                         if (it.toString() == DUPLICATE_VOTE) {
                             pushState(ArExploreViewState.Message(R.string.error_duplicate_vote))
                         } else {
-                            pushState(ArExploreViewState.Message(R.string.downvote_success))
-                            fetchNotes()
+                            fetchNotes(R.string.downvote_success)
                         }
                     },
                     { pushState(ArExploreViewState.Message(R.string.error_downvote_failed)) }
