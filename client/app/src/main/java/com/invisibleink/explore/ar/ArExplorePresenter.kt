@@ -1,6 +1,8 @@
 package com.invisibleink.explore.ar
 
 import androidx.annotation.StringRes
+import androidx.annotation.VisibleForTesting
+import com.google.android.gms.maps.model.LatLng
 import com.invisibleink.R
 import com.invisibleink.architecture.BasePresenter
 import com.invisibleink.explore.SearchFilter
@@ -21,9 +23,11 @@ class ArExplorePresenter @Inject constructor(
     BasePresenter<ArExploreViewState, ArExploreViewEvent, ArExploreDestination>() {
 
     private val exploreApi = retrofit.create(ArExploreApi::class.java)
-    private val disposable = CompositeDisposable()
+    @VisibleForTesting
+    internal var disposable = CompositeDisposable()
     lateinit var voteGateway: VoteGateway
     lateinit var reportGateway: ReportGateway
+    @VisibleForTesting
     var locationProvider: LocationProvider? = null
     var searchFilter: SearchFilter? = SearchFilter.EMPTY_FILTER
     private var recentNotes: List<Note> = listOf()
@@ -32,6 +36,7 @@ class ArExplorePresenter @Inject constructor(
 
     override fun onEvent(viewEvent: ArExploreViewEvent) = when (viewEvent) {
         is ArExploreViewEvent.FetchNotes -> fetchNotes()
+        is ArExploreViewEvent.RefreshNotes -> fetchNotes()
         is ArExploreViewEvent.UpvoteNote -> upvoteNote(viewEvent.noteId)
         is ArExploreViewEvent.DownvoteNote -> downvoteNote(viewEvent.noteId)
         is ArExploreViewEvent.ReportNote -> reportNote(viewEvent.noteId, viewEvent.reportType, viewEvent.reportComment)
@@ -39,7 +44,7 @@ class ArExplorePresenter @Inject constructor(
 
     override fun onAttach() {
         super.onAttach()
-        pushState(ArExploreViewState.Message(R.string.loading))
+        pushState(ArExploreViewState.Loading)
         locationProvider?.addLocationChangeListener {
             // Only re-fetch notes if we have none. Otherwise just update the device
             // location on the map.
@@ -117,7 +122,7 @@ class ArExplorePresenter @Inject constructor(
 
     private fun downvoteNote(noteId: String) {
         disposable.add(
-            voteGateway.downvoteNote(noteId)
+            voteGateway.downVoteNote(noteId)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(

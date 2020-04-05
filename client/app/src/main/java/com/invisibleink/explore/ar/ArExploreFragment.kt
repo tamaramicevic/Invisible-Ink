@@ -6,6 +6,7 @@ import android.os.Bundle
 import android.os.Looper
 import android.view.*
 import android.widget.*
+import androidx.annotation.VisibleForTesting
 import com.google.android.gms.location.*
 import com.google.android.gms.maps.model.LatLng
 import com.google.ar.core.Frame
@@ -72,8 +73,7 @@ class ArExploreFragment : ArFragment(), ViewProvider, LocationProvider,
     private lateinit var notesRendered: MutableMap<String, ViewRenderable>
     private lateinit var notePositions: MutableList<Pose>
 
-    private var DISTANCE_BETWEEN_NOTES = 1.0
-    private var NOTE_RADIUS: Float = 100F
+    private var DISTANCE_BETWEEN_NOTES = 1.5
 
     override fun <T : View> findViewById(id: Int): T = findViewOrThrow(id)
     override fun onBackPress() = doNothingOnBackPress()
@@ -97,7 +97,7 @@ class ArExploreFragment : ArFragment(), ViewProvider, LocationProvider,
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean = when (item.itemId) {
         R.id.refreshItem -> {
-            presenter.onEvent(ArExploreViewEvent.FetchNotes)
+            presenter.onEvent(ArExploreViewEvent.RefreshNotes)
             true
         }
         R.id.mapExploreItem -> {
@@ -391,7 +391,9 @@ class ArExploreFragment : ArFragment(), ViewProvider, LocationProvider,
         ).show()
     }
 
-    private fun filterNotes(location: LatLng, notes: List<Note>): List<Note> {
+    @VisibleForTesting
+    internal fun filterNotes(location: LatLng, notes: List<Note>): List<Note> {
+        var NOTE_RADIUS = 100F
 
         val userLocation = Location("User Location");
         userLocation.latitude = location.latitude;
