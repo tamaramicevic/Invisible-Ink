@@ -8,4 +8,3 @@ npm install
 
 # Install pm2
 pm2 start npm --no-automation --name InvisibleInk -- run start
-

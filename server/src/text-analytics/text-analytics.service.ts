@@ -1,3 +1,11 @@
+/**
+ * Software Requirements Specification Coverage
+ *
+ *  - Covers System Feature 4.7, Functional Requirement: Auto-Negative-Note-Scan
+ *  - Covers SEQ-REQ-1
+ * 
+ */
+
 import { AnalyzeSentimentResult, AnalyzeSentimentSuccessResult, CognitiveServicesCredential, TextAnalyticsClient} from '@azure/ai-text-analytics';
 import { Injectable } from '@nestjs/common';
 import { ConfigService} from '@nestjs/config';

@@ -1,3 +1,11 @@
+/**
+ * Software Requirements Specification Coverage
+ *
+ *  - Covers System Feature 4.7, Functional Requirement: Auto-Negative-Note-Scan
+ *  - Covers SEQ-REQ-1
+ * 
+ */
+
 import { Controller, Post, Req } from '@nestjs/common';
 import { AzureCosmosDbService } from 'src/azure-db/azure-cosmos-db.service';
 import { ContentModerationService } from 'src/content-moderation/content-moderation.service';

@@ -1,3 +1,14 @@
+/**
+ * Software Requirements Specification Coverage
+ *
+ *  - Covers System Feature 4.2, Functional Requirement: AR-Server-Note-Logic
+ *  - Covers System Feature 4.2, Functional Requirement: AR-Server-Note-Retrieval
+ *  - Covers System Feature 4.3, Functional Requirement: Map-Client-Note-Serve
+ *  - Covers System Feature 4.3, Functional Requirement: Client-Search-Params
+ *  - Covers System Feature 4.5, Functional Requirement: Client-Search-Filter
+ * 
+ */
+
 import { Controller, Get, Post, Req } from '@nestjs/common';
 import { Point } from 'geojson';
 import { AzureCosmosDbService } from 'src/azure-db/azure-cosmos-db.service';

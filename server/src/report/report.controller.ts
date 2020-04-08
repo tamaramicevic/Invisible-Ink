@@ -1,3 +1,11 @@
+/**
+ * Software Requirements Specification Coverage
+ *
+ *  - Covers System Feature 4.6, Functional Requirement: Report-Note-DB-Saved
+ *  - Covers System Feature 4.6, Functional Requirement: Report-Note-Return-Code
+ * 
+ */
+
 import { Controller, Post, Req } from '@nestjs/common';
 import { AzureCosmosDbService } from 'src/azure-db/azure-cosmos-db.service';
 import { ReportedNoteSchema } from 'src/azure-db/models/reported-note-schema';

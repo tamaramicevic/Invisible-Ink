@@ -1,3 +1,11 @@
+/**
+ * Software Requirements Specification Coverage
+ *
+ *  - Covers System Feature 4.7, Functional Requirement: Auto-Negative-Note-Scan
+ *  - Covers SEQ-REQ-1
+ * 
+ */
+
 import { ContentModeratorClient } from '@azure/cognitiveservices-contentmoderator';
 import { CognitiveServicesCredentials } from '@azure/ms-rest-azure-js';
 import { Injectable, Logger } from '@nestjs/common';
