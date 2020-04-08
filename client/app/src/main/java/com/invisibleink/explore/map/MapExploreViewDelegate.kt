@@ -23,7 +23,13 @@ import com.invisibleink.explore.SearchFilter
 import com.invisibleink.extensions.showSnackbarWithRetryAction
 import com.invisibleink.models.Note
 
-
+/**
+ * Software Requirements Specification Coverage
+ *
+ *  - Covers System Feature 4.3, Functional Requirement: Map-Client-Search
+ *  - Covers System Feature 4.3, Functional Requirement: Map-Client-Filter
+ *
+ */
 class MapExploreViewDelegate(viewProvider: ViewProvider) :
     BaseViewDelegate<MapExploreViewState, MapExploreViewEvent, MapExploreDestination>(viewProvider) {
 

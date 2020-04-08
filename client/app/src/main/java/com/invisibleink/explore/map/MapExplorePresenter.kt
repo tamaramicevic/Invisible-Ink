@@ -15,6 +15,15 @@ import io.reactivex.schedulers.Schedulers
 import retrofit2.Retrofit
 import javax.inject.Inject
 
+/**
+ * Software Requirements Specification Coverage
+ *
+ *  - Covers System Feature 4.3, Functional Requirement: Map-Client-Note-Retrieval
+ *  - Covers System Feature 4.3, Functional Requirement: Map-Client-Grouping
+ *  - Covers System Feature 4.3, Functional Requirement: Map-Client-Search
+ *  - Covers System Feature 4.3, Functional Requirement: Map-Client-Filter
+ *
+ */
 class MapExplorePresenter @Inject constructor(
     retrofit: Retrofit
 ) :
