@@ -12,6 +12,7 @@ enum class VoteResult {
  * Software Requirements Specification Coverage
  *  - Covers System Feature 4.4, Functional Requirement: Rating-Score
  *  - Covers System Feature 4.4, Functional Requirement: Rating-Duplicates
+ *  - Covers Security Requirement: SEQ-REQ-2
  */
 class VoteGateway @Inject constructor(
     retrofit: Retrofit
