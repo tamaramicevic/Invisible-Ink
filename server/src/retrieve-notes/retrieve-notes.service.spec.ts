@@ -1,7 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { Note } from 'src/shared/models/note';
-import { RetrieveNotesService } from './retrieve-notes.service';
 import { Filter, PreBuiltFilter } from './models/retrieve-notes-request';
+import { RetrieveNotesService } from './retrieve-notes.service';
 
 const notes: Note[] = [
   {
