@@ -48,19 +48,8 @@ class ArExplorePresenterTest {
         private val defaultSearchNotesFilter = SearchFilter("Some query", 12, false, PrebuiltOptions.WORST)
         private val locationOnlyFetchRequest = FetchNotesRequest(validLocation!!, SearchFilter.EMPTY_FILTER)
         private val defaultSearchNotesRequest = FetchNotesRequest(validLocation!!, defaultSearchNotesFilter)
-        private val defaultNote = Note(
-            id = "1",
-            title = "title",
-            body = "body",
-            location = validLocation!!,
-            score = 0
-        )
-        private val invalidNoteId = null
-        private val validNoteId = "1"
-        private val emptyNoteList = listOf<Note>()
-        private val defaultNoteList = listOf(defaultNote)
+        private const val validNoteId = "1"
         private val reportType = ReportType.HARASSMENT
-
     }
 
     @Before
@@ -93,7 +82,6 @@ class ArExplorePresenterTest {
         // Capture the location call back for testing
         argumentCaptor<(LatLng) -> Unit?>().apply {
             verify(locationProvider).addLocationChangeListener(capture())
-//            locationUpdateListener = firstValue
         }
     }
 
@@ -175,6 +163,30 @@ class ArExplorePresenterTest {
     }
 
     @Test
+    fun `verify presenter pushes success message on up-voting a note`() {
+        setUpVoteApiReturns(VoteResult.SUCCESS)
+
+        arPresenter.onEvent(ArExploreViewEvent.UpvoteNote(validNoteId))
+        verify(arViewDelegate).render(ArExploreViewState.Message(R.string.upvote_success))
+    }
+
+    @Test
+    fun `verify presenter pushes duplicate message on up-voting a note`() {
+        setUpVoteApiReturns(VoteResult.DUPLICATE)
+
+        arPresenter.onEvent(ArExploreViewEvent.UpvoteNote(validNoteId))
+        verify(arViewDelegate).render(ArExploreViewState.Message(R.string.error_duplicate_vote))
+    }
+
+    @Test
+    fun `verify presenter pushes failure message on up-voting a note`() {
+        setUpVoteApiReturns(VoteResult.FAILURE)
+
+        arPresenter.onEvent(ArExploreViewEvent.UpvoteNote(validNoteId))
+        verify(arViewDelegate).render(ArExploreViewState.Message(R.string.error_upvote_failed))
+    }
+
+    @Test
     fun `verify presenter invokes voteGateway to down-vote on a note`() {
         arPresenter.onEvent(ArExploreViewEvent.DownvoteNote(validNoteId))
 
@@ -182,10 +194,50 @@ class ArExplorePresenterTest {
     }
 
     @Test
+    fun `verify presenter pushes success message on down-voting a note`() {
+        setDownVoteApiReturns(VoteResult.SUCCESS)
+
+        arPresenter.onEvent(ArExploreViewEvent.DownvoteNote(validNoteId))
+        verify(arViewDelegate).render(ArExploreViewState.Message(R.string.downvote_success))
+    }
+
+    @Test
+    fun `verify presenter pushes failure message on down-voting a note`() {
+        setDownVoteApiReturns(VoteResult.FAILURE)
+
+        arPresenter.onEvent(ArExploreViewEvent.DownvoteNote(validNoteId))
+        verify(arViewDelegate).render(ArExploreViewState.Message(R.string.error_downvote_failed))
+    }
+
+    @Test
+    fun `verify presenter pushes duplicate message on down-voting a note`() {
+        setDownVoteApiReturns(VoteResult.DUPLICATE)
+
+        arPresenter.onEvent(ArExploreViewEvent.DownvoteNote(validNoteId))
+        verify(arViewDelegate).render(ArExploreViewState.Message(R.string.error_duplicate_vote))
+    }
+
+    @Test
     fun `verify presenter invokes reportGateway to report a note`() {
         arPresenter.onEvent(ArExploreViewEvent.ReportNote(validNoteId, reportType, ""))
 
         verify(reportGateway).reportNote(validNoteId, reportType, "")
+    }
+
+    @Test
+    fun `verify presenter pushes success message for reporting a note`() {
+        setReportApiReturns(ReportResult.SUCCESS)
+        arPresenter.onEvent(ArExploreViewEvent.ReportNote(validNoteId, reportType, ""))
+
+        verify(arViewDelegate).render(ArExploreViewState.Message(R.string.upload_report_success))
+    }
+
+    @Test
+    fun `verify presenter pushes failure message for reporting a note`() {
+        setReportApiReturns(ReportResult.FAILURE)
+        arPresenter.onEvent(ArExploreViewEvent.ReportNote(validNoteId, reportType, ""))
+
+        verify(arViewDelegate).render(ArExploreViewState.Message(R.string.error_report_failed))
     }
 
     private fun setUpLocationProvider(location: LatLng?) =
@@ -212,13 +264,13 @@ class ArExplorePresenterTest {
     }
 
     private fun setDownVoteApiReturns(voteResponse: VoteResult?) {
-        val voteResp = if (voteResponse != null) {
+        val voteResponseObsv = if (voteResponse != null) {
             Single.just(voteResponse).toObservable()
         } else {
             Observable.never<VoteResult>()
         }
 
-        whenever(voteGateway.downVoteNote(any())) doReturn voteResp
+        whenever(voteGateway.downVoteNote(any())) doReturn voteResponseObsv
     }
 
     private fun setReportApiReturns(reportResponse: ReportResult?) {

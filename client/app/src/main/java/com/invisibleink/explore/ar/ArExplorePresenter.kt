@@ -7,9 +7,11 @@ import com.invisibleink.R
 import com.invisibleink.architecture.BasePresenter
 import com.invisibleink.explore.SearchFilter
 import com.invisibleink.explore.vote.VoteGateway
+import com.invisibleink.explore.vote.VoteResult
 import com.invisibleink.location.LocationProvider
 import com.invisibleink.models.Note
 import com.invisibleink.report.ReportGateway
+import com.invisibleink.report.ReportResult
 import com.invisibleink.report.ReportType
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
@@ -31,8 +33,6 @@ class ArExplorePresenter @Inject constructor(
     var locationProvider: LocationProvider? = null
     var searchFilter: SearchFilter? = SearchFilter.EMPTY_FILTER
     private var recentNotes: List<Note> = listOf()
-
-    private var DUPLICATE_VOTE: String = "DUPLICATE"
 
     override fun onEvent(viewEvent: ArExploreViewEvent) = when (viewEvent) {
         is ArExploreViewEvent.FetchNotes -> fetchNotes()
@@ -109,8 +109,10 @@ class ArExplorePresenter @Inject constructor(
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(
                     {
-                        if (it.toString() == DUPLICATE_VOTE) {
+                        if (it == VoteResult.DUPLICATE) {
                             pushState(ArExploreViewState.Message(R.string.error_duplicate_vote))
+                        } else if (it == VoteResult.FAILURE) {
+                            pushState(ArExploreViewState.Message(R.string.error_upvote_failed))
                         } else {
                             fetchNotes(R.string.upvote_success)
                         }
@@ -127,8 +129,10 @@ class ArExplorePresenter @Inject constructor(
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(
                     {
-                        if (it.toString() == DUPLICATE_VOTE) {
+                        if (it == VoteResult.DUPLICATE) {
                             pushState(ArExploreViewState.Message(R.string.error_duplicate_vote))
+                        } else if (it == VoteResult.FAILURE) {
+                            pushState(ArExploreViewState.Message(R.string.error_downvote_failed))
                         } else {
                             fetchNotes(R.string.downvote_success)
                         }
@@ -147,7 +151,13 @@ class ArExplorePresenter @Inject constructor(
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe(
-                { pushState(ArExploreViewState.Message(R.string.upload_report_success)) },
+                {
+                    if (it == ReportResult.FAILURE) {
+                        pushState(ArExploreViewState.Message(R.string.error_report_failed))
+                    } else {
+                        pushState(ArExploreViewState.Message(R.string.upload_report_success))
+                    }
+                },
                 { pushState(ArExploreViewState.Message(R.string.error_report_failed)) }
             ))
     }
