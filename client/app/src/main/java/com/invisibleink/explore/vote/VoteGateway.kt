@@ -18,7 +18,7 @@ class VoteGateway @Inject constructor(
 
     fun upVoteNote(noteId: String): Observable<VoteResult> = vote(VoteRequest.upvote(noteId))
 
-    fun downvoteNote(noteId: String): Observable<VoteResult> = vote(VoteRequest.downvote(noteId))
+    fun downVoteNote(noteId: String): Observable<VoteResult> = vote(VoteRequest.downvote(noteId))
 
     fun clearDatabase() = voteDatabase.clearAllTables()
 

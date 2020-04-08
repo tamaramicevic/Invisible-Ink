@@ -108,7 +108,7 @@ class SettingsFragment : PreferenceFragmentCompat(), NavigationActivity.BackPres
 
     private fun downvoteNote() {
         disposable.add(
-            voteGateway.downvoteNote("b56d6a1b-2b1d-4f72-b50e-36474a2ba02e")
+            voteGateway.downVoteNote("b56d6a1b-2b1d-4f72-b50e-36474a2ba02e")
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(

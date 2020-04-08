@@ -16,11 +16,13 @@ data class FetchNotesRequest(
 )
 
 sealed class ArExploreViewState : ViewState {
+    object Loading : ArExploreViewState()
     data class Success(val deviceLocation: LatLng, val notes: List<Note>) : ArExploreViewState()
     data class Message(@StringRes val message: Int) : ArExploreViewState()
 }
 
 sealed class ArExploreViewEvent : ViewEvent {
+    object RefreshNotes : ArExploreViewEvent()
     object FetchNotes : ArExploreViewEvent()
     data class UpvoteNote(val noteId: String) : ArExploreViewEvent()
     data class DownvoteNote(val noteId: String) : ArExploreViewEvent()
