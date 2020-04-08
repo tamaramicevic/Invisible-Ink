@@ -17,6 +17,17 @@ import retrofit2.Retrofit
 import java.io.File
 import javax.inject.Inject
 
+/**
+ * Software Requirements Specification Coverage
+ *
+ *  - Covers System Feature 4.1, Functional Requirement: Note-Input-Validation
+ *  - Covers System Feature 4.1, Functional Requirement: Note-Photo-Import
+ *  - Covers System Feature 4.1, Functional Requirement: Note-Photo-Capture
+ *  - Covers System Feature 4.1, Functional Requirement: Note-Geo-Tagging
+ *  - Covers System Feature 4.1, Functional Requirement: Note-Upload-Message
+ *  - Covers System Feature 4.7, Functional Requirement: Auto-Negative-Note-Show
+ *
+ */
 class NotePresenter @Inject constructor(retrofit: Retrofit) :
     BasePresenter<NoteViewState, NoteViewEvent, NoteDestination>(),
     Router<NoteDestination> {

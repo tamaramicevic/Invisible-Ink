@@ -5,6 +5,11 @@ import android.content.pm.PackageManager
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 
+/**
+ * Software Requirements Specification Coverage
+ *  - Covers System Feature 4.4, Functional Requirement: AR-GPS-Permissions
+ */
+
 // Require permissions
 private const val LOCATION_PERMISSION = android.Manifest.permission.ACCESS_FINE_LOCATION
 private const val PERMISSION_GRANTED = PackageManager.PERMISSION_GRANTED

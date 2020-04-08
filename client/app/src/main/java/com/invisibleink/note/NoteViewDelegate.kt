@@ -17,6 +17,12 @@ import org.joda.time.DateTime
 import org.joda.time.format.DateTimeFormat
 import org.joda.time.format.DateTimeFormatter
 
+/**
+ * Software Requirements Specification Coverage
+ *
+ *  - Covers System Feature 4.1, Functional Requirement: Note-Input
+ *
+ */
 class NoteViewDelegate(viewProvider: ViewProvider) :
     BaseViewDelegate<NoteViewState, NoteViewEvent, NoteDestination>(viewProvider) {
 

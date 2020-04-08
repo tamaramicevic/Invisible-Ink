@@ -9,7 +9,6 @@ local.properties
 *.eml
 *.ipr
 *.iws
-*.apk
 *.aar
 *.patch
 *.diff

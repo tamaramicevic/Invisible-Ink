@@ -8,6 +8,10 @@ enum class ReportResult {
     SUCCESS, FAILURE, DUPLICATE
 }
 
+/**
+ * Software Requirements Specification Coverage
+ *  - Covers System Feature 4.6, Functional Requirement: Report-Note-Client-Post
+ */
 class ReportGateway @Inject constructor(
     retrofit: Retrofit
 ) {
