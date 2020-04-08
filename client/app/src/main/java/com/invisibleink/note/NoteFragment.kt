@@ -31,6 +31,13 @@ import pl.aprilapps.easyphotopicker.MediaFile
 import pl.aprilapps.easyphotopicker.MediaSource
 import javax.inject.Inject
 
+/**
+ * Software Requirements Specification Coverage
+ *
+ *  - Covers System Feature 4.1, Functional Requirement: Note-Photo-Import
+ *  - Covers System Feature 4.1, Functional Requirement: Note-Photo-Capture
+ *
+ */
 class NoteFragment : LocationFragment(), ViewProvider, NotePresenter.ImageHandler,
     LocationProvider, NavigationActivity.BackPressHandler {
 
