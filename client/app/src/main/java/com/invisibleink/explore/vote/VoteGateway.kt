@@ -8,6 +8,11 @@ enum class VoteResult {
     SUCCESS, FAILURE, DUPLICATE
 }
 
+/**
+ * Software Requirements Specification Coverage
+ *  - Covers System Feature 4.4, Functional Requirement: Rating-Score
+ *  - Covers System Feature 4.4, Functional Requirement: Rating-Duplicates
+ */
 class VoteGateway @Inject constructor(
     retrofit: Retrofit
 ) {

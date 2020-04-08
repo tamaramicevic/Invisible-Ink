@@ -39,7 +39,15 @@ import com.invisibleink.report.ReportGateway
 import javax.inject.Inject
 import kotlin.math.sqrt
 
-
+/**
+ * Software Requirements Specification Coverage
+ *  - Covers System Feature 4.2, Functional Requirement: AR-Show-Notes
+ *  - Covers System Feature 4.2, Functional Requirement: AR-Note-Content-Display
+ *  - Covers System Feature 4.2, Functional Requirement: AR-Note-Grouping
+ *  - Covers System Feature 4.4, Functional Requirement: Rating-Input
+ *  - Covers System Feature 4.4, Functional Requirement: Rating-Score
+ *  - Covers System Feature 4.6, Functional Requirement: Report-Note-UI
+ */
 class ArExploreFragment : ArFragment(), ViewProvider, LocationProvider,
     NavigationActivity.BackPressHandler {
 

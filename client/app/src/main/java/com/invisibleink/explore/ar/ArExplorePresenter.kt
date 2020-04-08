@@ -19,6 +19,12 @@ import io.reactivex.schedulers.Schedulers
 import retrofit2.Retrofit
 import javax.inject.Inject
 
+
+/**
+ * Software Requirements Specification Coverage
+ *  - Covers System Feature 4.2, Functional Requirement: AR-Client-Note-Retrieval
+ *  - Covers System Feature 4.6, Functional Requirement: Report-Note-Client-Post
+ */
 class ArExplorePresenter @Inject constructor(
     retrofit: Retrofit
 ) :
