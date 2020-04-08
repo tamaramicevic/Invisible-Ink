@@ -73,7 +73,7 @@ class ArExploreFragment : ArFragment(), ViewProvider, LocationProvider,
     private lateinit var notesRendered: MutableMap<String, ViewRenderable>
     private lateinit var notePositions: MutableList<Pose>
 
-    private var DISTANCE_BETWEEN_NOTES = 1.5
+    private var DISTANCE_BETWEEN_NOTES = 1.0
 
     override fun <T : View> findViewById(id: Int): T = findViewOrThrow(id)
     override fun onBackPress() = doNothingOnBackPress()
@@ -158,7 +158,8 @@ class ArExploreFragment : ArFragment(), ViewProvider, LocationProvider,
     }
 
     fun showNotes(deviceLocation: LatLng, notes: List<Note>) {
-        val filteredNotes = filterNotes(deviceLocation, notes)
+        val distances = getDistances(deviceLocation, notes)
+        val filteredNotes = filterNotes(distances)
 
         filteredNotes.forEach loop@{ note ->
 
@@ -392,9 +393,22 @@ class ArExploreFragment : ArFragment(), ViewProvider, LocationProvider,
     }
 
     @VisibleForTesting
-    internal fun filterNotes(location: LatLng, notes: List<Note>): List<Note> {
+    internal fun filterNotes(distances: Map<Note, Float>): List<Note> {
         var NOTE_RADIUS = 100F
 
+        val sortedNotes : Map<Note, Float> = distances.toList().sortedBy { (_, value) -> value}.toMap()
+        val filteredNotes: MutableList<Note> = mutableListOf()
+
+        sortedNotes.forEach { sortedNote ->
+            if (NOTE_RADIUS.compareTo(sortedNote.value) == 1) {
+                filteredNotes.add(sortedNote.key)
+            }
+        }
+
+        return filteredNotes
+    }
+
+    private fun getDistances(location: LatLng, notes: List<Note>): Map<Note, Float> {
         val userLocation = Location("User Location");
         userLocation.latitude = location.latitude;
         userLocation.longitude = location.longitude;
@@ -410,16 +424,7 @@ class ArExploreFragment : ArFragment(), ViewProvider, LocationProvider,
             distances[note] = distance
         }
 
-        val sortedNotes : Map<Note, Float> = distances.toList().sortedBy { (_, value) -> value}.toMap()
-        val filteredNotes: MutableList<Note> = mutableListOf()
-
-        sortedNotes.forEach { sortedNote ->
-            if (NOTE_RADIUS.compareTo(sortedNote.value) == 1) {
-                filteredNotes.add(sortedNote.key)
-            }
-        }
-
-        return filteredNotes
+        return distances
     }
 
     open fun onLocationPermissionGranted() {}

@@ -175,14 +175,6 @@ class ArExplorePresenterTest {
     }
 
     @Test
-    fun `verify presenter pushes success message on up-voting a note`() {
-        voteGateway.clearDatabase()
-
-        arPresenter.onEvent(ArExploreViewEvent.UpvoteNote(validNoteId))
-        verify(arViewDelegate).render(ArExploreViewState.Message(R.string.upvote_success))
-    }
-
-    @Test
     fun `verify presenter invokes voteGateway to down-vote on a note`() {
         arPresenter.onEvent(ArExploreViewEvent.DownvoteNote(validNoteId))
 
