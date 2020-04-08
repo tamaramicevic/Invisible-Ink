@@ -25,6 +25,7 @@ import javax.inject.Inject
  *  - Covers System Feature 4.1, Functional Requirement: Note-Photo-Capture
  *  - Covers System Feature 4.1, Functional Requirement: Note-Geo-Tagging
  *  - Covers System Feature 4.1, Functional Requirement: Note-Upload-Message
+ *  - Covers System Feature 4.7, Functional Requirement: Auto-Negative-Note-Show
  *
  */
 class NotePresenter @Inject constructor(retrofit: Retrofit) :
