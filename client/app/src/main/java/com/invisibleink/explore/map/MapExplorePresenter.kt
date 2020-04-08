@@ -22,6 +22,8 @@ import javax.inject.Inject
  *  - Covers System Feature 4.3, Functional Requirement: Map-Client-Grouping
  *  - Covers System Feature 4.3, Functional Requirement: Map-Client-Search
  *  - Covers System Feature 4.3, Functional Requirement: Map-Client-Filter
+ *  - Covers System Feature 4.5, Functional Requirement: Client-Search-Request
+ *  - Covers System Feature 4.5, Functional Requirement: Client-Search-Params
  *
  */
 class MapExplorePresenter @Inject constructor(
